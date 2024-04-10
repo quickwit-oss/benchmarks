@@ -1,0 +1,55 @@
+# Inspired from https://opensearch.org/docs/latest/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
+
+version: '3'
+services:
+  opensearch-node: # This is also the hostname of the container within the Docker network (i.e. https://opensearch-node/)
+    image: opensearchproject/opensearch:latest # Specifying the latest available image - modify if you want a specific version
+    container_name: opensearch-node
+    environment:
+      - cluster.name=opensearch-cluster # Name the cluster
+      - node.name=opensearch-node # Name the node that will run in this container
+      - discovery.seed_hosts=opensearch-node # Nodes to look for when discovering the cluster
+      - cluster.initial_cluster_manager_nodes=opensearch-node # Nodes eligible to serve as cluster manager
+      - bootstrap.memory_lock=true # Disable JVM heap memory swapping
+      - "OPENSEARCH_JAVA_OPTS=-Xms16g -Xmx16g"
+      - plugins.security.disabled=true
+      - http.port=9301
+      # Disable caches.
+      - indices.queries.cache.size=0
+      - indices.fielddata.cache.size=0
+    ulimits:
+      memlock:
+        soft: -1 # Set memlock to unlimited (no soft or hard limit)
+        hard: -1
+      nofile:
+        soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
+        hard: 65536
+    volumes:
+      - data:/usr/share/opensearch/data:z # Creates volume called opensearch-data1 and mounts it to the container
+    ports:
+      - 9301:9301 # REST API
+      - 9600:9600 # Performance Analyzer
+    expose:
+      - "9301"
+    networks:
+      - opensearch-net # All of the containers will join the same Docker bridge network
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest # Make sure the version of opensearch-dashboards matches the version of opensearch installed on other nodes
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601 # Map host port 5601 to container port 5601
+    expose:
+      - "5601" # Expose port 5601 for web access to OpenSearch Dashboards
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch-node:9301"]' # Define the OpenSearch nodes that OpenSearch Dashboards will query
+      server.host: "0.0.0.0"
+      # Disable the login page.
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
+    networks:
+      - opensearch-net
+
+volumes:
+  data:
+
+networks:
+  opensearch-net:

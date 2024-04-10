@@ -1,0 +1,14 @@
+version: 0.7
+listen_address: 0.0.0.0
+rest_listen_port: 7280
+gossip_listen_port: 7281
+
+ingest_api:
+  max_queue_memory_usage: 4GB
+  max_queue_disk_usage: 8GB
+
+searcher:
+  fast_field_cache_capacity: 0G
+  split_footer_cache_capacity: 0G
+  partial_request_cache_capacity: 0G
+  aggregation_memory_limit: 1G

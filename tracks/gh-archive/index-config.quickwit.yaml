@@ -1,0 +1,26 @@
+version: 0.6
+index_id: gharchive
+
+doc_mapping:
+  mode: dynamic
+  dynamic_mapping:
+    record: position
+    fast: true
+    tokenizer: default
+  field_mappings:
+    - name: indexed_time
+      type: datetime
+      precision: millisecond
+      fast: true
+      input_formats:
+        - unix_timestamp
+      output_format: unix_timestamp_secs
+  timestamp_field: created_at
+
+indexing_settings:
+  split_num_docs_target: 2000000
+  commit_timeout_secs: 60
+
+retention:
+  period: 3 days
+  schedule: daily

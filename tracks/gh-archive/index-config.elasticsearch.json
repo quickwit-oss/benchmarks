@@ -1,0 +1,63 @@
+{
+  "settings": {
+    "index": {
+      "refresh_interval": "-1",
+      "queries": {
+        "cache": {
+          "enabled": false
+        }
+      },
+      "mapping": {
+        "total_fields": {
+          "limit": 2000
+        }
+      }
+    },
+    "analysis": {
+      "filter": {
+        "length_under_40": {
+          "type": "length",
+          "min": 0,
+          "max": 39
+        }
+      },
+      "analyzer": {
+        "tantivy_default_analyzer": {
+          "type": "custom",
+          "tokenizer": "letter",
+          "filter": [
+            "length_under_40",
+            "lowercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "date_detection": false,
+    "properties": {
+      "created_at": {
+        "type": "date"
+      }
+    },
+    "dynamic_templates": [
+      {
+        "string_fields": {
+          "match_mapping_type": "string",
+          "mapping": {
+            "type": "text",
+            "norms": false,
+            "index_options": "docs",
+            "analyzer": "tantivy_default_analyzer",
+            "fields": {
+              "raw": {
+                "type": "keyword",
+                "ignore_above": 8191
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

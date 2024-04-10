@@ -1,0 +1,23 @@
+{
+    "query": "*",
+    "max_hits": 0,
+    "aggs": {
+        "events": {
+            "date_histogram": {
+                "field": "created_at",
+                "fixed_interval": "1d"
+            },
+            "aggs": {
+                "top_repositories": {
+                    "terms": {
+                        "size": 100,
+                        "field": "repo.name",
+                        "order": {
+                            "_count": "desc"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

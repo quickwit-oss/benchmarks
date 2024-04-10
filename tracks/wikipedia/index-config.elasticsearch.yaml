@@ -1,0 +1,28 @@
+
+settings:
+  index:
+    refresh_interval: "-1"
+    queries:
+      cache:
+        enabled: false
+  analysis:
+    filter:
+      length_under_40:
+        type: length
+        min: 0
+        max: 39
+    analyzer:
+      tantivy_default_analyzer:
+        type: custom
+        tokenizer: letter
+        filter:
+          - length_under_40
+          - lowercase
+mappings:
+  properties:
+    id:
+      type: keyword
+    text:
+      type: text
+      analyzer: tantivy_default_analyzer
+          

@@ -1,0 +1,899 @@
+{"query": {"query": "the", "sort_by_field": "-_score"}, "tags": ["term"]}
+{"query": {"query": "+griffith +observatory", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"griffith observatory\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "griffith OR observatory", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bowel +obstruction", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"bowel obstruction\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "bowel OR obstruction", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+vicenza +italy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"vicenza italy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "vicenza OR italy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+digital +scanning", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"digital scanning\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "digital OR scanning", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+plus +size +clothing", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"plus size clothing\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "plus OR size OR clothing", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+borders +books", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"borders books\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "borders OR books", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+american +funds", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"american funds\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "american OR funds", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+scottsdale +az", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"scottsdale az\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "scottsdale OR az", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+wisconsin +attorney +general", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"wisconsin attorney general\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "wisconsin OR attorney OR general", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +english +restoration", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the english restoration\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR english OR restoration", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+freelance +work", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"freelance work\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "freelance OR work", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+french +culinary +institute", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"french culinary institute\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "french OR culinary OR institute", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+color +combinations", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"color combinations\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "color OR combinations", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+italian +translation", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"italian translation\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "italian OR translation", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+milwaukee +newspaper", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"milwaukee newspaper\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "milwaukee OR newspaper", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+robert +green +ingersoll", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"robert green ingersoll\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "robert OR green OR ingersoll", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+omaha +symphony", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"omaha symphony\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "omaha OR symphony", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+body +painting", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"body painting\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "body OR painting", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+who +dares +wins", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"who dares wins\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "who OR dares OR wins", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+west +palm +beach +florida", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"west palm beach florida\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "west OR palm OR beach OR florida", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+stone +mountain", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"stone mountain\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "stone OR mountain", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+san +francisco", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"san francisco\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "san OR francisco", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ford +modeling +agency", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"ford modeling agency\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "ford OR modeling OR agency", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+glass +works", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"glass works\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "glass OR works", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+personal +loan", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"personal loan\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "personal OR loan", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+texas +state +legislature", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"texas state legislature\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "texas OR state OR legislature", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+spiritual +warfare", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"spiritual warfare\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "spiritual OR warfare", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+georgia +public +broadcasting", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"georgia public broadcasting\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "georgia OR public OR broadcasting", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+graffiti +art", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"graffiti art\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "graffiti OR art", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+texas +death +row", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"texas death row\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "texas OR death OR row", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+catholic +answers", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"catholic answers\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "catholic OR answers", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+interest +only", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"interest only\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "interest OR only", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+region +iv", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"region iv\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "region OR iv", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+army +reserve", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"army reserve\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "army OR reserve", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+chicken +coop", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"chicken coop\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "chicken OR coop", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+people +having +sex", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"people having sex\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "people OR having OR sex", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+new +york +population", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"new york population\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "new OR york OR population", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+most +improved +player", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"most improved player\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "most OR improved OR player", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+ear +ache", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ear ache\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ear OR ache", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+mercury +insurance", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"mercury insurance\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "mercury OR insurance", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+battle +of +the +bulge", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"battle of the bulge\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "battle OR of OR the OR bulge", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+secretary +of +state", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"secretary of state\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "secretary OR of OR state", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+third +trimester", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"third trimester\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "third OR trimester", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+hempstead +new +york", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"hempstead new york\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "hempstead OR new OR york", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+university +of +washington", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"university of washington\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "university OR of OR washington", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+japan +airlines", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"japan airlines\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "japan OR airlines", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+freedom +tower", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"freedom tower\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "freedom OR tower", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+virginia +usa", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"virginia usa\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "virginia OR usa", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kasota +stone", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"kasota stone\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "kasota OR stone", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+intramuscular +injections", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"intramuscular injections\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "intramuscular OR injections", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+jesus +as +a +child", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"jesus as a child\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "jesus OR as OR a OR child", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+montessori +schools", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"montessori schools\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "montessori OR schools", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+oxford +dictionary", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"oxford dictionary\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "oxford OR dictionary", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+state +of +louisiana", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"state of louisiana\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "state OR of OR louisiana", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+penny +stocks", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"penny stocks\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "penny OR stocks", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+cured +of +cancer", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"cured of cancer\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "cured OR of OR cancer", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+lord +of +the +rings", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"lord of the rings\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "lord OR of OR the OR rings", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+helen +of +troy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"helen of troy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "helen OR of OR troy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+long +legs", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"long legs\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "long OR legs", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+sore +muscles", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"sore muscles\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "sore OR muscles", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+connecticut +post", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"connecticut post\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "connecticut OR post", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+danbury +ct", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"danbury ct\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "danbury OR ct", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+chicago +bulls", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"chicago bulls\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "chicago OR bulls", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+child +support", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"child support\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "child OR support", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+iq +scores", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"iq scores\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "iq OR scores", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+philadelphia +phillies", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"philadelphia phillies\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "philadelphia OR phillies", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+trans +siberian +orchestra", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"trans siberian orchestra\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "trans OR siberian OR orchestra", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+naomi +wallace", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"naomi wallace\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "naomi OR wallace", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+montgomery +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"montgomery college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "montgomery OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+belcourt +castle", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"belcourt castle\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "belcourt OR castle", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+binghamton +new +york", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"binghamton new york\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "binghamton OR new OR york", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+tallest +trees +in +the +world", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"tallest trees in the world\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "tallest OR trees OR in OR the OR world", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+reading +museum", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"reading museum\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "reading OR museum", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+merry +christmas", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"merry christmas\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "merry OR christmas", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+flow +meter", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"flow meter\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "flow OR meter", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+famous +quotes", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"famous quotes\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "famous OR quotes", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+georgian +architecture", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"georgian architecture\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "georgian OR architecture", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+prayer +times", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"prayer times\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "prayer OR times", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+columbia +university", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"columbia university\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "columbia OR university", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+fluid +power", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"fluid power\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "fluid OR power", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+american +south", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"american south\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "american OR south", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+international +baseball", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"international baseball\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "international OR baseball", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ace +frehley", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ace frehley\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ace OR frehley", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +globe +newspaper", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the globe newspaper\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR globe OR newspaper", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+decorative +windows", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"decorative windows\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "decorative OR windows", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ancient +egypt", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ancient egypt\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ancient OR egypt", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+american +academy +of +child +and +adolescent +psychiatry", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"american academy of child and adolescent psychiatry\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "american OR academy OR of OR child OR and OR adolescent OR psychiatry", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+york +photo", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"york photo\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "york OR photo", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+good +luck", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"good luck\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "good OR luck", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+world +bank +president", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"world bank president\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "world OR bank OR president", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+jonathan +daniel", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"jonathan daniel\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "jonathan OR daniel", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+clothing +optional", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"clothing optional\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "clothing OR optional", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+xena +warrior +princess", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"xena warrior princess\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "xena OR warrior OR princess", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+time +for +kids", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"time for kids\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "time OR for OR kids", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+tom +welling", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"tom welling\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "tom OR welling", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+elliott +smith", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"elliott smith\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "elliott OR smith", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+heart +disease", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"heart disease\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "heart OR disease", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+st +petersburg +high +school", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"st petersburg high school\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "st OR petersburg OR high OR school", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+fatherless +children", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"fatherless children\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "fatherless OR children", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+hotel +del +coronado", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"hotel del coronado\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "hotel OR del OR coronado", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+law +dictionary", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"law dictionary\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "law OR dictionary", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+anderson +hospital", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"anderson hospital\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "anderson OR hospital", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kenosha +wisconsin", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"kenosha wisconsin\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "kenosha OR wisconsin", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+false +prophets", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"false prophets\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "false OR prophets", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+cheap +hotels", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"cheap hotels\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "cheap OR hotels", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+walk +the +line", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"walk the line\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "walk OR the OR line", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+missy +elliott", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"missy elliott\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "missy OR elliott", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+portrait +studio", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"portrait studio\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "portrait OR studio", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+calvin +klein", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"calvin klein\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "calvin OR klein", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kitchen +accessories", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"kitchen accessories\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "kitchen OR accessories", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+consumer +affairs", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"consumer affairs\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "consumer OR affairs", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+adobe +buildings", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"adobe buildings\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "adobe OR buildings", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+national +book +award", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"national book award\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "national OR book OR award", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+back +surgery", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"back surgery\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "back OR surgery", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+mid +continent +airport", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"mid continent airport\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "mid OR continent OR airport", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+developmental +delays", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"developmental delays\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "developmental OR delays", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+elise +neal", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"elise neal\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "elise OR neal", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+canadian +real +estate", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"canadian real estate\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "canadian OR real OR estate", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+barrett +jackson", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"barrett jackson\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "barrett OR jackson", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bmw +engines", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"bmw engines\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "bmw OR engines", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+john +donne", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"john donne\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "john OR donne", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+evening +wear", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"evening wear\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "evening OR wear", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+toxic +encephalopathy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"toxic encephalopathy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "toxic OR encephalopathy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+critical +care +nurse", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"critical care nurse\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "critical OR care OR nurse", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +breakfast +club", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the breakfast club\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR breakfast OR club", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+lost +episode", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"lost episode\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "lost OR episode", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+seal +pictures", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"seal pictures\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "seal OR pictures", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+critical +care +medicine", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"critical care medicine\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "critical OR care OR medicine", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+hurricane +wilma", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"hurricane wilma\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "hurricane OR wilma", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+john +wilkes +booth", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"john wilkes booth\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "john OR wilkes OR booth", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+sesame +street", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"sesame street\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "sesame OR street", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ellen +degeneres +show", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"ellen degeneres show\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "ellen OR degeneres OR show", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+jaguar +x +type", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"jaguar x type\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "jaguar OR x OR type", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +movement", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"the movement\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "the OR movement", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+sarah +fisher", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"sarah fisher\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "sarah OR fisher", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+dexter +michigan", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"dexter michigan\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "dexter OR michigan", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+little +brown +jug", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"little brown jug\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "little OR brown OR jug", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+books +on +cd", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"books on cd\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "books OR on OR cd", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+carolyn +jones", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"carolyn jones\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "carolyn OR jones", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+aishwarya +rai", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"aishwarya rai\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "aishwarya OR rai", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+trendy +clothes", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"trendy clothes\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "trendy OR clothes", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+weather +underground", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"weather underground\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "weather OR underground", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+mercedes +benz", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"mercedes benz\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "mercedes OR benz", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+analog +computer", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"analog computer\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "analog OR computer", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+pump +it +up", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"pump it up\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "pump OR it OR up", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+food +carts", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"food carts\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "food OR carts", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+graduate +management +admission +test", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"graduate management admission test\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "graduate OR management OR admission OR test", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+big +boss +man", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"big boss man\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "big OR boss OR man", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+gun +magazines", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"gun magazines\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "gun OR magazines", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bankruptcy +laws", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"bankruptcy laws\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "bankruptcy OR laws", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+antonio +cromartie", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"antonio cromartie\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "antonio OR cromartie", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+sky +news", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"sky news\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "sky OR news", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+phone +cases", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"phone cases\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "phone OR cases", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +incredibles", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"the incredibles\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "the OR incredibles", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+padre +island", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"padre island\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "padre OR island", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+worcester +state +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"worcester state college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "worcester OR state OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+little +cars", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"little cars\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "little OR cars", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+jefferson +davis +high +school", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"jefferson davis high school\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "jefferson OR davis OR high OR school", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+game +downloads", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"game downloads\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "game OR downloads", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+chicken +noodle +soup", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"chicken noodle soup\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "chicken OR noodle OR soup", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+music +stands", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"music stands\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "music OR stands", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+microsoft +frontpage", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"microsoft frontpage\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "microsoft OR frontpage", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+camp +claiborne", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"camp claiborne\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "camp OR claiborne", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+william +wallace", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"william wallace\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "william OR wallace", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+home +loan", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"home loan\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "home OR loan", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+cherry +blossom", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"cherry blossom\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "cherry OR blossom", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+miami +dade +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"miami dade college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "miami OR dade OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+time +in +denver", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"time in denver\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "time OR in OR denver", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+naked +news", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"naked news\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "naked OR news", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+wildlife +photography", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"wildlife photography\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "wildlife OR photography", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+david +kim", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"david kim\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "david OR kim", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+printer +ink", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"printer ink\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "printer OR ink", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+all +funds", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"all funds\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "all OR funds", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+zion +national +park", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"zion national park\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "zion OR national OR park", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+john +klein", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"john klein\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "john OR klein", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+edith +wharton", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"edith wharton\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "edith OR wharton", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+times +union", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"times union\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "times OR union", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+milan +tennessee", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"milan tennessee\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "milan OR tennessee", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+western +herald", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"western herald\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "western OR herald", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+care +a +lot", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"care a lot\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "care OR a OR lot", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+costume +designers", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"costume designers\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "costume OR designers", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +actors +studio", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the actors studio\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR actors OR studio", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+personal +chef", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"personal chef\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "personal OR chef", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+david +koresh", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"david koresh\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "david OR koresh", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bismarck +state +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"bismarck state college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "bismarck OR state OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +oregonian +newspaper", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the oregonian newspaper\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR oregonian OR newspaper", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+justin +timberlake", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"justin timberlake\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "justin OR timberlake", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+hawk +mountain", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"hawk mountain\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "hawk OR mountain", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kristanna +loken", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"kristanna loken\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "kristanna OR loken", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+chicago +teachers +union", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"chicago teachers union\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "chicago OR teachers OR union", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+connecticut +historical +society", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"connecticut historical society\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "connecticut OR historical OR society", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+shih +tzu", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"shih tzu\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "shih OR tzu", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+robert +fuller", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"robert fuller\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "robert OR fuller", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+zip +code", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"zip code\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "zip OR code", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bass +fishing", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"bass fishing\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "bass OR fishing", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ford +parts", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ford parts\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ford OR parts", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+automatic +writing", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"automatic writing\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "automatic OR writing", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+roundabout +theatre", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"roundabout theatre\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "roundabout OR theatre", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+table +lamps", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"table lamps\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "table OR lamps", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +garden +of +eden", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"the garden of eden\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "the OR garden OR of OR eden", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+immigration +to +mexico", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"immigration to mexico\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "immigration OR to OR mexico", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +daily +breeze", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the daily breeze\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR daily OR breeze", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+debra +jo +rupp", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"debra jo rupp\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "debra OR jo OR rupp", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+term +life +insurance", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"term life insurance\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "term OR life OR insurance", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+tennis +elbow", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"tennis elbow\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "tennis OR elbow", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kidney +transplant", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"kidney transplant\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "kidney OR transplant", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+us +coast +guard", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"us coast guard\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "us OR coast OR guard", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+car +stereo", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"car stereo\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "car OR stereo", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+playa +del +rey", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"playa del rey\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "playa OR del OR rey", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+domain +names", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"domain names\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "domain OR names", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+premier +wine", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"premier wine\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "premier OR wine", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+too +faced", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"too faced\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "too OR faced", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+avon +school", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"avon school\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "avon OR school", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+jungle +boy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"jungle boy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "jungle OR boy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ventura +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ventura college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ventura OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+kansas +city +kings", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"kansas city kings\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "kansas OR city OR kings", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+new +haven", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"new haven\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "new OR haven", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ron +keel", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ron keel\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ron OR keel", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+business +consultants", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"business consultants\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "business OR consultants", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+open +source +software", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"open source software\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "open OR source OR software", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+ambassador +of +italy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"ambassador of italy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "ambassador OR of OR italy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+los +angeles +daily +news", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"los angeles daily news\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "los OR angeles OR daily OR news", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+napa +auto +parts", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"napa auto parts\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "napa OR auto OR parts", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+law +school +rankings", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"law school rankings\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "law OR school OR rankings", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+hsbc +bank", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"hsbc bank\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "hsbc OR bank", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+cognitive +impairment", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"cognitive impairment\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "cognitive OR impairment", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+mushroom +kingdom", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"mushroom kingdom\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "mushroom OR kingdom", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +progressive", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"the progressive\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "the OR progressive", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+mood +swings", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"mood swings\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "mood OR swings", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+ugly +people", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"ugly people\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "ugly OR people", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+little +shop +of +horrors", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"little shop of horrors\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "little OR shop OR of OR horrors", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+abilene +tx", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"abilene tx\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "abilene OR tx", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+internet +fraud", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"internet fraud\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "internet OR fraud", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+tv +party", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"tv party\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "tv OR party", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+new +jersey +police", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"new jersey police\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "new OR jersey OR police", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+university +of +akron", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"university of akron\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "university OR of OR akron", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +news +journal", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the news journal\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR news OR journal", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+cartoon +network", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"cartoon network\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "cartoon OR network", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+robert +reed", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"robert reed\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "robert OR reed", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+interracial +love", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"interracial love\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "interracial OR love", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+round +table", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"round table\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "round OR table", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+low +estrogen", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"low estrogen\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "low OR estrogen", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+akron +beacon", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"akron beacon\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "akron OR beacon", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+john +wellington", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"john wellington\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "john OR wellington", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+city +in +iran", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"city in iran\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "city OR in OR iran", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+corpus +christi +tx", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"corpus christi tx\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "corpus OR christi OR tx", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+becoming +a +widow", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"becoming a widow\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "becoming OR a OR widow", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+king +kalakaua", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"king kalakaua\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "king OR kalakaua", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+centerville +high +school", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"centerville high school\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "centerville OR high OR school", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+foam +mattress", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"foam mattress\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "foam OR mattress", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+music +videos", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"music videos\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "music OR videos", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+farmers +almanac", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"farmers almanac\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "farmers OR almanac", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+civil +war +battlefields", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"civil war battlefields\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "civil OR war OR battlefields", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+national +security +cutter", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"national security cutter\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "national OR security OR cutter", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+eastern +mennonite +university", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"eastern mennonite university\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "eastern OR mennonite OR university", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+new +york +times +best +sellers +list", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"new york times best sellers list\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "new OR york OR times OR best OR sellers OR list", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+usb +hub", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"usb hub\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "usb OR hub", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+rob +halford", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"rob halford\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "rob OR halford", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+new +york +towns", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"new york towns\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "new OR york OR towns", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+medal +of +honor", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"medal of honor\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "medal OR of OR honor", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+hot +springs +south +dakota", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"hot springs south dakota\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "hot OR springs OR south OR dakota", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+home +business", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"home business\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "home OR business", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+perfume +bottles", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"perfume bottles\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "perfume OR bottles", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+old +photos", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"old photos\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "old OR photos", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+edith +head", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"edith head\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "edith OR head", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+danube +river", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"danube river\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "danube OR river", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+bladder +tumor", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"bladder tumor\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "bladder OR tumor", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +british +embassy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"the british embassy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "the OR british OR embassy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+human +trafficking", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"human trafficking\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "human OR trafficking", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+new +england +aquarium", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"new england aquarium\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "new OR england OR aquarium", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+the +book +of +life", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"the book of life\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "the OR book OR of OR life", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+rolex +watches", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"rolex watches\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "rolex OR watches", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+water +filters", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"water filters\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "water OR filters", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+general +motors", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"general motors\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "general OR motors", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+the +preakness", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"the preakness\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "the OR preakness", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+blue +ridge +parkway", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"blue ridge parkway\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "blue OR ridge OR parkway", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+elizabeth +vargas", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"elizabeth vargas\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "elizabeth OR vargas", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+canon +powershot", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"canon powershot\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "canon OR powershot", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+air +mattress", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"air mattress\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "air OR mattress", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+pocket +pc", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"pocket pc\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "pocket OR pc", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+chicago +public +schools", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"chicago public schools\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "chicago OR public OR schools", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+george +r +brown +convention +center", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"george r brown convention center\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "george OR r OR brown OR convention OR center", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+warren +county", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"warren county\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "warren OR county", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+animal +rights", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"animal rights\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "animal OR rights", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+david +lee +roth", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"david lee roth\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "david OR lee OR roth", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+central +community +college", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"central community college\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "central OR community OR college", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+power +rangers +ninja +storm", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"power rangers ninja storm\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "power OR rangers OR ninja OR storm", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+movie +theatres", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"movie theatres\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "movie OR theatres", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+canary +bird", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"canary bird\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "canary OR bird", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+health +literacy", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"health literacy\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "health OR literacy", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+david +thornton", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"david thornton\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "david OR thornton", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+jamie +murray", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"jamie murray\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "jamie OR murray", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+boulder +city +nevada", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"boulder city nevada\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "boulder OR city OR nevada", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+united +states +constitution", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"united states constitution\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "united OR states OR constitution", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+niceville +high +school", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_3"]}
+{"query": {"query": "\"niceville high school\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_3"]}
+{"query": {"query": "niceville OR high OR school", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_3"]}
+{"query": {"query": "+sleep +study", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"sleep study\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "sleep OR study", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+true +religion", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"true religion\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "true OR religion", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+google +satellite", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_2"]}
+{"query": {"query": "\"google satellite\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_2"]}
+{"query": {"query": "google OR satellite", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_2"]}
+{"query": {"query": "+laborers +international +union +of +north +america", "sort_by_field": "-_score"}, "tags": ["intersection", "global", "intersection:num_tokens_>3"]}
+{"query": {"query": "\"laborers international union of north america\"", "sort_by_field": "-_score"}, "tags": ["phrase", "phrase:num_tokens_>3"]}
+{"query": {"query": "laborers OR international OR union OR of OR north OR america", "sort_by_field": "-_score"}, "tags": ["union", "global", "union:num_tokens_>3"]}
+{"query": {"query": "+\"the who\" +uk", "sort_by_field": "-_score"}, "tags": ["two-phase-critic"]}

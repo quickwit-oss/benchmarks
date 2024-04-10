@@ -1,0 +1,21 @@
+apiVersion: 1
+
+providers:
+  - name: Benchmarks
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards/benchmarks.json
+  - name: Node Exporter
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards/node-exporter.json
+  - name: Quickwit
+    folder: Quickwit
+    options:
+      path: /var/lib/grafana/dashboards/quickwit
+      foldersFromFilesStructure: true
+  - name: Loki
+    folder: Loki
+    options:
+      path: /var/lib/grafana/dashboards/loki
+      foldersFromFilesStructure: true

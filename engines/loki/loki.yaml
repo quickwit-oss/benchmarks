@@ -1,0 +1,91 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+compactor:
+  retention_enabled: true #required for manual deletion -.-
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+
+query_scheduler:
+  # the TSDB index dispatches many more, but each individually smaller, requests. 
+  # We increase the pending request queue sizes to compensate.
+  max_outstanding_requests_per_tenant: 32768
+
+querier:
+  # Each `querier` component process runs a number of parallel workers to process queries simultaneously.
+  # You may want to adjust this up or down depending on your resource usage
+  # (more available cpu and memory can tolerate higher values and vice versa),
+  # but we find the most success running at around `16` with tsdb
+  max_concurrent: 16
+
+ingester:
+  chunk_encoding: snappy
+  # chunk_idle_period: 2m
+  # chunk_retain_period: 2m
+  # chunk_target_size: 572864
+
+schema_config:
+  configs:
+    - from: "2023-01-05"
+      store: tsdb
+      object_store: filesystem
+      schema: v12
+      index:
+        prefix: index_
+        period: 24h
+
+# storage_config:
+  # # New tsdb-shipper configuration
+  # tsdb_shipper:
+  #   active_index_directory: /data/tsdb-index
+  #   cache_location: /data/tsdb-cache
+  #   index_gateway_client:
+  #     # only applicable if using microservices where index-gateways are independently deployed.
+  #     # This example is using kubernetes-style naming.
+  #     server_address: dns:///index-gateway.<namespace>.svc.cluster.local:9095
+  #   shared_store: gcs
+
+analytics:
+  reporting_enabled: false
+
+ruler:
+  alertmanager_url: http://localhost:9093
+
+limits_config:
+  unordered_writes: true
+  ingestion_rate_mb: 1000
+  ingestion_burst_size_mb: 1000
+  max_streams_per_user: 0 # unlimited
+  max_global_streams_per_user: 1000000
+  # 
+  # per_stream_rate_limit: 100M # default value 3MB
+  # per_stream_rate_limit_burst: 100M # default value 15MB
+ 
+  # max_structured_metadata_size: 1M
+  # max_structured_metadata_entries_count: 10000
+  
+  retention_period: 10y
+  reject_old_samples: false
+  reject_old_samples_max_age: 10y
+
+  # per_stream_rate_limit: 10240M
+  # per_stream_rate_limit_burst: 10240M
+  # cardinality_limit: 20000000
+

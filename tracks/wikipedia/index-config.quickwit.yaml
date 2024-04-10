@@ -1,0 +1,24 @@
+version: 0.5
+index_id: wikipedia
+
+doc_mapping:
+  field_mappings:
+    - name: id
+      type: text
+      tokenizer: raw
+    - name: text
+      type: text
+      record: position
+      fieldnorms: true
+
+search_settings:
+  default_search_fields: [text]
+
+indexing_settings:
+  commit_timeout_secs: 30
+  split_num_docs_target: 5000000
+  merge_policy:
+    type: "limit_merge"
+    max_merge_ops: 2
+    merge_factor: 8
+    max_merge_factor: 8

@@ -1,0 +1,3 @@
+{
+    "query": "payload.description:javascript OR payload.comment.body:javascript OR payload.issue.body:javascript"
+}

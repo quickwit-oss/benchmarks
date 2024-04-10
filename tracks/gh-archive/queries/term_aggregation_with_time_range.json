@@ -1,0 +1,17 @@
+{
+    "query": "*",
+    "max_hits": 0,
+    "aggs": {
+        "top_repositories": {
+            "terms": {
+                "size": 10,
+                "field": "repo.name",
+                "order": {
+                    "_count": "desc"
+                }
+            }
+        }
+    },
+    "start_timestamp": 1421276400,
+    "end_timestamp": 1421708400
+}

@@ -1,0 +1,21 @@
+LOKI_VERSION ?= 2.9.4
+
+start:
+	@docker run -d \
+	    --rm \
+	    --name loki \
+		--net benchmark \
+	    -p 3100:3100 \
+		-v $(PWD):/mnt/config \
+	    grafana/loki:${LOKI_VERSION} \
+		--config.file=/mnt/config/loki.yaml
+	@echo "Waiting 10 seconds for Loki to start..."
+	@sleep 10
+
+stop:
+	@echo "---- Stop Loki ----"
+	@docker stop loki
+
+# clean:
+# 	@docker stop loki
+# 	rm -r ${DATADIR} && mkdir ${DATADIR}

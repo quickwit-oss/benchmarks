@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - id: 1
+    name: Prometheus
+    type: prometheus
+    typeName: Prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 5s
+    readOnly: false
+  - id: 2
+    name: Loki
+    type: loki
+    typeName: Loki
+    access: proxy
+    url: http://loki:3100
+    readOnly: false

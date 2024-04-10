@@ -1,0 +1,5 @@
+{
+    "query": "payload.issue.body:rust",
+    "start_timestamp": 1421276400,
+    "end_timestamp": 1421708400
+}
