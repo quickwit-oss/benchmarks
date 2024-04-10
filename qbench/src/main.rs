@@ -51,6 +51,11 @@ pub struct CliArgs {
     retry_indexing_errors: bool,
 
     #[arg(long, env)]
+    /// Whether the v2 ingestion for Quickwit should be used.
+    /// Only makes sense when engine is Engine::Quickwit.
+    qw_ingest_v2: bool,
+
+    #[arg(long, env)]
     /// Specify the datasets path.
     dataset_uri: String,
 
@@ -84,7 +89,8 @@ async fn main() -> anyhow::Result<()> {
     let source: Box<dyn Source> = Box::new(source::UriSource::new(&args.dataset_uri));
     let sink: Box<dyn sink::Sink> = match args.engine {
         Engine::Quickwit => {
-            let sink = sink::quickwit::QuickwitSink::new(&host, &args.index);
+            let sink =
+                sink::quickwit::QuickwitSink::new(&host, &args.index, args.qw_ingest_v2);
             Box::new(sink)
         },
         Engine::Elasticsearch | Engine::Opensearch => {

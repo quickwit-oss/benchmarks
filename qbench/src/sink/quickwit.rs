@@ -18,13 +18,16 @@ pub struct QuickwitSink {
 }
 
 impl QuickwitSink {
-    pub fn new(host: &str, index_id: &str) -> Self {
+    pub fn new(host: &str, index_id: &str, ingest_v2: bool) -> Self {
         let api_root_url =
             Url::parse(&format!("http://{host}/api/v1/")).expect("Invalid quickwit URL");
         let index_url = Url::parse(&format!("http://{host}/api/v1/indexes/{index_id}/"))
             .expect("Invalid quickwit URL");
-        let ingest_url = Url::parse(&format!("http://{host}/api/v1/{index_id}/ingest"))
-            .expect("Invalid quickwit URL");
+        let ingest_url_component = if ingest_v2 { "ingest-v2" } else { "ingest" };
+        let ingest_url = Url::parse(&format!(
+            "http://{host}/api/v1/{index_id}/{ingest_url_component}"
+        ))
+        .expect("Invalid quickwit URL");
         let client = Client::builder()
             .connect_timeout(Duration::from_secs(5))
             .timeout(Duration::from_secs(60))

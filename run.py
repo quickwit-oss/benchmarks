@@ -259,6 +259,8 @@ def main():
     parser.add_argument('--no-hits', action='store_true', help='Do not retrieve docs')
     parser.add_argument('--query-filter', help='Only run queries matching the given pattern', default="*")
     parser.add_argument('--num-iteration', type=int, help='Number of iterations of the search benchmark', default=10)
+    parser.add_argument('--qw-ingest-v2', action='store_true', help="If set, we will use Quickwit's ingest V2")
+
     args = parser.parse_args()
 
     results_dir = f'{args.output_path}/{args.track}.{args.engine}'
@@ -285,7 +287,7 @@ def main():
 
     if not args.search_only:
         print("Run indexing...")
-        completed_process = subprocess.run([
+        qbench_command = [
             "./qbench/target/release/qbench",
             "--engine",
             args.engine,
@@ -296,7 +298,10 @@ def main():
             "--output-path",
             f'{results_dir}/indexing-results.json',
             "--retry-indexing-errors",
-        ])
+        ]
+        if args.qw_ingest_v2:
+            qbench_command.append("--qw-ingest-v2")
+        completed_process = subprocess.run(qbench_command)
         with open(f'{results_dir}/indexing-results.json') as results_file:
             indexing_results = json.load(results_file)
             indexing_results['tag'] = args.tags
