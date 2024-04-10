@@ -69,8 +69,9 @@ pub struct CliArgs {
 fn read_rdtsc() -> u64 {
     unsafe { core::arch::x86_64::_rdtsc() }
 }
+
 #[cfg(not(target_arch = "x86_64"))]
-unsafe fn read_rdtsc() -> u64 {
+fn read_rdtsc() -> u64 {
     0
 }
 
