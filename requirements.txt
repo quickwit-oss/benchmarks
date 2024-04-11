@@ -1,0 +1,5 @@
+PyYAML
+docker
+prometheus-client
+psutil
+requests

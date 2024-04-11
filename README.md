@@ -40,15 +40,21 @@ python3 run.py --engine elasticsearch --track generated-logs --instance m1
 ### Prerequisites
 
 - [Make](https://www.gnu.org/software/make/) to ease the running of the benchmark.
-- [Docker](https://docs.docker.com/get-docker/) to run the benchmarked engines.
+- [Docker](https://docs.docker.com/get-docker/) to run the benchmarked engines, including the Python API.
 - [Python3](https://www.python.org/downloads/) to download the dataset and run queries against the benchmarked engines.
 - [Rust](https://www.rust-lang.org/tools/install) and `openssl-devel` to build the ingestion tool `qbench`.
-- [gsutil](https://cloud.google.com/storage/docs/gsutil) to download datasets.
+- [gcloud](https://cloud.google.com/sdk/docs/install) to download datasets.
+- Prometheus client python library.
+- psutil python library: `apt-get install python3-psutil`
+
+Alternatively, python deps can be installed with:
+`pip install -r requirements.txt`
 
 ### Downloading datasets
 
 ```bash
-gsutil -m cp "gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-????.ndjson.gz" .
+mkdir -p datasets
+gcloud storage cp "gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-????.ndjson.gz" datasets/
 ```
 
 ### Compile qbench
@@ -155,3 +161,19 @@ make serve
 and open your browser at [http://localhost:8080](http://localhost:8080).
 
 For `make serve` to work, `export NODE_OPTIONS=--openssl-legacy-provider` or a better fix might be needed (see [stackoverflow thread](https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported)).
+
+
+### Export results to the benchmark service
+
+> [!NOTE]
+> This is still WIP and subject to change.
+
+Use `run.py` with `--export-to-endpoint` to export benchmark results to the benchmark service.
+```bash
+python run.py --engine quickwit --storage SSD --track generated-logs --instance P14s_laptop --tags "$(date '+%Y%m%d')_${USER}_test_run"  --export-to-endpoint https://qw-internal-benchmark-service.104.155.161.122.nip.io --disable-exporter-https-verification
+```
+The first time this runs, you will be re-directed to a web page where
+you should login with you Google account and pass back a token to run.py (just follow the
+instructions the tool prints).
+
+Exported runs can then be seen in the [Benchmark Dervice](https://qw-internal-benchmark-service.104.155.161.122.nip.io).
