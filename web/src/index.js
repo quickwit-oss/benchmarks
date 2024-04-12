@@ -5,7 +5,7 @@ import './style.css'
 import * as serviceWorker from './serviceWorker';
 
 function getEngineWithTag(engine_results) {
-  return engine_results["engine"] + "." + engine_results["tag"];
+  return engine_results["engine"] + "." + engine_results["instance"] + "." + engine_results["tag"];
 }
 
 function formatPercentVariation(p) {
@@ -114,6 +114,10 @@ class Benchmark extends React.Component {
       }
       engines[taggedEngine] = engine_results;
       engines[taggedEngine].total = total;
+      // Ratios with a similar formula as in the clickhouse benchmark.
+      // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
+      // Sum(log(ratio)) for each query comparing the current engine to the first engine.
+      var sum_log_ratios = 0;
       for (let query of engine_queries) {
         var query_data = {};
         if (queries[query.name] !== undefined) {
@@ -121,7 +125,14 @@ class Benchmark extends React.Component {
         }
         query_data[taggedEngine] = query
         queries[query.name] = query_data
+        var reference_time_micros = Object.values(query_data)[0].p90;
+        var ratio = 1.0;
+        if (Math.abs(reference_time_micros - query.p90) >= 3 * 1000) {
+          ratio = (query.p90 + 10 * 1000) / (reference_time_micros + 10 * 1000);
+        }
+        sum_log_ratios += Math.log(ratio);
       }
+      engines[taggedEngine].avg_ratios = Math.exp(sum_log_ratios / Object.keys(engine_queries).length);
     }
 
     for (let query in queries) {
@@ -303,6 +314,24 @@ class Benchmark extends React.Component {
                 if (engine_stats !== undefined) {
                   return <td key={"result-" + engine}>
                     {numberWithCommas(engine_stats / 1000)} ms
+                </td>;
+                } else {
+                  return <td key={"result-" + engine}>
+                    Some Unsupported Queries
+                </td>;
+                }
+              })
+            }
+          </tr>
+          <tr className="average-row">
+            <td>Geometric average of query time ratios</td>
+            {
+              Object.entries(data_view.engines).map(kv => {
+                var engine = kv[0];
+                var engine_stats = kv[1].avg_ratios.toFixed(2);
+                if (engine_stats !== undefined) {
+                  return <td key={"result-" + engine}>
+                    {engine_stats}x
                 </td>;
                 } else {
                   return <td key={"result-" + engine}>
