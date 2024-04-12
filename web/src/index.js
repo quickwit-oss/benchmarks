@@ -137,36 +137,28 @@ class Benchmark extends React.Component {
 
     for (let query in queries) {
         let query_data = queries[query];
-        var min_microsecs = Number.MAX_VALUE;
-        var max_microsecs = 0;
 
-        // First pass: Find the min and max times
-        for (let engine in query_data) {
+        // Filter out unsupported engines
+        let supportedEngines = Object.keys(query_data).filter(engine => !query_data[engine].unsupported);
+
+        // Determine minimum and maximum times
+        let min_microsecs = Math.min(...supportedEngines.map(engine => query_data[engine].p90));
+        let max_microsecs = Math.max(...supportedEngines.map(engine => query_data[engine].p90));
+
+        // Mark engines as fastest and slowest, and calculate variation
+        supportedEngines.forEach(engine => {
             let engine_data = query_data[engine];
-            if (engine_data.unsupported) continue;
-
-            if (engine_data.p90 < min_microsecs) {
-                min_microsecs = engine_data.p90;
-            }
-            if (engine_data.p90 > max_microsecs) {
-                max_microsecs = engine_data.p90;
-            }
-        }
-
-        // Second pass: Assign classes based on min and max times
-        for (let engine in query_data) {
-            let engine_data = query_data[engine];
-            if (engine_data.unsupported) continue;
-
-            // Mark as fastest or slowest and calculate variation
             if (engine_data.p90 === min_microsecs) {
                 engine_data.className = "fastest";
             } else if (engine_data.p90 === max_microsecs) {
                 engine_data.className = "slowest";
-            } else {
+            } 
+
+            if (engine_data.p90 !== min_microsecs) {
+                // Calculate variation for engines that are not fastest
                 engine_data.variation = (engine_data.p90 - min_microsecs) / min_microsecs;
             }
-        }
+        });
     }
     return { engines, queries };
   }
