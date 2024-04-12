@@ -136,36 +136,37 @@ class Benchmark extends React.Component {
     }
 
     for (let query in queries) {
-      let query_data = queries[query];
-      var min_engine = null;
-      var min_microsecs = 0;
-      var max_engine = null;
-      var max_microsecs = 0;
-      for (let engine in query_data) {
-        var engine_data = query_data[engine];
-        if (engine_data.unsupported)
-          continue;
-        if (min_engine == null || engine_data.p90 < min_microsecs) {
-          min_engine = engine;
-          min_microsecs = engine_data.p90;
+        let query_data = queries[query];
+        var min_microsecs = Number.MAX_VALUE;
+        var max_microsecs = 0;
+
+        // First pass: Find the min and max times
+        for (let engine in query_data) {
+            let engine_data = query_data[engine];
+            if (engine_data.unsupported) continue;
+
+            if (engine_data.p90 < min_microsecs) {
+                min_microsecs = engine_data.p90;
+            }
+            if (engine_data.p90 > max_microsecs) {
+                max_microsecs = engine_data.p90;
+            }
         }
-        if (max_engine == null || engine_data.p90 > max_microsecs) {
-          max_engine = engine;
-          max_microsecs = engine_data.p90;
+
+        // Second pass: Assign classes based on min and max times
+        for (let engine in query_data) {
+            let engine_data = query_data[engine];
+            if (engine_data.unsupported) continue;
+
+            // Mark as fastest or slowest and calculate variation
+            if (engine_data.p90 === min_microsecs) {
+                engine_data.className = "fastest";
+            } else if (engine_data.p90 === max_microsecs) {
+                engine_data.className = "slowest";
+            } else {
+                engine_data.variation = (engine_data.p90 - min_microsecs) / min_microsecs;
+            }
         }
-      }
-      for (let engine in query_data) {
-        let engine_data = query_data[engine];
-        if (engine_data.unsupported) continue;
-        if (engine !== min_engine) {
-          engine_data.variation = (engine_data.p90 - min_microsecs) / min_microsecs;
-        }
-      }
-      if (min_engine != null) {
-        // Only useful if at least one engine supports this query 
-        query_data[min_engine].className = "fastest";
-        query_data[max_engine].className = "slowest";
-      }
     }
     return { engines, queries };
   }
