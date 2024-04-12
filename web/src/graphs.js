@@ -93,22 +93,22 @@ class GraphsWithSelector extends React.Component {
       this.setState({ "run_filter_display_name": null});
     }
   }
- 
+  
   render() {
     let {search_metrics, row_to_col_to_series} = this.generateDataView();
     let datasets = Object.keys(this.props.dataset_to_selector_options).sort()
     return (
       <div>
-      <form>
-        <fieldset>
-          <label htmlFor="datasetField">Dataset</label>
-          <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
-            {datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
-          </select>
-	  <label>Run filter</label>
-	  <Select options={this.props.dataset_to_selector_options[this.state.dataset]} className="basic-multi-select" classNamePrefix="select" onChange={(evt) => this.handleChangeRunFilter(evt)}/>
-        </fieldset>
-      </form>
+	<form>
+          <fieldset>
+            <label htmlFor="datasetField">Dataset</label>
+            <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
+              {datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
+            </select>
+	    <label>Run filter</label>
+	    <Select options={this.props.dataset_to_selector_options[this.state.dataset]} className="basic-multi-select" classNamePrefix="select" onChange={(evt) => this.handleChangeRunFilter(evt)}/>
+          </fieldset>
+	</form>
 	<table>
 	  <tbody>
 	    {
@@ -139,11 +139,11 @@ class GraphsWithSelector extends React.Component {
 		  for (let series of Object.values(col_to_series)) {
 		    let {uplot_options, uplot_data} = uplotParamsFromSeries(
 		      this.state.run_filter_display_name, series);
-		      td_graph_elements.push(
-			<td>
-			  <UplotReact options={uplot_options} data={uplot_data} />
-			</td>
-		      );
+		    td_graph_elements.push(
+		      <td>
+			<UplotReact options={uplot_options} data={uplot_data} />
+		      </td>
+		    );
 		  }
 		}
 		return (<tr>

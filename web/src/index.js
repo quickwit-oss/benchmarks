@@ -58,16 +58,16 @@ class Benchmark extends React.Component {
   // `datasets`
   // `dataset_to_selector_options`
   constructor(props) {
-      super(props);
-      this.state = {
-	tag: null, // TODO: remove.
-	dataset: props.datasets[0],
-	// List of selected runs, i.e. a list of:
-	// {indexing: ID of the indexing run, search: ID of the search run}.
-	selected_runs: null,
-	// Maps display name to {indexing: run_results, search: run_results}
-	runs: {}
-      };
+    super(props);
+    this.state = {
+      tag: null, // TODO: remove.
+      dataset: props.datasets[0],
+      // List of selected runs, i.e. a list of:
+      // {indexing: ID of the indexing run, search: ID of the search run}.
+      selected_runs: null,
+      // Maps display name to {indexing: run_results, search: run_results}
+      runs: {}
+    };
   }
 
   handleChangeTag(evt) {
@@ -130,7 +130,7 @@ class Benchmark extends React.Component {
       console.error('Error fetching data:', error);
     }
   }
-    
+  
   handleChangeRun(evt) {
     // Array of {indexing: numerical run ID, search: numerical run ID}.
     var selected_runs = [];
@@ -140,7 +140,7 @@ class Benchmark extends React.Component {
     this.setState({"selected_runs": selected_runs})
     this.fetchRuns(selected_runs);
   }
-    
+  
   filterQueries(queries) {
     let tag = this.state.tag;
     if (tag !== undefined && tag !== null) {
@@ -248,215 +248,215 @@ class Benchmark extends React.Component {
     return { engines, queries };
   }
 
-    render() {
-      var data_view = this.generateDataView();
+  render() {
+    var data_view = this.generateDataView();
     return <div>
-      <form>
-        <fieldset>
-          <label htmlFor="datasetField">Dataset</label>
-          <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
-            {this.props.datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
-          </select>
-          <label htmlFor="queryTagField">Type of Query</label>
-          <select id="queryTagField" onChange={(evt) => this.handleChangeTag(evt)}>
-            <option value="ALL" key="all">ALL</option>
-            {this.props.tags.map((tag) => <option value={tag} key={tag}>{tag}</option>)}
-          </select>
-	  <label>Runs to compare</label>
-          <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
-		  isMulti className="basic-multi-select" classNamePrefix="select"
-		  onChange={(evt) => this.handleChangeRun(evt)}/>
-        </fieldset>
-      </form>
-      <hr />
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            {
-              Object.entries(data_view.engines).map((kv) => {
-		let engine = kv[0];
-		let params = new URLSearchParams({
-		  page: "raw",
-		  run_ids: [kv[1].indexing_run_id, kv[1].search_run_id].filter(x => x != null)
-		});
-		return (<th key={"col-" + engine}><a href={"?" + params}>{engine}</a></th>);
-	      })
-            }
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Indexing time</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-                var engine_stats = kv[1].indexing_duration_secs?.toFixed(2);
-                if (engine_stats !== undefined) {
-                  return <td key={"result-" + engine}>
-                    {engine_stats} s
-                </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-                    Unknown
-                </td>;
-                }
-              })
-            }
-          </tr>
-          <tr>
-            <td>Indexing throughput</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-                var engine_stats = kv[1].mb_bytes_per_second?.toFixed(2);
-                if (engine_stats !== undefined) {
-                  return <td key={"result-" + engine}>
-                    {engine_stats} MB/s
-                </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-                    Unknown
-                </td>;
-                }
-              })
-            }
-          </tr>
-          <tr>
-            <td>Index size</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                let engine = kv[0];
-		if ("num_indexed_bytes" in kv[1]) {
-                  let engine_stats = (kv[1].num_indexed_bytes / 1000000000).toFixed(2);
-                  return <td key={"result-" + engine}>
-			   {engine_stats} GB
-			 </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-			   Unknown
-			 </td>;
-                }
-              })
-            }
-          </tr>
-          <tr>
-            <td>Number of documents</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-		if ("num_indexed_docs" in kv[1]) {
-                  let engine_stats = (kv[1].num_indexed_docs / 1000000).toFixed(2);
-                  return <td key={"result-" + engine}>
-			   {engine_stats} M
-			 </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-			   Unknown
-			 </td>;
-                }
-              })
-            }
-          </tr>
-          <tr>
-            <td>Number of splits/segments</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-                var engine_stats = kv[1].num_splits;
-                if (engine_stats !== undefined) {
-                  return <td key={"result-" + engine}>
-                    {engine_stats}
-                </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-                    Unknown
-                </td>;
-                }
-              })
-            }
-          </tr>
-          <tr>
-            <td>Docs per sec</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-		if ("num_indexed_docs" in kv[1] && "indexing_duration_secs" in kv[1]) {
-                  let engine_stats = (kv[1].num_indexed_docs / 1000 / kv[1].indexing_duration_secs).toFixed(2);
-                  return <td key={"result-" + engine}>
-			   {engine_stats} K docs/s
-			 </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-			   Unknown
-			 </td>;
-                }
-              })
-            }
-          </tr>
-          <tr className="average-row">
-            <td>Query time AVERAGE</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-                var engine_stats = kv[1].total;
-                if (engine_stats !== undefined) {
-                  return <td key={"result-" + engine}>
-                    {numberWithCommas(engine_stats / 1000)} ms
-                </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-                    Some Unsupported Queries
-                </td>;
-                }
-              })
-            }
-          </tr>
-          <tr className="average-row">
-            <td>Geometric average of query time ratios</td>
-            {
-              Object.entries(data_view.engines).map(kv => {
-                var engine = kv[0];
-                var engine_stats = kv[1].avg_ratios?.toFixed(2);
-                if (engine_stats !== undefined) {
-                  return <td key={"result-" + engine}>
-                    {engine_stats}x
-                </td>;
-                } else {
-                  return <td key={"result-" + engine}>
-                    Some Unsupported Queries
-                </td>;
-                }
-              })
-            }
-          </tr>
-          {
-            Object.entries(data_view.queries).map(kv => {
-              var query_name = kv[0];
-              var engine_queries = kv[1];
-              let ref_engine = Object.keys(engine_queries)[0];
-              return <tr key={query_name}>
-                <td><Display name={query_name} query={engine_queries[ref_engine].query}></Display></td>
-                       {
-                  Object.keys(data_view.engines).map(engine => {
-                    var cell_data = engine_queries[engine];
-                    if (cell_data == null || cell_data.unsupported) {
-                      return <td key={query_name + engine} className={"data"}></td>;
-                    } else {
-                      return <td key={query_name + engine} className={"data " + cell_data.className}>
-                        <div className="timing">{numberWithCommas(cell_data.p90 / 1000 )}  ms</div>
-                        <div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
-                        <div className="count">{numberWithCommas(cell_data.count)} docs</div>
-                      </td>;
-                    }
-                  })
-                }
-              </tr>
-            })
-          }
-        </tbody>
-      </table>
-    </div>;
+	     <form>
+               <fieldset>
+		 <label htmlFor="datasetField">Dataset</label>
+		 <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
+		   {this.props.datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
+		 </select>
+		 <label htmlFor="queryTagField">Type of Query</label>
+		 <select id="queryTagField" onChange={(evt) => this.handleChangeTag(evt)}>
+		   <option value="ALL" key="all">ALL</option>
+		   {this.props.tags.map((tag) => <option value={tag} key={tag}>{tag}</option>)}
+		 </select>
+		 <label>Runs to compare</label>
+		 <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
+			 isMulti className="basic-multi-select" classNamePrefix="select"
+			 onChange={(evt) => this.handleChangeRun(evt)}/>
+               </fieldset>
+	     </form>
+	     <hr />
+	     <table>
+               <thead>
+		 <tr>
+		   <th></th>
+		   {
+		     Object.entries(data_view.engines).map((kv) => {
+		       let engine = kv[0];
+		       let params = new URLSearchParams({
+			 page: "raw",
+			 run_ids: [kv[1].indexing_run_id, kv[1].search_run_id].filter(x => x != null)
+		       });
+		       return (<th key={"col-" + engine}><a href={"?" + params}>{engine}</a></th>);
+		     })
+		   }
+		 </tr>
+               </thead>
+               <tbody>
+		 <tr>
+		   <td>Indexing time</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+                       var engine_stats = kv[1].indexing_duration_secs?.toFixed(2);
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats} s
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Indexing throughput</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+                       var engine_stats = kv[1].mb_bytes_per_second?.toFixed(2);
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats} MB/s
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Index size</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+		       if ("num_indexed_bytes" in kv[1]) {
+			 let engine_stats = (kv[1].num_indexed_bytes / 1000000000).toFixed(2);
+			 return <td key={"result-" + engine}>
+				  {engine_stats} GB
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Number of documents</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+		       if ("num_indexed_docs" in kv[1]) {
+			 let engine_stats = (kv[1].num_indexed_docs / 1000000).toFixed(2);
+			 return <td key={"result-" + engine}>
+				  {engine_stats} M
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Number of splits/segments</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+                       var engine_stats = kv[1].num_splits;
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats}
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Docs per sec</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+		       if ("num_indexed_docs" in kv[1] && "indexing_duration_secs" in kv[1]) {
+			 let engine_stats = (kv[1].num_indexed_docs / 1000 / kv[1].indexing_duration_secs).toFixed(2);
+			 return <td key={"result-" + engine}>
+				  {engine_stats} K docs/s
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr className="average-row">
+		   <td>Query time AVERAGE</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+                       var engine_stats = kv[1].total;
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {numberWithCommas(engine_stats / 1000)} ms
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Some Unsupported Queries
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr className="average-row">
+		   <td>Geometric average of query time ratios</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       var engine = kv[0];
+                       var engine_stats = kv[1].avg_ratios?.toFixed(2);
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats}x
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Some Unsupported Queries
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 {
+		   Object.entries(data_view.queries).map(kv => {
+		     var query_name = kv[0];
+		     var engine_queries = kv[1];
+		     let ref_engine = Object.keys(engine_queries)[0];
+		     return <tr key={query_name}>
+			      <td><Display name={query_name} query={engine_queries[ref_engine].query}></Display></td>
+			      {
+				Object.keys(data_view.engines).map(engine => {
+				  var cell_data = engine_queries[engine];
+				  if (cell_data == null || cell_data.unsupported) {
+				    return <td key={query_name + engine} className={"data"}></td>;
+				  } else {
+				    return <td key={query_name + engine} className={"data " + cell_data.className}>
+					     <div className="timing">{numberWithCommas(cell_data.p90 / 1000 )}  ms</div>
+					     <div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
+					     <div className="count">{numberWithCommas(cell_data.count)} docs</div>
+					   </td>;
+				  }
+				})
+			      }
+			    </tr>
+		   })
+		 }
+               </tbody>
+	     </table>
+	   </div>;
   }
 }
 
@@ -476,10 +476,10 @@ class Display extends React.Component {
     //   return <div>Aggregation "{agg_name}" - Search "{query.query}" <DisplayTimestampFilter query={query}/></div>
     // }
     return <div className="note">
-            {name}
-            <div className="tooltip tooltip-query"> {JSON.stringify(query, null, 2)} </div>
-            <DisplayTimestampFilter query={query}/>
-        </div>
+             {name}
+             <div className="tooltip tooltip-query"> {JSON.stringify(query, null, 2)} </div>
+             <DisplayTimestampFilter query={query}/>
+           </div>
   }
 }
 
@@ -535,64 +535,64 @@ $(function () {
     return;
   }
   
-    $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
-	var data = {};
-	// Maps dataset name to:
-	// {display_name -> {indexing: most recent indexing run,
-	//                   search: most recent search run}
-	// }
-	let dataset_to_most_recent_runs = {};
-	for (const run_info of list_runs_resp.run_infos) {
-	    let dataset = run_info.track;
-	    let display_name = getRunDisplayName(run_info);
-	    if (!(dataset in dataset_to_most_recent_runs)) {
-		dataset_to_most_recent_runs[dataset] = {};
-	    }
-	    let most_recent_runs = dataset_to_most_recent_runs[dataset];
-	    if (!(display_name in most_recent_runs)) {
-		most_recent_runs[display_name] = {
-		    indexing: null,
-		    search: null
-		};
-	    }
-	  let previous_run_info = most_recent_runs[display_name][run_info.run_type];
-	  if (previous_run_info === null ||
-	      previous_run_info.timestamp < run_info.timestamp) {
-	    most_recent_runs[display_name][run_info.run_type] = run_info;
-	  }
-	}
-	
-      // Pick the latest for each combination.
-      // Map from dataset name to an array of {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
-       let dataset_to_selector_options = {};
-	for (const dataset in dataset_to_most_recent_runs) {
-	    if (!(dataset in dataset_to_selector_options)) {
-	      dataset_to_selector_options[dataset] = [];
-	    }
-	    for (const display_name in dataset_to_most_recent_runs[dataset]) {
-		const search_run_info = dataset_to_most_recent_runs[dataset][display_name].search;
-		const indexing_run_info = dataset_to_most_recent_runs[dataset][display_name].indexing;
-		dataset_to_selector_options[dataset].push({
-		    value: {
-			indexing: indexing_run_info === null ? null : indexing_run_info.id,
-			search: search_run_info === null ? null : search_run_info.id
-		    },
-		    label: display_name});
-	    }
-	}
-      
-        var tagged_engines = [];
-        // TODO: Remove logic around tags, it actually has no effect.
-	var tags_set = new Set();
-	const datasets = Object.keys(dataset_to_most_recent_runs).sort();
-	var tags = Array.from(tags_set);
-	tags.sort();
-	var el = document.getElementById("app-container");
-	console.log("Initial rendering of Benchmark react elmt");
-	ReactDOM.render(<React.StrictMode>
-			    <Benchmark data={data} tags={tags} engines={tagged_engines} datasets={datasets} dataset_to_selector_options={dataset_to_selector_options}/>
-			</React.StrictMode>, el);
-    });
+  $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
+    var data = {};
+    // Maps dataset name to:
+    // {display_name -> {indexing: most recent indexing run,
+    //                   search: most recent search run}
+    // }
+    let dataset_to_most_recent_runs = {};
+    for (const run_info of list_runs_resp.run_infos) {
+      let dataset = run_info.track;
+      let display_name = getRunDisplayName(run_info);
+      if (!(dataset in dataset_to_most_recent_runs)) {
+	dataset_to_most_recent_runs[dataset] = {};
+      }
+      let most_recent_runs = dataset_to_most_recent_runs[dataset];
+      if (!(display_name in most_recent_runs)) {
+	most_recent_runs[display_name] = {
+	  indexing: null,
+	  search: null
+	};
+      }
+      let previous_run_info = most_recent_runs[display_name][run_info.run_type];
+      if (previous_run_info === null ||
+	  previous_run_info.timestamp < run_info.timestamp) {
+	most_recent_runs[display_name][run_info.run_type] = run_info;
+      }
+    }
+    
+    // Pick the latest for each combination.
+    // Map from dataset name to an array of {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
+    let dataset_to_selector_options = {};
+    for (const dataset in dataset_to_most_recent_runs) {
+      if (!(dataset in dataset_to_selector_options)) {
+	dataset_to_selector_options[dataset] = [];
+      }
+      for (const display_name in dataset_to_most_recent_runs[dataset]) {
+	const search_run_info = dataset_to_most_recent_runs[dataset][display_name].search;
+	const indexing_run_info = dataset_to_most_recent_runs[dataset][display_name].indexing;
+	dataset_to_selector_options[dataset].push({
+	  value: {
+	    indexing: indexing_run_info === null ? null : indexing_run_info.id,
+	    search: search_run_info === null ? null : search_run_info.id
+	  },
+	  label: display_name});
+      }
+    }
+    
+    var tagged_engines = [];
+    // TODO: Remove logic around tags, it actually has no effect.
+    var tags_set = new Set();
+    const datasets = Object.keys(dataset_to_most_recent_runs).sort();
+    var tags = Array.from(tags_set);
+    tags.sort();
+    var el = document.getElementById("app-container");
+    console.log("Initial rendering of Benchmark react elmt");
+    ReactDOM.render(<React.StrictMode>
+		      <Benchmark data={data} tags={tags} engines={tagged_engines} datasets={datasets} dataset_to_selector_options={dataset_to_selector_options}/>
+		    </React.StrictMode>, el);
+  });
 });
 
 // If you want your app to work offline and load faster, you can change
