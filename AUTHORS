@@ -1,0 +1,11 @@
+# This is the list of benchmarks's significant contributors.
+#
+# This does not necessarily list everyone who has contributed code.
+# To see the full list of contributors, see the revision history in
+# source control.
+Quickwit
+
+# For contributions from Google employees, it is required to add
+# Google LLC in the list of authors, but this project is not
+# affiliated to Google in any way.
+Google LLC
