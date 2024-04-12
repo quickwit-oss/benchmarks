@@ -66,8 +66,8 @@ DOMAIN = os.environ.get("DOMAIN", "http://localhost:9000")
 
 # OAuth settings. They come from the Google Cloud console section
 # "OAuth 2.0 Client IDs".
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID') or None
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET') or None
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 # For this to be accepted by Google's oauth2 API, it must be
 # registered in Google Cloud console section "OAuth 2.0 Client IDs"
 # under "Authorized redirect URIs".
@@ -78,11 +78,11 @@ GOOGLE_REDIRECT_URI = f"{DOMAIN}/auth/google"
 # any random string of sufficient size, e.g. `openssl rand -hex 32`.
 # When the secret is changed, all previously issued JWT tokens become
 # invalid, so ideally this should not change across restarts.
-JWT_SECRET = os.environ.get("JWT_SECRET") or None
+JWT_SECRET = os.environ.get("JWT_SECRET")
 JWT_ALGO = "HS256"
 JWT_EXPIRATION = datetime.timedelta(days=365)
 if GOOGLE_CLIENT_ID is None or GOOGLE_CLIENT_SECRET is None or JWT_SECRET is None:
-    raise Exception('Missing env variables')
+    raise Exception('Missing env variables. Expected GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, JWT_SECRET.')
 
 ACCEPTED_SERVICE_ACCOUNT_EMAIL = "continuous-benchmark-runner@quickwit-prod.iam.gserviceaccount.com"
 
