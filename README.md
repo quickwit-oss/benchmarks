@@ -176,6 +176,6 @@ The first time this runs, you will be re-directed to a web page where
 you should login with you Google account and pass back a token to run.py (just follow the
 instructions the tool prints).
 
-Exported runs can then be seen in the [Benchmark Dervice](https://qw-benchmark-service.104.155.161.122.nip.io).
+Exported runs can then be seen in the [Benchmark Service](https://qw-benchmark-service.104.155.161.122.nip.io).
 
-This [here](service/README.md) for running the benchmark service.
+See [here](service/README.md) for running the benchmark service.
