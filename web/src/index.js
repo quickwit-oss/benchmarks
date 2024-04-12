@@ -91,7 +91,6 @@ class Benchmark extends React.Component {
 
   // get_runs_response: schemas.GetRunsResponse.
   handleGetRunsResponse(get_runs_response) {
-    console.log("FETCHED:", get_runs_response);
     // Maps run display names to {indexing: run, search: run}.
     let name_to_runs = {};
     for (const run of get_runs_response.runs) {
@@ -106,13 +105,11 @@ class Benchmark extends React.Component {
       }
       name_to_runs[name][run.run_info.run_type] = run;
     }
-    console.log("Setting runs in state:", name_to_runs);
     this.setState({"runs": name_to_runs});
   }
   
   // run_ids: Array of {indexing: numerical run ID, search: numerical run ID}.
   fetchRuns(run_ids) {
-    console.log("fetchRuns", run_ids);
     let all_run_ids = [];
     for (const {indexing, search} of run_ids) {
       all_run_ids.push(indexing);
@@ -135,15 +132,12 @@ class Benchmark extends React.Component {
   }
     
   handleChangeRun(evt) {
-    console.log("multiselect evt:", evt);
     // Array of {indexing: numerical run ID, search: numerical run ID}.
     var selected_runs = [];
     for (var run_info of evt) {
       selected_runs.push(run_info.value);
     }
     this.setState({"selected_runs": selected_runs})
-    console.log("multiselect evt:", evt);
-    console.log("multiselect set state:", selected_runs);
     this.fetchRuns(selected_runs);
   }
     
@@ -161,17 +155,13 @@ class Benchmark extends React.Component {
   // which the runs were selected. It's not the case right now (seems
   // lexicographic in the run name).
   generateDataView() {
-    console.log("generateDataView. this.state.runs", this.state.runs);
     // Maps display name to indexing run results, together with extra
     // info computed in this function.
     var engines = {}
     // query_name -> (engine display name -> query stats).
     var queries = {}
     let dataset = this.state.dataset;
-    // TODO: make it work on a results.json file as well, should be doable.
-    //    for (var engine_results of data) {
     for (let display_name in this.state.runs) {
-      console.log("generateDataView processing", display_name);
       // {search: run, indexing: run}.
       let engine_results = this.state.runs[display_name].indexing?.run_results;
       if (engine_results == null) {
@@ -255,7 +245,6 @@ class Benchmark extends React.Component {
         }
       });
     }
-    console.log("generateDataView done");
     return { engines, queries };
   }
 
@@ -443,7 +432,6 @@ class Benchmark extends React.Component {
           </tr>
           {
             Object.entries(data_view.queries).map(kv => {
-	      console.log("RENDERING QUERIES:", kv);
               var query_name = kv[0];
               var engine_queries = kv[1];
               let ref_engine = Object.keys(engine_queries)[0];
@@ -530,12 +518,11 @@ function showRaw(run_ids) {
     });
 }
 
-// TODO: make it work with local jsons as well?? Doable (just have a global param 'local_json')
+// TODO: make it work with local jsons as well if needed. Doable (just
+// have a global param 'local_json')
 $(function () {
 
   let searchParams = new URLSearchParams(window.location.search)
-  console.log(searchParams);
-  console.log(window.location.pathname);
   if (searchParams.get("page") == "graphs") {
     console.log("Showing graphs");
     showContinuousGraphs();
@@ -549,19 +536,7 @@ $(function () {
   }
   
     $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
-	console.log("list_runs_resp", list_runs_resp);
 	var data = {};
-	/*
-	var datasets = [];
-	for (const run_info of list_runs_resp.run_infos) {
-            console.log("run_info", run_info);
-	    datasets.push(run_info.track)
-	}
-	
-	datasets.sort();
-	console.log("datasets", datasets);
-	*/
-
 	// Maps dataset name to:
 	// {display_name -> {indexing: most recent indexing run,
 	//                   search: most recent search run}
@@ -586,8 +561,6 @@ $(function () {
 	    most_recent_runs[display_name][run_info.run_type] = run_info;
 	  }
 	}
-	console.log('dataset_to_most_recent_runs',
-		    dataset_to_most_recent_runs);
 	
       // Pick the latest for each combination.
       // Map from dataset name to an array of {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
@@ -607,21 +580,10 @@ $(function () {
 		    label: display_name});
 	    }
 	}
-	console.log('dataset_to_selector_options:', dataset_to_selector_options);
       
-	var tagged_engines = [];
+        var tagged_engines = [];
+        // TODO: Remove logic around tags, it actually has no effect.
 	var tags_set = new Set();
-//	for (var engine_results of data[datasets[0]]) {
-//	    tagged_engines.push(getEngineWithTag(engine_results));
-//	}
-
-//	for (var engine_results of data[datasets[0]]) {
-//	    for (var query of engine_results.queries) {
-		//        for (var tag of query.tags) {
-		//          tags_set.add(tag);
-		//        }
-//	    }
-//	}
 	const datasets = Object.keys(dataset_to_most_recent_runs).sort();
 	var tags = Array.from(tags_set);
 	tags.sort();

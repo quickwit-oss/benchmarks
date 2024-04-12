@@ -73,7 +73,6 @@ class GraphsWithSelector extends React.Component {
   }
 
   handleChangeDataset(evt) {
-    console.log("Change dataset:", evt);
     let dataset = evt.target.value;
     if (dataset) {
       this.setState({ "dataset": dataset });
@@ -84,7 +83,6 @@ class GraphsWithSelector extends React.Component {
   }
 
   handleChangeRunFilter(evt) {
-    console.log("Change run evt:", evt);
     let run_filter = evt.value;
     if (run_filter) {
       this.setState({ "run_filter": run_filter});
@@ -98,7 +96,6 @@ class GraphsWithSelector extends React.Component {
  
   render() {
     let {search_metrics, row_to_col_to_series} = this.generateDataView();
-    console.log("Graphs.render:", search_metrics, row_to_col_to_series);
     let datasets = Object.keys(this.props.dataset_to_selector_options).sort()
     return (
       <div>
@@ -116,7 +113,6 @@ class GraphsWithSelector extends React.Component {
 	  <tbody>
 	    {
 	      Object.entries(row_to_col_to_series).map(row_name_and_col_to_series => {
-		console.log("Rendering graph row:", row_name_and_col_to_series);
 		let row_name = row_name_and_col_to_series[0];
 		let col_to_series = row_name_and_col_to_series[1];
 		let td_graph_elements = [];
