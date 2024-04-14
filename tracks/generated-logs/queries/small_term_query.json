@@ -1,0 +1,10 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "term": {
+      "aws.cloudwatch.log_stream": {
+        "value": "ballisticracer"
+      }
+    }
+  }
+}

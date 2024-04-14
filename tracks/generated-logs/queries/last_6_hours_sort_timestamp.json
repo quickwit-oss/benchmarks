@@ -1,0 +1,15 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "range": {
+      "timestamp": {
+        "gte": "2023-01-02T00:00:00"
+      }
+    }
+  },
+  "sort": [
+    {
+      "timestamp": {"order": "desc"}
+    }
+  ]
+}

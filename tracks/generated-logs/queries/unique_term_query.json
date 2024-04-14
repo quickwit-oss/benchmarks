@@ -1,0 +1,10 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "term": {
+      "trace_id": {
+        "value": "2566377301415292313"
+      }
+    }
+  }
+}

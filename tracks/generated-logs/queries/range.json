@@ -1,0 +1,11 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "range": {
+      "timestamp": {
+        "gte": "2023-01-01T19:12:00Z",
+        "lt": "2023-01-01T19:47:00Z"
+      }
+    }
+  }
+}

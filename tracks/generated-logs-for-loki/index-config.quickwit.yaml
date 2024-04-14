@@ -1,0 +1,20 @@
+version: 0.6
+index_id: generated-logs-for-loki
+
+doc_mapping:
+  mode: dynamic
+  field_mappings:
+    - name: timestamp
+      type: datetime
+      precision: milliseconds
+      fast: true
+      input_formats:
+        - rfc3339
+      output_format: unix_timestamp_secs
+    - name: message
+      type: text
+  timestamp_field: timestamp
+
+indexing_settings:
+  split_num_docs_target: 10000000
+  commit_timeout_secs: 60

@@ -1,0 +1,13 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "match": {
+      "level": "ERROR"
+    }
+  },
+  "sort": [
+    {
+      "metrics.size": {"order": "desc"}
+    }
+  ]
+}

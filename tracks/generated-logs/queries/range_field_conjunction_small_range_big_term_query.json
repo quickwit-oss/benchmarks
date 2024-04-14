@@ -1,0 +1,24 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "process.name": {
+              "value": "systemd"
+            }
+          }
+        },
+        {
+          "range": {
+            "metrics.size": {
+              "gte": 1,
+              "lte": 2
+            }
+          }
+        }
+      ]
+    }
+  }
+}

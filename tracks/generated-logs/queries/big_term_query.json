@@ -1,0 +1,10 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "term": {
+      "process.name": {
+        "value": "systemd"
+      }
+    }
+  }
+}

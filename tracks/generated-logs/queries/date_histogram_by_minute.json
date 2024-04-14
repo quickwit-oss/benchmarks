@@ -1,0 +1,12 @@
+{
+  "track_total_hits": true,
+  "size": 0,
+  "aggs": {
+    "by_minute": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "1m"
+      }
+    }
+  }
+}

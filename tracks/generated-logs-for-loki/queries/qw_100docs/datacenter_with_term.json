@@ -1,0 +1,28 @@
+{
+    "track_total_hits": false,
+      "size" : 100,
+    "query": {
+	"bool": {
+	    "must": [
+		{
+		    "term": {
+			"cloud.region": {
+			    "value": "us-east-2"
+			}
+		    }
+		},
+		{
+		    "term": {
+			"message": {
+			    "value": "queen"
+			}
+		    }
+		}]
+	}
+    },
+    "sort": [
+    {
+      "timestamp": {"order": "desc"}
+    }
+  ]
+}

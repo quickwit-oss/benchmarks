@@ -1,0 +1,15 @@
+{
+  "track_total_hits": true,
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "by_datacenter": {
+      "terms": {
+          "field": "cloud.region",
+	  "size": 100
+      }
+    }
+  }
+}

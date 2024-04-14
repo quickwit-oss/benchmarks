@@ -1,0 +1,12 @@
+{
+  "track_total_hits": true,
+  "size": 0,
+  "aggs": {
+    "station": {
+      "terms": {
+        "field": "trace_id",
+        "size": 1000
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "timestamp": {
+              "gte": "2023-01-01T18:00:00",
+              "lt": "2023-01-02T01:30:00"
+            }
+          }
+        },
+        {
+          "query_string": {
+            "query": "shield AND carp AND shark",
+            "fields": ["message"]
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "metrics.size": {
+        "order": "desc"
+      }
+    }
+  ]
+}
