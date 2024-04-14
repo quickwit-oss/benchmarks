@@ -1,12 +1,13 @@
-LOKI_VERSION ?= 2.9.4
+LOKI_VERSION ?= 2.9.6
 
 start:
-	@docker run -d \
+	@docker run \
 	    --rm \
 	    --name loki \
 		--net benchmark \
 	    -p 3100:3100 \
 		-v $(PWD):/mnt/config \
+		-v /data1/benchmarks/loki:/loki \
 	    grafana/loki:${LOKI_VERSION} \
 		--config.file=/mnt/config/loki.yaml
 	@echo "Waiting 10 seconds for Loki to start..."

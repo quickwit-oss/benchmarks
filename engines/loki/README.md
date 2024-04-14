@@ -58,7 +58,7 @@ make start
 ### Send logs with vector
 
 ```bash
-docker run -i -v $(pwd)/:/etc/vector/ -v $(pwd)/../../datasets/:/datasets/ --net benchmark --rm timberio/vector:0.36.0-debian
+docker run -i -v $(pwd)/:/etc/vector/ -v /data/benchmarks/datasets/generated-logs-v1/:/datasets/ --net benchmark --rm timberio/vector:0.36.0-debian --config /etc/vector/vector_100streams.yaml
 ```
 
 ### Open Grafana
@@ -66,4 +66,17 @@ docker run -i -v $(pwd)/:/etc/vector/ -v $(pwd)/../../datasets/:/datasets/ --net
 - Explore view to search with Loki.
 - Loki dashboards to monitor ingestion speed, RAM/CPU/Disk usage.
 
+### Additional commands.
 
+#### Index with 25k streams.
+
+First make sure you have a machine with >25GBs, ideally 64GBs.
+
+```bash
+docker run --memory="61g" -d --rm --name loki --net benchmark  -p 3100:3100  -v $(pwd):/mnt/config  -v /data/loki_data_25000streams:/loki  grafana/loki:2.9.4 --config.file=/mnt/config/loki_gcs.yaml
+```
+where loki_gcs points to gs://bench202403-loki-25000streams and has ingester.chunk_target_size.
+
+````bash
+docker run -d  -v $(pwd)/:/etc/vector/ -v /data/benchmarks/datasets/generated-logs-v1/:/datasets/ --net benchmark --rm timberio/vector:0.36.0-debian --config /etc/vector/vector_25000streams.yaml
+```

@@ -28,7 +28,6 @@ sinks:
   # "metrics": {"size": 260335, "tmin": 462262},
   # "agent": {"id": "c315dc22-3ea6-44dc-8d56-fd02f675367b","name": "olivevulture","type": "filebeat","version": "8.8.0","ephemeral_id": "c315dc22-3ea6-44dc-8d56-fd02f675367b"},
   # "tags": ["preserve_original_event"], "trace_id":"142720679204778717", "level": "DEBUG"}
-
   bench_loki:
     type: loki
     out_of_order_action: accept
@@ -39,9 +38,10 @@ sinks:
     labels:
       # If you want to explode RAM usage, just add the log stream to the label
       # aws_cloudwatch_log_stream: '{{ "aws.cloudwatch".log_stream }}'
-      cloud_region: '{{ cloud.region }}'
-      input_type: '{{ input.type }}'
-      level: '{{ level }}'
+      # hostname: '{{ "host".name }}'  # ~1000 unique values per config-1.yml in log generator.
+      cloud_region: '{{ cloud.region }}'  # ~25 values.
+      input_type: '{{ input.type }}'  # We can leave it, 1 value.
+      level: '{{ level }}'  # 4 values. remove per recommendation? 
       agent: benchmark
     remove_timestamp: true
     remove_label_fields: true

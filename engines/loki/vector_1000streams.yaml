@@ -18,6 +18,11 @@ transforms:
 
       .timestamp = parse_timestamp(.timestamp, "%Y-%m-%dT%H:%M:%S%.3fZ") ?? from_unix_timestamp!(1704118424)
 
+      .bucketed_hostname = slice!(sha2!(.host.name), start:0, end:2)
+
+# See vrl playgroud:
+# https://playground.vrl.dev/?state=eyJwcm9ncmFtIjoiIyBBZGQgYSB0aW1lc3RhbXBcbi50aW1lc3RhbXAgPSBub3coKVxuXG4uYnVja2V0ID0gc2xpY2UhKHNoYTIhKC5ob3N0Lm5hbWUpLCBzdGFydDowLCBlbmQ6MilcbiIsImV2ZW50Ijp7Imhvc3QiOnsibmFtZSI6InF3ZSJ9fSwiaXNfanNvbmwiOmZhbHNlLCJlcnJvciI6bnVsbH0%3D
+
 sinks:
   # JSON log example:
   # {"timestamp": "2023-01-02T03:14:09.000Z",
@@ -29,6 +34,7 @@ sinks:
   # "agent": {"id": "c315dc22-3ea6-44dc-8d56-fd02f675367b","name": "olivevulture","type": "filebeat","version": "8.8.0","ephemeral_id": "c315dc22-3ea6-44dc-8d56-fd02f675367b"},
   # "tags": ["preserve_original_event"], "trace_id":"142720679204778717", "level": "DEBUG"}
 
+  # FIXME: Loki does not take into account the timestamp field, why?
   bench_loki:
     type: loki
     out_of_order_action: accept
@@ -39,9 +45,11 @@ sinks:
     labels:
       # If you want to explode RAM usage, just add the log stream to the label
       # aws_cloudwatch_log_stream: '{{ "aws.cloudwatch".log_stream }}'
-      cloud_region: '{{ cloud.region }}'
-      input_type: '{{ input.type }}'
-      level: '{{ level }}'
+      # hostname: '{{ "host".name }}'  # ~10k unique values.
+      bucketed_hostname: '{{ bucketed_hostname }}'  # 256 unique values. 16^2 since sha2 returns the hash in hexadecimal format.
+      #      cloud_region: '{{ cloud.region }}'  # ~25 values.
+      input_type: '{{ input.type }}'  # We can leave it, 1 value.
+      level: '{{ level }}'  # 4 values.
       agent: benchmark
     remove_timestamp: true
     remove_label_fields: true
