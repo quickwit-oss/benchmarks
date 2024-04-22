@@ -47,7 +47,7 @@ class BearerAuthentication(requests.auth.AuthBase):
         self.token = token
 
     def __call__(self, r):
-        r.headers["authorization"] = f"Bearer {self.token}"
+        r.headers["authorization"] = f"Bearer {self.token.strip()}"
         return r
 
 
@@ -790,7 +790,7 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
     print("Opening login page of the endpoint used for exporting runs:")
     print(auth_url)
     webbrowser.open(auth_url, new=2, autoraise=True)
-    token = input("Please paste the JWT token displayed in the service response:\n")
+    token = input("Please paste the JWT token displayed in the service response:\n").strip()
     if not check_exporter_token(endpoint, token, verify_https):
         raise Exception(f"Token '{token}' is invalid, error in copy-paste?")
     print(f"Saving token to file {JWT_TOKEN_FILENAME} for future use.")
