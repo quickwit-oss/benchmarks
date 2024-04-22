@@ -1,0 +1,6 @@
+fastapi[all]
+pg8000
+sqlalchemy
+uvicorn[standard]
+cloud-sql-python-connector
+pyjwt

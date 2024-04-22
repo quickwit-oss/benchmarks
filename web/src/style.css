@@ -88,3 +88,57 @@ td div.count {
   text-align: left;
   white-space: normal;
 }
+
+
+/* For uPlot!! */
+.uplot {
+    display: inline-block;
+    vertical-align: top;
+    width: min-content;
+    padding-bottom: 25px;
+}
+
+.u-over {
+    box-shadow: 0px 0px 0px 0.5px #ccc;
+}
+
+.u-legend {
+    text-align: left;
+    padding-left: 50px;
+}
+
+.u-inline tr {
+    margin-right: 8px;
+}
+
+.u-label {
+    font-size: 12px;
+}
+.u-title {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 14px;
+    word-break: break-all;
+}
+.u-legend {
+    text-align: center;
+}
+.u-tooltip {
+    font-size: 10pt;
+    position: absolute;
+    background: #fff;
+    display: none;
+    border: 2px solid black;
+    padding: 4px;
+    pointer-events: none;
+    z-index: 100;
+    white-space: pre;
+    font-family: monospace;
+}
+
+/*
+body {
+    padding: 1em;
+    margin: 0;
+}
+*/

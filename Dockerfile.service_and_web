@@ -1,0 +1,36 @@
+# Copyright 2024 The benchmarks Authors
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
+
+# Build with:
+# docker build -t quickwit/benchmark_service_and_web -f Dockerfile.service_and_web .
+
+FROM python:3.12-slim-bookworm
+
+RUN apt-get -y update
+RUN apt-get -y install npm
+
+COPY ./service/requirements.txt /service/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /service/requirements.txt --break-system-packages
+
+COPY ./web /web
+
+WORKDIR /web
+
+# TODO: consider these tricks for faster Docker builds:
+# https://bitjudo.com/blog/2014/03/13/building-efficient-dockerfiles-node-dot-js/
+RUN npm install
+RUN npm run build
+
+# Now the website is built under /web/build
+
+WORKDIR /
+COPY ./service/ /service/
+
+# Local equivalent:
+# uvicorn service.main:app --reload --log-config=service/log_conf.yaml --port=80
+ENTRYPOINT ["uvicorn", "service.main:app", "--host", "0.0.0.0", "--log-config", "service/log_conf.yaml"]
+CMD ["--port", "80"]
