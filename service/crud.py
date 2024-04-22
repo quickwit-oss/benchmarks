@@ -6,7 +6,6 @@
 
 import datetime
 import enum
-import time
 import sqlalchemy
 from sqlalchemy.orm import Session
 from sqlalchemy import distinct, select
@@ -49,7 +48,6 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
 def db_run_to_schema_run(run: models.Run) -> schemas.IndexingRun | schemas.SearchRun:
     """Converts a DB run (models.Run) into a schemas.IndexingRun or SearchRun."""
     schema_cls = schemas.IndexingRun if run.run_type == 'indexing' else schemas.SearchRun
-    t0 = time.time()
     schema_run = schema_cls(run_info=db_run_to_run_info(run),
                             run_results=run.run_results)
     return schema_run

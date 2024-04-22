@@ -14,6 +14,7 @@ from google.cloud.sql.connector import Connector, IPTypes
 # "postgresql+pg8000://" (and fill the env variables below).
 SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# Env variables only used for a Postgres connection.
 INSTANCE_CONNECTION_NAME = os.environ.get("INSTANCE_CONNECTION_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")

@@ -13,10 +13,11 @@ from .database import Base
 
 
 class Run(Base):
+    """This contains both indexing and search runs."""
     __tablename__ = "runs"
 
     id = Column(Integer, primary_key=True)
-    run_type = Column(String)  # search or indexing. TODO: use StrEnum.
+    run_type = Column(String)  # 'search' or 'indexing'. TODO: use StrEnum.
     track = Column(String, index=True)
     engine = Column(String, index=True)
     storage = Column(String, index=True)
@@ -25,6 +26,9 @@ class Run(Base):
     timestamp = Column(DateTime, index=True)
     unsafe_user = Column(String, index=True)
     verified_email = Column(String, index=True)
-    run_results = Column(JSON)  # json for now.
+    # Actual results, can contain a JSON representation of
+    # schemas.IndexingRunResults or schemas.SearchRunResults depending
+    # on 'run_type'.
+    run_results = Column(JSON)
     source = Column(String, index=True)
 

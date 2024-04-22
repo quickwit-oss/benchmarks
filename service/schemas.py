@@ -77,7 +77,8 @@ class CreateIndexingRunRequest(BaseModel):
 
 
 class ListRunsResponse(BaseModel):
-    # For convenient runs are returned from most recent to oldest.
+    # For convenience, runs are returned by the service from most
+    # recent to oldest.
     run_infos: list[RunInfo]
 
 
@@ -116,11 +117,14 @@ class SearchRun(BaseModel):
     run_info: RunInfo
     run_results: SearchRunResults
 
+
 class CreateSearchRunRequest(BaseModel):
     run: SearchRun
 
+
 class GetRunsRequest(BaseModel):
     run_ids: list[int]
+
 
 class GetRunsResponse(BaseModel):
     runs: list[IndexingRun | SearchRun]
@@ -132,6 +136,7 @@ class Timeseries(BaseModel):
     # The 3 fields below will have the same number of elements.
     # In service responses, we guarantee that the timestamps are in increasing order.
     timestamps_s: list[int]
+    # Actualy data points corresponding to the metric.
     data_points: list[float]
     tags: list[str]
 

@@ -32,23 +32,9 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# # CORS no longer needed since we serve static pages from the service.
-# # # https://fastapi.tiangolo.com/tutorial/cors/
+# If CORS is ever needed (e.g. if pages are not served from the
+# service), see https://fastapi.tiangolo.com/tutorial/cors/
 # origins = [
-#     "http://104.155.161.122",
-#     "http://104.155.161.122:80",
-#     "http://localhost",
-#     "http://localhost:3001",
-#     "http://localhost:8080",
-#     "http://localhost:8000",
-#     "http://localhost:9001",
-#     "http://localhost:80",
-#     "http://0.0.0.0",
-#     "http://0.0.0.0:3001",
-#     "http://0.0.0.0:8080",
-#     "http://0.0.0.0:8000",
-#     "http://0.0.0.0:9001",
-#     "http://0.0.0.0:80",
 # ]
 # app.add_middleware(
 #     CORSMiddleware,
@@ -62,6 +48,7 @@ app = FastAPI()
 # responses by a factor ~15.
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=4)
 
+# Used for building the redirection URL used by Google's oauth2 flow.
 DOMAIN = os.environ.get("DOMAIN", "http://localhost:9000")
 
 # OAuth settings. They come from the Google Cloud console section
@@ -93,12 +80,14 @@ oauth2_scheme = fastapi.security.OAuth2AuthorizationCodeBearer(
 
 @app.get("/login/google")
 async def login_google(request: fastapi.Request):
+    """Start Google's oauth2 flow: authenticate into Google."""
     return fastapi.responses.RedirectResponse(
         "https://accounts.google.com/o/oauth2/auth?" +
         urllib.parse.urlencode({
             "response_type": "code",
             "client_id": GOOGLE_CLIENT_ID,
             "redirect_uri": GOOGLE_REDIRECT_URI,
+            # We only needed minimal scope.
             "scope": "openid profile email",
         }))
 
@@ -118,7 +107,6 @@ def check_user_info(user_info: dict[str, str]):
     return user_info.get("verified_email", False) and check_email(user_info.get("email", ""))
 
 
-# TODO: return something nicer
 @app.get("/auth/google", response_class=HTMLResponse)
 async def auth_google(code: str):
     """Authenticate into the service.
@@ -133,6 +121,9 @@ async def auth_google(code: str):
     
     Args:
       code: Authentication code provided by Google's oauth2/auth API.
+
+    Returns:
+      An HTML page showing the JWT token.
     """
     token_url = "https://accounts.google.com/o/oauth2/token"
     data = {
@@ -226,7 +217,6 @@ def get_current_user_email(token: str = Depends(oauth2_scheme)) -> str:
     )
 
 
-# Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -238,6 +228,7 @@ def get_db():
 @app.get("/api/v1/check_jwt_token")
 def check_jwt_token(email_current_user: Annotated[str, Depends(get_current_user_email)],
                     db: Session = Depends(get_db)):
+    """Debug endpoint to check authentication with a JWT token."""
     return f"Authentication OK with email: {email_current_user}"
 
 
@@ -245,6 +236,7 @@ def check_jwt_token(email_current_user: Annotated[str, Depends(get_current_user_
 def create_indexing_run(req: schemas.CreateIndexingRunRequest,
                         email_current_user: Annotated[str, Depends(get_current_user_email)],
                         db: Session = Depends(get_db)):
+    """Insert an indexing run into the service."""
     if req.run.run_info.id is not None:
         raise HTTPException(status_code=400, detail="run id should not be provided")
     if req.run.run_info.timestamp is not None:
@@ -260,6 +252,7 @@ def create_indexing_run(req: schemas.CreateIndexingRunRequest,
 # TODO: consider removing.
 @app.get("/api/v1/indexing_runs/{run_id}", response_model=schemas.IndexingRun)
 def get_indexing_run(run_id: int, db: Session = Depends(get_db)):
+    """Get an indexing run from the service."""
     try:
         run = crud.db_run_to_indexing_run(crud.get_run(db=db, run_id=run_id))
     except ValueError as e:
@@ -267,8 +260,10 @@ def get_indexing_run(run_id: int, db: Session = Depends(get_db)):
                             detail=f"Run with id {run_id} is not an indexing run. Details: {e}")
     return run
 
+
 @app.get("/api/v1/tracks/list/")
 def list_tracks(db: Session = Depends(get_db)) -> list[str]:
+    """Return the list of benchmark tracks."""
     tracks = crud.list_tracks(db=db)
     return tracks
 
@@ -286,6 +281,7 @@ def list_runs(run_type: str | None = None,
               verified_email: str | None = None,
               source: schemas.RunSource | None = None,
               db: Session = Depends(get_db)):
+    """Return the list of runs according to filters."""
     db_runs = crud.list_runs(
         db=db,
         run_type=run_type,
@@ -309,6 +305,7 @@ def list_runs(run_type: str | None = None,
 def create_search_run(req: schemas.CreateSearchRunRequest,
                       email_current_user: Annotated[str, Depends(get_current_user_email)],
                       db: Session = Depends(get_db)):
+    """Insert a search run into the service."""
     if req.run.run_info.id is not None:
         raise HTTPException(status_code=400, detail="run id should not be provided")
     if req.run.run_info.timestamp is not None:
@@ -324,6 +321,7 @@ def create_search_run(req: schemas.CreateSearchRunRequest,
 # TODO: consider removing.
 @app.get("/api/v1/search_runs/{run_id}", response_model=schemas.SearchRun)
 def get_search_run(run_id: int, db: Session = Depends(get_db)):
+    """Get a search run from the service."""
     try:
         run = crud.db_run_to_search_run(crud.get_run(db=db, run_id=run_id))
     except ValueError as e:
@@ -335,6 +333,7 @@ def get_search_run(run_id: int, db: Session = Depends(get_db)):
 # TODO: report error for those that are not found.
 @app.post("/api/v1/all_runs/get/", response_model=schemas.GetRunsResponse)
 def get_runs(req: schemas.GetRunsRequest, db: Session = Depends(get_db)):
+    """Get runs from the service from a list of IDs."""
     return schemas.GetRunsResponse(
         runs=[crud.db_run_to_schema_run(db_run)
               for db_run in crud.get_runs(db=db, run_ids=req.run_ids)])
@@ -353,7 +352,7 @@ def get_as_timeseries(
         end_timestamp: datetime.datetime | None = None,
         source: schemas.RunSource | None = None,
         db: Session = Depends(get_db)):
-    t0 = time.time()
+    """Get runs from filters and format their results as timeseries."""
     db_runs = crud.list_runs(
         db=db,
         run_type=None,
@@ -418,6 +417,7 @@ def get_as_timeseries(
     return schemas.GetRunsAsTimeseriesResponse(timeseries=timeseries.values())
 
 
+# Serve ../web/build directly from the service.
 # This needs to be last not to prevent access to /api
 app.mount("/",
           StaticFiles(directory=os.path.join(os.path.dirname(__file__), "../web/build"), html=True),
