@@ -35,7 +35,7 @@ function stats(timings) {
     "mean": mean,
     "min": timings[0],
     "max": timings[timings.length - 1],
-    "p90": median,
+    "p90": p90,
   };
 }
 
@@ -181,7 +181,7 @@ class Benchmark extends React.Component {
 	if (query.unsupported) {
 	  unsupported = true;
         } else {
-          total += query.p90;
+          total += query.median;
         }
       }
       if (unsupported) {
@@ -204,10 +204,10 @@ class Benchmark extends React.Component {
         }
         query_data[taggedEngine] = query
         queries[query.name] = query_data
-        var reference_time_micros = Object.values(query_data)[0].p90;
+        var reference_time_micros = Object.values(query_data)[0].median;
         var ratio = 1.0;
-        if (Math.abs(reference_time_micros - query.p90) >= 3 * 1000) {
-          ratio = (query.p90 + 10 * 1000) / (reference_time_micros + 10 * 1000);
+        if (Math.abs(reference_time_micros - query.median) >= 3 * 1000) {
+          ratio = (query.median + 10 * 1000) / (reference_time_micros + 10 * 1000);
         }
         sum_log_ratios += Math.log(ratio);
       }
@@ -226,21 +226,21 @@ class Benchmark extends React.Component {
       let supportedEngines = Object.keys(query_data).filter(engine => !query_data[engine].unsupported);
 
       // Determine minimum and maximum times
-      let min_microsecs = Math.min(...supportedEngines.map(engine => query_data[engine].p90));
-      let max_microsecs = Math.max(...supportedEngines.map(engine => query_data[engine].p90));
+      let min_microsecs = Math.min(...supportedEngines.map(engine => query_data[engine].median));
+      let max_microsecs = Math.max(...supportedEngines.map(engine => query_data[engine].median));
 
       // Mark engines as fastest and slowest, and calculate variation
       supportedEngines.forEach(engine => {
         let engine_data = query_data[engine];
-        if (engine_data.p90 === min_microsecs) {
+        if (engine_data.median === min_microsecs) {
           engine_data.className = "fastest";
-        } else if (engine_data.p90 === max_microsecs) {
+        } else if (engine_data.median === max_microsecs) {
           engine_data.className = "slowest";
         } 
 
-        if (engine_data.p90 !== min_microsecs) {
+        if (engine_data.median !== min_microsecs) {
           // Calculate variation for engines that are not fastest
-          engine_data.variation = (engine_data.p90 - min_microsecs) / min_microsecs;
+          engine_data.variation = (engine_data.median - min_microsecs) / min_microsecs;
         }
       });
     }
@@ -443,7 +443,7 @@ class Benchmark extends React.Component {
 				    return <td key={query_name + engine} className={"data"}></td>;
 				  } else {
 				    return <td key={query_name + engine} className={"data " + cell_data.className}>
-					     <div className="timing">{numberWithCommas(cell_data.p90 / 1000 )}  ms</div>
+					     <div className="timing">{numberWithCommas(cell_data.median / 1000 )}  ms</div>
 					     <div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
 					     <div className="count">{numberWithCommas(cell_data.count)} docs</div>
 					   </td>;
