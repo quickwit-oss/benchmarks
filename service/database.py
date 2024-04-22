@@ -5,10 +5,11 @@
 # https://opensource.org/licenses/MIT.
 
 import os
+
 import sqlalchemy
+from google.cloud.sql.connector import Connector, IPTypes
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from google.cloud.sql.connector import Connector, IPTypes
 
 # E.g.: "sqlite:///./benchmark_service.db" or for postgres:
 # "postgresql+pg8000://" (and fill the env variables below).

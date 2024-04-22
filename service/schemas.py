@@ -4,9 +4,10 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
-from pydantic import BaseModel, Field
 import datetime
 import enum
+
+from pydantic import BaseModel, Field
 
 
 class RunSource(enum.StrEnum):

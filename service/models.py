@@ -6,7 +6,8 @@
 
 # Databases (SQLAlchemy) models.
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Enum, JSON
+from sqlalchemy import (JSON, Boolean, Column, DateTime, Enum, ForeignKey,
+                        Integer, String)
 from sqlalchemy.orm import relationship
 
 from .database import Base

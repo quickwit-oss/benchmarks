@@ -5,26 +5,26 @@
 # https://opensource.org/licenses/MIT.
 
 import datetime
+import logging
 import os
 import time
-import logging
-import requests
-import jwt
-from typing import Annotated
 import urllib.parse
+from typing import Annotated
+
 import fastapi
-from fastapi import Depends, FastAPI, HTTPException
+import jwt
+import requests
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from sqlalchemy.orm import Session
-from starlette.staticfiles import StaticFiles
-from starlette.config import Config
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Header
 from fastapi.responses import HTMLResponse
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from starlette.config import Config
+from starlette.staticfiles import StaticFiles
+
 from . import crud, models, schemas
 from .database import SessionLocal, engine
-
 
 models.Base.metadata.create_all(bind=engine)
 

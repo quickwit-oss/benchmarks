@@ -6,9 +6,10 @@
 
 import datetime
 import enum
+
 import sqlalchemy
-from sqlalchemy.orm import Session
 from sqlalchemy import distinct, select
+from sqlalchemy.orm import Session
 
 from . import models, schemas
 
