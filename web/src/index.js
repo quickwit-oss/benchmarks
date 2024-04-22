@@ -2,7 +2,8 @@ import React from 'react';
 import { useEffect } from 'react';
 import Select from 'react-select';
 import $ from 'jquery';
-import ReactJson from 'react-json-view'
+import { JsonView, defaultStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
 import ReactDOM from 'react-dom';
 import './style.css'
 import * as serviceWorker from './serviceWorker';
@@ -512,7 +513,7 @@ function showRaw(run_ids) {
     .then((res) => { return res.json(); })
     .then((resp) => {
       ReactDOM.render(<React.StrictMode>
-			<ReactJson src={resp} />
+			<JsonView data={resp} style={defaultStyles}/>
 		      </React.StrictMode>,
 		      document.getElementById("app-container"));
     });
