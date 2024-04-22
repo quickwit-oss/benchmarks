@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import datetime
 import fnmatch
 import getpass
 import json
@@ -16,11 +17,10 @@ import time
 import webbrowser
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-import datetime
-import dateutil.parser as dateutil_parser
 from glob import glob
 from typing import Any
 
+import dateutil.parser as dateutil_parser
 import docker
 import prometheus_client
 import prometheus_client.parser as prometheus_parser
