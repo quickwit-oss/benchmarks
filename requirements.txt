@@ -2,4 +2,5 @@ PyYAML
 docker
 prometheus-client
 psutil
+python-dateutil
 requests

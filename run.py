@@ -16,7 +16,8 @@ import time
 import webbrowser
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import date
+import datetime
+import dateutil.parser as dateutil_parser
 from glob import glob
 from typing import Any
 
@@ -621,6 +622,33 @@ def stop_engine(engine: str):
         return
 
 
+def prune_docker_images(engine: str, until_days: int = 3):
+    """Removes dangling images for a given engine.
+
+    Args:
+      engine: Name of the engine. Only 'quickwit' is supported.
+      until_days: Only images older than this number of days will be removed.
+    """
+    if engine != 'quickwit':
+        raise ValueError(f"Pruning docker images for {engine} is not supported.")
+    logging.info("Pruning docker images for engine %s", engine)
+    docker_client = docker.from_env()
+    remove_before = (datetime.datetime.now(datetime.timezone.utc) -
+                     datetime.timedelta(days=until_days))
+    try:
+        for image in docker_client.images.list(
+                name="quickwit/quickwit", all=True, filters={"dangling": True}):
+            # Docker provides date in RFC3339Nano format, which unfortunately
+            # cannot be parsed by datetime.strptime which only supports
+            # microseconds.
+            creation_date = dateutil_parser.parse(image.attrs["Created"])
+            if creation_date < remove_before:
+                logging.info("Removing docker image %s", image.id)
+                docker_client.images.remove(image=image.id)
+    except docker.errors.APIError as ex:
+        logging.info("Failed to prune images for engine %s", engine)
+
+
 def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
     """Prepares indices and runs the benchmark."""
     results_dir = f'{args.output_path}/{args.track}.{args.engine}'
@@ -846,6 +874,7 @@ def main():
 
         if args.manage_engine:
             stop_engine(args.engine)
+            prune_docker_images(args.engine)
 
         if not args.loop:
             break
