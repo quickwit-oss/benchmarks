@@ -116,7 +116,18 @@ class GraphsWithSelector extends React.Component {
 		let row_name = row_name_and_col_to_series[0];
 		let col_to_series = row_name_and_col_to_series[1];
 		let td_graph_elements = [];
-		if (row_name != "indexing") {
+		if (row_name == "indexing") {
+		  row_name = row_name.toUpperCase();
+		  for (let series of Object.values(col_to_series)) {
+		    let {uplot_options, uplot_data} = uplotParamsFromSeries(
+		      this.state.run_filter_display_name, series);
+		    td_graph_elements.push(
+		      <td>
+			<UplotReact options={uplot_options} data={uplot_data} />
+		      </td>
+		    );
+		  }
+		} else { // "search" row.
 		  // Iterate over search_metrics to make sure the
 		  // order is consistent across rows (and an empty
 		  // <td> is used if there is no data for a given
@@ -133,17 +144,6 @@ class GraphsWithSelector extends React.Component {
 		    } else {
 		      td_graph_elements.push(<td>NO DATA</td>);
 		    }
-		  }
-		} else { // "indexing" row.
-		  row_name = row_name.toUpperCase();
-		  for (let series of Object.values(col_to_series)) {
-		    let {uplot_options, uplot_data} = uplotParamsFromSeries(
-		      this.state.run_filter_display_name, series);
-		    td_graph_elements.push(
-		      <td>
-			<UplotReact options={uplot_options} data={uplot_data} />
-		      </td>
-		    );
 		  }
 		}
 		return (<tr>
@@ -164,6 +164,7 @@ class GraphsWithSelector extends React.Component {
 
 // `run_filter_display_name`: e.g. "quickwit.SSD.c3-standard-4.continuous".
 // `series`: schemas.Timeseries.
+// Returns Uplot data and options to be passed to a UploadReact component.
 function uplotParamsFromSeries(run_filter_display_name, series) {
   let yAxisLabel = series.metric_name;
   let title = series.metric_name;
@@ -207,7 +208,6 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
 }
 
 export function showContinuousGraphs() {
-
   fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking`)
     .then((res) => { return res.json(); })
     .then((resp) => {
@@ -239,7 +239,7 @@ export function showContinuousGraphs() {
 	}
       }
       
-      var el = document.getElementById("app-container");
+      let el = document.getElementById("app-container");
       ReactDOM.render(<React.StrictMode>
 			<GraphsWithSelector dataset_to_selector_options={dataset_to_selector_options}/>
 		      </React.StrictMode>, el);
