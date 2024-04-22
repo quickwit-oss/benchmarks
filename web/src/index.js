@@ -1,5 +1,4 @@
 import React from 'react';
-import { useEffect } from 'react';
 import Select from 'react-select';
 import $ from 'jquery';
 import { JsonView, defaultStyles } from 'react-json-view-lite';
@@ -99,8 +98,8 @@ class Benchmark extends React.Component {
       if (!(name in name_to_runs)) {
 	name_to_runs[name] = {indexing: null, search: null};
       }
-      if (run.run_info.run_type != "indexing" &&
-	  run.run_info.run_type != "search") {
+      if (run.run_info.run_type !== "indexing" &&
+	  run.run_info.run_type !== "search") {
 	console.error("Got run with unexpected type:", run);
 	continue;
       }
@@ -161,7 +160,6 @@ class Benchmark extends React.Component {
     var engines = {}
     // query_name -> (engine display name -> query stats).
     var queries = {}
-    let dataset = this.state.dataset;
     for (let display_name in this.state.runs) {
       // {search: run, indexing: run}.
       let engine_results = this.state.runs[display_name].indexing?.run_results;
@@ -524,13 +522,13 @@ function showRaw(run_ids) {
 $(function () {
 
   let searchParams = new URLSearchParams(window.location.search)
-  if (searchParams.get("page") == "graphs") {
+  if (searchParams.get("page") === "graphs") {
     console.log("Showing graphs");
     showContinuousGraphs();
     return;
   }
 
-  if (searchParams.get("page") == "raw") {
+  if (searchParams.get("page") === "raw") {
     console.log("Showing raw");
     showRaw(searchParams.get("run_ids").split(","));
     return;

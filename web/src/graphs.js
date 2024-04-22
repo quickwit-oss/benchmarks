@@ -20,7 +20,7 @@ import "uplot/dist/uPlot.min.css"
 import './style.css'
 import UplotReact from 'uplot-react';
 import {BENCHMARK_SERVICE_ADDRESS, getRunDisplayName} from "./utils.js";
-import {tooltipPlugin, genPlotOpts} from "./graphs_helpers.js";
+import {genPlotOpts} from "./graphs_helpers.js";
 
 class GraphsWithSelector extends React.Component {
   // Expects in props:
@@ -53,7 +53,7 @@ class GraphsWithSelector extends React.Component {
     }
     let search_metrics = new Set();
     for (let series of this.state.timeseries) {
-      if (series.name != "indexing") {
+      if (series.name !== "indexing") {
 	search_metrics.add(series.metric_name);
       }
     }
@@ -116,7 +116,7 @@ class GraphsWithSelector extends React.Component {
 		let row_name = row_name_and_col_to_series[0];
 		let col_to_series = row_name_and_col_to_series[1];
 		let td_graph_elements = [];
-		if (row_name == "indexing") {
+		if (row_name === "indexing") {
 		  row_name = row_name.toUpperCase();
 		  for (let series of Object.values(col_to_series)) {
 		    let {uplot_options, uplot_data} = uplotParamsFromSeries(
@@ -169,11 +169,11 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
   let yAxisLabel = series.metric_name;
   let title = series.metric_name;
   let data_points = series.data_points;
-  if (series.metric_name == "engine_duration") {
+  if (series.metric_name === "engine_duration") {
     yAxisLabel = "Engine Duration milliseconds";
     title = "Engine latency";
     data_points = series.data_points.map(micros => { return micros / 1e3; });
-  } else if (series.metric_name == "total_cpu_time_s") {
+  } else if (series.metric_name === "total_cpu_time_s") {
     yAxisLabel = "CPU Time seconds";
     title = "Engine CPU Time";
   }
