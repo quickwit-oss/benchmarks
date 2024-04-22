@@ -134,12 +134,13 @@ class GetRunsResponse(BaseModel):
 class Timeseries(BaseModel):
     name: str  # Will typically be a query name or "indexing".
     metric_name: str  # E.g. "engine_duration", "total_cpu_time_s", etc..
-    # The 3 fields below will have the same number of elements.
+    # The fields below will have the same number of elements.
     # In service responses, we guarantee that the timestamps are in increasing order.
     timestamps_s: list[int]
     # Actualy data points corresponding to the metric.
     data_points: list[float]
     tags: list[str]
+    run_ids: list[int]
 
 
 class GetRunsAsTimeseriesResponse(BaseModel):

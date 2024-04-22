@@ -392,12 +392,13 @@ def get_as_timeseries(
                     if key not in timeseries:
                         timeseries[key] = schemas.Timeseries(
                             name=query_result.name, metric_name=metric_name,
-                            timestamps_s=[], data_points=[], tags=[])
+                            timestamps_s=[], data_points=[], tags=[], run_ids=[])
                     series = timeseries[key]
                     series.timestamps_s.append(int(run.run_info.timestamp.timestamp()))
                     series.data_points.append(measurements.median)
                     series.tags.append(
                         run.run_results.engine_info.get("build", {}).get("commit_short_hash", ""))
+                    series.run_ids.append(run.run_info.id)
 
         if run.run_info.run_type == "indexing":
             for indexing_metric in INDEXING_METRICS:
@@ -405,7 +406,7 @@ def get_as_timeseries(
                 if key not in timeseries:
                     timeseries[key] = schemas.Timeseries(
                         name="indexing", metric_name=indexing_metric,
-                        timestamps_s=[], data_points=[], tags=[])
+                        timestamps_s=[], data_points=[], tags=[], run_ids=[])
                 series = timeseries[key]
                 point = getattr(run.run_results, indexing_metric)
                 if point is not None:
@@ -413,6 +414,7 @@ def get_as_timeseries(
                     series.data_points.append(point)
                     series.tags.append(
                         run.run_results.engine_info.get("build", {}).get("commit_short_hash", ""))
+                    series.run_ids.append(run.run_info.id)
 
     return schemas.GetRunsAsTimeseriesResponse(timeseries=timeseries.values())
 

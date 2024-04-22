@@ -183,8 +183,8 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
     { label: run_filter_display_name, stroke: 'red' }
   ];
   let commits = [];
-  for (let tag of series.tags) {
-    commits.push([tag, tag]);
+  for (let i = 0; i < series.tags.length; i++) {
+    commits.push([series.tags[i], series.run_ids[i]]);
   }
   let plotOpts = genPlotOpts({
     width: 500,

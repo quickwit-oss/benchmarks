@@ -78,8 +78,8 @@ export function tooltipPlugin({
     }
     tooltip.textContent =
       fmtDate(new Date(u.data[0][dataIdx] * 1e3)) +
-      "\n" +
-      commits[dataIdx][1].slice(0, 10) +
+      "\ncommit_hash=" +
+      commits[dataIdx][0].slice(0, 10) +
       "\n" +
       trailer;
   }
@@ -202,14 +202,8 @@ export function genPlotOpts({
     plugins: [
       tooltipPlugin({
         onclick(_u, _seriesIdx, dataIdx) {
-          // No earlier data to show
-          if (dataIdx == 0) return;
-
-          let thisCommit = commits[dataIdx][1];
-          let prevCommit = commits[dataIdx - 1][1];
-//          window.open(
-//            `/compare.html?start=${prevCommit}&end=${thisCommit}&stat=${stat}`
-//          );
+	  let run_id = commits[dataIdx][1];
+          window.open(`/?page=raw&run_ids=${run_id}`);
         },
         commits,
         isInterpolated,
