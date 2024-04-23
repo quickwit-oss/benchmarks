@@ -62,18 +62,15 @@ def get_docker_info(container_name: str):
             "image_hash": container.attrs["Image"]}
 
 
-def find_process_by_name(process_name):
-    process_id = None
+def find_process_by_name(process_name) -> psutil.Process | None:
+    process = None
     for proc in psutil.process_iter(['pid', 'name']):
         if proc.name() == process_name:
-            if process_id:
+            if process:
                 raise ValueError(
-                    f'Found multiple processes with name {process_name}: {process_id}, {proc.pid}')
-            process_id = proc.pid
-    if not process_id:
-        raise ValueError(
-            f'Did not find process with name {process_name}')
-    return process_id
+                    f'Found multiple processes with name {process_name}: {process.pid}, {proc.pid}')
+            process = proc
+    return process
 
 
 @dataclass
@@ -116,7 +113,10 @@ class ProcessMonitor:
         if bool(process_id) == bool(process_name):
             raise ValueError('Either process_id or process_name should be specified')
         if not process_id:
-            process_id = find_process_by_name(process_name)
+            process_id = find_process_by_name(process_name).pid
+            if process_id is None:
+                raise ValueError(
+                    f"Can't monitor a process that was not found {process_name=}")
         self.process = psutil.Process(process_id)
         self.metrics_addr = metrics_addr
         self.watched_metrics = watched_metrics
@@ -606,7 +606,26 @@ def start_engine(engine: str):
         raise ValueError("Failed to start container '%s': status: '%s'", container.name, container.status)
 
 
+def start_engine_from_binary(engine: str, binary_path: str):
+    if engine != 'quickwit':
+        raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
+    config_path = os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
+    data_dir = os.path.join(os.getcwd(), "engines", engine, "data")
+    os.makedirs(data_dir, exist_ok=True)
+    process = subprocess.Popen(
+        [binary_path, "run"],
+        env={"QW_DISABLE_TELEMETRY": "1",
+             "QW_CONFIG": config_path,
+             "QW_DATA_DIR": data_dir,
+             },
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    logging.info("Started binary %s PID=%s", binary_path, process.pid)
+
+
 def stop_engine(engine: str):
+    """Stops both docker containers and non-docker processes of an engine."""
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by run_engine().")
     docker_client = docker.from_env()
@@ -619,7 +638,11 @@ def stop_engine(engine: str):
         container.stop()
     except docker.errors.NotFound as ex:
         logging.info("Attempted to stop %s but it was not found: %s", engine, ex)
-        return
+
+    process = find_process_by_name(engine)
+    if process is not None:
+        process.kill()
+        logging.info("Killed %s process with ID %s", engine, process.pid)
 
 
 def prune_docker_images(engine: str, until_days: int = 3):
@@ -844,7 +867,8 @@ def main():
     parser.add_argument(
         '--manage-engine', action='store_true',
         help=("If set, the engine will be started by this script before being benchmarked, "
-              "and stopped at the end."))
+              "and stopped at the end. It will be started from a docker image by default, "
+              "unless --binary-path is specified."))
     parser.add_argument(
         '--loop', action='store_true',
         help=("If set, the benchmark will be run repeatedly until this script is killed. "
@@ -855,6 +879,10 @@ def main():
         help=("Source of the run. In the web UI, graph will typically only be "
               "shown for 'continuous_benchmarking' runs only."),
         default="manual")
+    parser.add_argument(
+        '--binary-path', type=str,
+        help=("Path to the binary to run. Only makes sense with --manage-engine is set."),
+        default="")
 
     args = parser.parse_args()
 
@@ -867,7 +895,10 @@ def main():
     while True:
         if args.manage_engine:
             stop_engine(args.engine)
-            start_engine(args.engine)
+            if args.binary_path:
+                start_engine_from_binary(args.engine, args.binary_path)
+            else:
+                start_engine(args.engine)
 
         # When looping, we ignore errors.
         bench_ok = run_benchmark(args, exporter_token)
