@@ -15,6 +15,7 @@ class RunSource(enum.StrEnum):
     MANUAL = "manual"
     # Automated run launched by continuous benchmarking.
     CONTINUOUS_BENCHMARKING = "continuous_benchmarking"
+    GITHUB_WORKFLOW = "github_workflow"
 
 
 class RunInfo(BaseModel):

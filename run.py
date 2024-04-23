@@ -875,7 +875,7 @@ def main():
               "Useful for continuous benchmarking"))
     parser.add_argument(
         '--source', type=str,
-        choices=["manual", "continuous_benchmarking"],
+        choices=["manual", "continuous_benchmarking", "github_workflow"],
         help=("Source of the run. In the web UI, graph will typically only be "
               "shown for 'continuous_benchmarking' runs only."),
         default="manual")
