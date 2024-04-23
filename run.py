@@ -37,7 +37,7 @@ RETRY_ON_FAILED_RESPONSE_SUBSTR = [
 ]
 # File where the JWT token will be cached across invocation of this
 # tool.
-JWT_TOKEN_FILENAME = ".jwt_token_benchmark_service.txt"
+JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
 
 
 class BearerAuthentication(requests.auth.AuthBase):
@@ -799,14 +799,15 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
 
     The token is cached to a local file for convenience during future runs.
     """
+    jwt_token_filename = os.path.expanduser(JWT_TOKEN_FILENAME)
     try:
-        with open(JWT_TOKEN_FILENAME, "r") as f:
+        with open(jwt_token_filename, "r") as f:
             token = f.read()
             if check_exporter_token(endpoint, token, verify_https):
-                print(f"Token in {JWT_TOKEN_FILENAME} is valid. Re-using it.")
+                print(f"Token in {jwt_token_filename} is valid. Re-using it.")
                 return token
             else:
-                print(f"Invalid token in {JWT_TOKEN_FILENAME}, trying to obtain a new one.")
+                print(f"Invalid token in {jwt_token_filename}, trying to obtain a new one.")
     except FileNotFoundError:
         pass
     auth_url = f'{endpoint}/login/google'
@@ -816,8 +817,8 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
     token = input("Please paste the JWT token displayed in the service response:\n").strip()
     if not check_exporter_token(endpoint, token, verify_https):
         raise Exception(f"Token '{token}' is invalid, error in copy-paste?")
-    print(f"Saving token to file {JWT_TOKEN_FILENAME} for future use.")
-    with open(JWT_TOKEN_FILENAME, "w") as f:
+    print(f"Saving token to file {jwt_token_filename} for future use.")
+    with open(jwt_token_filename, "w") as f:
         f.write(token)
     return token
 
