@@ -1,0 +1,11 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "range": {
+      "metrics.size": {
+        "gte": 1251,
+        "lte": 3400
+      }
+    }
+  }
+}

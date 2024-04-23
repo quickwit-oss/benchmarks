@@ -2,15 +2,22 @@ auth_enabled: false
 
 server:
   http_listen_port: 3100
+  http_server_read_timeout: 15m
+  http_server_write_timeout: 15m
+
+# Note: the compactor as of March 2024 does not compact chunk files
+# on cloud storage once they are written. It only compacts the index
+# (which is usually very small anyways).
+# See https://utcc.utoronto.ca/~cks/space/blog/sysadmin/GrafanaLokiNoChunkCompaction
 compactor:
   retention_enabled: true #required for manual deletion -.-
 
 common:
   path_prefix: /loki
   storage:
-    filesystem:
-      chunks_directory: /loki/chunks
-      rules_directory: /loki/rules
+    gcs:
+      bucket_name: bench202403-loki-100streams
+#      bucket_name: bench202403-loki-25000streams
   replication_factor: 1
   ring:
     kvstore:
@@ -19,9 +26,20 @@ common:
 query_range:
   results_cache:
     cache:
+      enable_fifocache: false
       embedded_cache:
-        enabled: true
-        max_size_mb: 100
+        enabled: false
+        max_size_mb: 0
+
+# Seems to disable a cache used during queries, but I am not sure
+# whether this will be bad during ingestion.
+# chunk_store_config:
+#   chunk_cache_config:
+#     enable_fifocache: false
+#     embedded_cache:
+#       enabled: false
+#       max_size_mb: 0
+  
 
 query_scheduler:
   # the TSDB index dispatches many more, but each individually smaller, requests. 
@@ -34,18 +52,23 @@ querier:
   # (more available cpu and memory can tolerate higher values and vice versa),
   # but we find the most success running at around `16` with tsdb
   max_concurrent: 16
+  # Default of 1m is not enough for some queries.
+  query_timeout: 20m
 
 ingester:
   chunk_encoding: snappy
   # chunk_idle_period: 2m
   # chunk_retain_period: 2m
-  # chunk_target_size: 572864
+  # default: 1572864
+  # Leads to 25GBs peak usage during indexing of 25k streams.
+  # For 100 streams, the default is fine as it leads to peak mem usage of 5GBs during indexing.
+  chunk_target_size: 524288
 
 schema_config:
   configs:
-    - from: "2022-12-01"
+    - from: "2023-01-05"
       store: tsdb
-      object_store: filesystem
+      object_store: gcs
       schema: v12
       index:
         prefix: index_
@@ -69,6 +92,8 @@ ruler:
   alertmanager_url: http://localhost:9093
 
 limits_config:
+  # How much back in time we can go in a query.
+  max_query_length: 0h # Default: 721h
   unordered_writes: true
   ingestion_rate_mb: 1000
   ingestion_burst_size_mb: 1000
@@ -88,7 +113,4 @@ limits_config:
   # per_stream_rate_limit: 10240M
   # per_stream_rate_limit_burst: 10240M
   # cardinality_limit: 20000000
-
-  query_timeout: 10m
-  max_query_length: 0h
 

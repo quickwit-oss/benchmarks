@@ -1,0 +1,5 @@
+{
+    "start": "2024-03-15T12:00:00+01:00",
+    "end": "2024-03-15T14:00:00+01:00",
+    "query": "sum by (level)(count_over_time({cloud_region=\"us-east-2\"} | drop __error__[1m]))"
+}

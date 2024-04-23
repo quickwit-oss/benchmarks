@@ -1,0 +1,16 @@
+{
+    "track_total_hits": false,
+      "size" : 1000,
+  "query": {
+    "term": {
+      "message": {
+        "value": "queen"
+      }
+    }
+  },
+  "sort": [
+    {
+      "timestamp": {"order": "desc"}
+    }
+  ]
+}

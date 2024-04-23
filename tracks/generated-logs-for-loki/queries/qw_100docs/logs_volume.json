@@ -1,0 +1,26 @@
+{
+  "track_total_hits": false,
+  "size": 0,
+  "query": {
+    "term": {
+      "cloud.region": {
+        "value": "us-east-2"
+      }
+    }
+  },
+  "aggs": {
+    "by_time_bucket": {
+      "date_histogram": {
+        "field": "timestamp",
+        "fixed_interval": "2h"
+      },
+      "aggs": {
+        "by_log_level": {
+          "terms": {
+              "field": "level"
+	  }
+        }
+      }
+    }
+  }
+}

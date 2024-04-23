@@ -1,0 +1,4 @@
+description: Logs dataset generated with https://github.com/elastic/elastic-integration-corpus-generator-tool
+# Files from: gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-????.ndjson.gz
+dataset_uri: datasets/generated-logs-v1-{0001..0200}.ndjson.gz
+index: generated-logs

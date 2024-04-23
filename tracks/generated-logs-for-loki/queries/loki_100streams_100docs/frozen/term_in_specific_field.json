@@ -1,0 +1,6 @@
+{
+    "start": "2023-01-01T00:00:00+00:00",
+    "end": "2023-02-01T00:00:00+00:00",
+    "limit": 3,
+    "query": "{agent=\"benchmark\"} | json | line_format \"{{.aws_cloudwatch_log_stream}}\" | json  |= `autumnduck`"
+}

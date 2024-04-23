@@ -1,0 +1,24 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "term": {
+            "aws.cloudwatch.log_stream": {
+              "value": "squareslayer"
+            }
+          }
+        },
+        {
+          "range": {
+            "metrics.size": {
+              "gte": 1,
+              "lte": 1000
+            }
+          }
+        }
+      ]
+    }
+  }
+}

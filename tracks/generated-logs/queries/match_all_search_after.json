@@ -1,0 +1,6 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "match_all": {}
+  }
+}

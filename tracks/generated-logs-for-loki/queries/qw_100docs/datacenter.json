@@ -1,0 +1,16 @@
+{
+  "track_total_hits": false,
+  "size" : 100,
+  "query": {
+    "term": {
+      "cloud.region": {
+        "value": "us-east-2"
+      }
+    }
+  },
+  "sort": [
+    {
+      "timestamp": {"order": "desc"}
+    }
+  ]
+}
