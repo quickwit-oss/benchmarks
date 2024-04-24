@@ -70,15 +70,6 @@ class Benchmark extends React.Component {
     };
   }
 
-  handleChangeTag(evt) {
-    var tag = evt.target.value;
-    if (tag === "ALL") {
-      this.setState({ "tag": null });
-    } else {
-      this.setState({ "tag": tag });
-    }
-  }
-
   handleChangeDataset(evt) {
     var dataset = evt.target.value;
     if (dataset) {
@@ -141,16 +132,6 @@ class Benchmark extends React.Component {
     this.fetchRuns(selected_runs);
   }
   
-  filterQueries(queries) {
-    let tag = this.state.tag;
-    if (tag !== undefined && tag !== null) {
-      // return queries.filter(query => query.tags.indexOf(tag) >= 0);
-      return queries;
-    } else {
-      return queries;
-    }
-  }
-
   // TODO: make sure the order of display is the same as the order in
   // which the runs were selected. It's not the case right now (seems
   // lexicographic in the run name).
@@ -173,7 +154,7 @@ class Benchmark extends React.Component {
       
       // var engine_queries = engine_results.queries;
       let taggedEngine = display_name;
-      engine_queries = Array.from(this.filterQueries(engine_queries));
+      engine_queries = Array.from(engine_queries);
       engine_queries = engine_queries.map(aggregate);
       var total = 0
       var unsupported = false
@@ -255,11 +236,6 @@ class Benchmark extends React.Component {
 		 <label htmlFor="datasetField">Dataset</label>
 		 <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
 		   {this.props.datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
-		 </select>
-		 <label htmlFor="queryTagField">Type of Query</label>
-		 <select id="queryTagField" onChange={(evt) => this.handleChangeTag(evt)}>
-		   <option value="ALL" key="all">ALL</option>
-		   {this.props.tags.map((tag) => <option value={tag} key={tag}>{tag}</option>)}
 		 </select>
 		 <label>Runs to compare</label>
 		 <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
@@ -535,7 +511,6 @@ $(function () {
   }
   
   $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
-    var data = {};
     // Maps dataset name to:
     // {display_name -> {indexing: most recent indexing run,
     //                   search: most recent search run}
@@ -580,16 +555,11 @@ $(function () {
       }
     }
     
-    var tagged_engines = [];
-    // TODO: Remove logic around tags, it currently has no effect.
-    var tags_set = new Set();
     const datasets = Object.keys(dataset_to_most_recent_runs).sort();
-    var tags = Array.from(tags_set);
-    tags.sort();
     var el = document.getElementById("app-container");
     console.log("Initial rendering of Benchmark react elmt");
     ReactDOM.render(<React.StrictMode>
-		      <Benchmark data={data} tags={tags} engines={tagged_engines} datasets={datasets} dataset_to_selector_options={dataset_to_selector_options}/>
+		      <Benchmark datasets={datasets} dataset_to_selector_options={dataset_to_selector_options}/>
 		    </React.StrictMode>, el);
   });
 });
