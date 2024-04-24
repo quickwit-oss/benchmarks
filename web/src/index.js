@@ -57,20 +57,23 @@ class Benchmark extends React.Component {
   // Expects in props:
   // `datasets`
   // `dataset_to_selector_options`
+  // `initial_dataset`
+  // `initial_selector_options`
   constructor(props) {
     super(props);
     this.state = {
-      dataset: props.datasets[0],
+      dataset: this.props.initial_dataset,
       // List of selected runs, i.e. a list of:
       // {indexing: ID of the indexing run, search: ID of the search run}.
       selected_runs: null,
       // Maps display name to {indexing: run_results, search: run_results}
       runs: {}
     };
+    this.handleChangeRun(this.props.initial_selector_options);
   }
 
   handleChangeDataset(evt) {
-    var dataset = evt.target.value;
+    var dataset = evt.value;
     if (dataset) {
       this.setState({ "dataset": dataset });
     } else {
@@ -123,11 +126,18 @@ class Benchmark extends React.Component {
   
   handleChangeRun(evt) {
     // Array of {indexing: numerical run ID, search: numerical run ID}.
-    var selected_runs = [];
-    for (var run_info of evt) {
+    let selected_runs = [];
+    let all_run_ids = [];  // Only for the permalink
+    for (let run_info of evt) {
       selected_runs.push(run_info.value);
+      all_run_ids.push(run_info.value.indexing);
+      all_run_ids.push(run_info.value.search);
     }
     this.setState({"selected_runs": selected_runs})
+    // Update URL so that it becomes a permalink.
+    window.history.pushState(
+      "", "",
+      "?run_ids=" + all_run_ids.filter(x => x !== null).map(x => x.toString()).join(","));
     this.fetchRuns(selected_runs);
   }
   
@@ -228,17 +238,21 @@ class Benchmark extends React.Component {
   }
 
   render() {
-    var data_view = this.generateDataView();
+    let data_view = this.generateDataView();
     return <div>
 	     <form>
                <fieldset>
 		 <label htmlFor="datasetField">Dataset</label>
-		 <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
-		   {this.props.datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
-		 </select>
+		 <Select id="datasetField2" options={
+			   this.props.datasets.map((ds) => ({value: ds, label: ds}))
+			 }
+			 defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
+			 onChange={(evt) => this.handleChangeDataset(evt)}
+		 />		 
 		 <label>Runs to compare</label>
 		 <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
 			 isMulti className="basic-multi-select" classNamePrefix="select"
+			 defaultValue={this.props.initial_selector_options}
 			 onChange={(evt) => this.handleChangeRun(evt)}/>
                </fieldset>
 	     </form>
@@ -492,6 +506,135 @@ function showRaw(run_ids) {
     });
 }
 
+// `run_info` corresponds to schemas.RunInfo of the service.
+// `run_ids_filter` is a Set of integer run ids.
+function shouldPreselectRun(opt_track_filter,
+			    opt_commit_hash_filter,
+			    opt_storage_filter,
+			    run_ids_filter,
+			    run_info) {
+  if (!opt_commit_hash_filter &&
+      run_ids_filter.size == 0) {
+    // Require strong filters to be set to avoid preselecting too many
+    // runs.
+    return false;
+  }
+  if (opt_track_filter && opt_track_filter !== run_info.track) {
+    return false;
+  }
+  if (opt_commit_hash_filter && opt_commit_hash_filter !== run_info.commit_hash) {
+    return false;
+  }
+  if (opt_storage_filter && opt_storage_filter !== run_info.storage) {
+    return false;
+  }
+  if (run_ids_filter.size > 0 && !run_ids_filter.has(run_info.id)) {
+    return false;
+  }
+  return true;
+}
+
+function getMostRecentSelectedRun(left, right) {
+  if (left === null) return right;
+  if (left.selected != right.selected) {
+    return left.selected ? left : right;
+  }
+  return left.timestamp < right.timestamp ? right : left;
+}
+
+// `run_ids_filter` is a Set of integer run ids.
+function showComparison(opt_track_filter,
+			opt_commit_hash_filter,
+			opt_storage_filter,
+			run_ids_filter) {
+  console.log("showComparison with filters:",
+	      opt_track_filter,
+	      opt_commit_hash_filter,
+	      opt_storage_filter,
+	      run_ids_filter);
+  // TODO: consider only fetching the last N runs, or runs in the last
+  // D days (but ideally, we should make sure to filter the list of
+  // run IDs provided even if they are old).
+  $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
+    // Maps dataset name to:
+    // {display_name -> {indexing: most recent indexing run,
+    //                   search: most recent search run}
+    // }
+    let dataset_to_most_recent_runs = {};
+    for (const run_info of list_runs_resp.run_infos) {
+      let dataset = run_info.track;
+      let display_name = getRunDisplayName(run_info);
+      run_info.preselected = shouldPreselectRun(
+	opt_track_filter,
+	opt_commit_hash_filter,
+	opt_storage_filter,
+	run_ids_filter,
+	run_info);
+      if (!(dataset in dataset_to_most_recent_runs)) {
+	dataset_to_most_recent_runs[dataset] = {};
+      }
+      let most_recent_runs = dataset_to_most_recent_runs[dataset];
+      if (!(display_name in most_recent_runs)) {
+	most_recent_runs[display_name] = {
+	  indexing: null,
+	  search: null
+	};
+      }
+      let previous_run_info = most_recent_runs[display_name][run_info.run_type];
+      most_recent_runs[display_name][run_info.run_type] = getMostRecentSelectedRun(previous_run_info, run_info);
+    }
+    let initial_dataset = null;
+    // Pick the latest for each combination.
+    // Map from dataset name to an array of
+    // {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
+    let dataset_to_selector_options = {};
+    // Array of preselected selector options.
+    let initial_selector_options = [];
+    for (const dataset in dataset_to_most_recent_runs) {
+      if (!(dataset in dataset_to_selector_options)) {
+	dataset_to_selector_options[dataset] = [];
+      }
+      for (const display_name in dataset_to_most_recent_runs[dataset]) {
+	const search_run_info = dataset_to_most_recent_runs[dataset][display_name].search;
+	const indexing_run_info = dataset_to_most_recent_runs[dataset][display_name].indexing;
+	let preselected = false;
+	if (indexing_run_info !== null && indexing_run_info.preselected) {
+	  preselected = true;
+	}
+	if (search_run_info !== null && search_run_info.preselected) {
+	  preselected = true;
+	}
+	const selector_option = {
+	  value: {
+	    indexing: indexing_run_info === null ? null : indexing_run_info.id,
+	    search: search_run_info === null ? null : search_run_info.id
+	  },
+	  label: display_name
+	};
+	dataset_to_selector_options[dataset].push(selector_option);
+	if (preselected) {
+	  initial_selector_options.push(selector_option);
+	  initial_dataset = dataset;
+	}
+      }
+    }
+    
+    const datasets = Object.keys(dataset_to_most_recent_runs).sort();
+    if (initial_dataset === null) {
+      initial_dataset = datasets[0];
+    }
+    var el = document.getElementById("app-container");
+    console.log("Initial rendering of Benchmark react elmt");
+
+    ReactDOM.render(<React.StrictMode>
+		      <Benchmark datasets={datasets} initial_dataset={initial_dataset}
+				 dataset_to_selector_options={dataset_to_selector_options}
+				 initial_selector_options={initial_selector_options}
+		      />
+		    </React.StrictMode>, el);
+  });
+}
+
 // TODO: make it work with local jsons as well if needed. Doable (just
 // have a global param 'local_json')
 $(function () {
@@ -505,62 +648,14 @@ $(function () {
 
   if (searchParams.get("page") === "raw") {
     console.log("Showing raw");
-    showRaw(searchParams.get("run_ids").split(","));
+    showRaw(searchParams.get("run_ids")?.split(","));
     return;
   }
-  
-  $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
-    // Maps dataset name to:
-    // {display_name -> {indexing: most recent indexing run,
-    //                   search: most recent search run}
-    // }
-    let dataset_to_most_recent_runs = {};
-    for (const run_info of list_runs_resp.run_infos) {
-      let dataset = run_info.track;
-      let display_name = getRunDisplayName(run_info);
-      if (!(dataset in dataset_to_most_recent_runs)) {
-	dataset_to_most_recent_runs[dataset] = {};
-      }
-      let most_recent_runs = dataset_to_most_recent_runs[dataset];
-      if (!(display_name in most_recent_runs)) {
-	most_recent_runs[display_name] = {
-	  indexing: null,
-	  search: null
-	};
-      }
-      let previous_run_info = most_recent_runs[display_name][run_info.run_type];
-      if (previous_run_info === null ||
-	  previous_run_info.timestamp < run_info.timestamp) {
-	most_recent_runs[display_name][run_info.run_type] = run_info;
-      }
-    }
-    
-    // Pick the latest for each combination.
-    // Map from dataset name to an array of {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
-    let dataset_to_selector_options = {};
-    for (const dataset in dataset_to_most_recent_runs) {
-      if (!(dataset in dataset_to_selector_options)) {
-	dataset_to_selector_options[dataset] = [];
-      }
-      for (const display_name in dataset_to_most_recent_runs[dataset]) {
-	const search_run_info = dataset_to_most_recent_runs[dataset][display_name].search;
-	const indexing_run_info = dataset_to_most_recent_runs[dataset][display_name].indexing;
-	dataset_to_selector_options[dataset].push({
-	  value: {
-	    indexing: indexing_run_info === null ? null : indexing_run_info.id,
-	    search: search_run_info === null ? null : search_run_info.id
-	  },
-	  label: display_name});
-      }
-    }
-    
-    const datasets = Object.keys(dataset_to_most_recent_runs).sort();
-    var el = document.getElementById("app-container");
-    console.log("Initial rendering of Benchmark react elmt");
-    ReactDOM.render(<React.StrictMode>
-		      <Benchmark datasets={datasets} dataset_to_selector_options={dataset_to_selector_options}/>
-		    </React.StrictMode>, el);
-  });
+
+  showComparison(searchParams.get("track"),
+		 searchParams.get("commit_hash"),
+		 searchParams.get("storage"),
+		 new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))));
 });
 
 // If you want your app to work offline and load faster, you can change
