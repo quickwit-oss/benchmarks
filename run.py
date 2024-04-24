@@ -671,10 +671,13 @@ def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str
              "QW_CONFIG": config_path,
              "QW_DATA_DIR": data_dir,
              },
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+#        stdout=subprocess.DEVNULL,
+#        stderr=subprocess.DEVNULL,
     )
     logging.info("Started binary %s PID=%s", binary_path, process.pid)
+    time.sleep(2)
+    if process.poll() is not None:
+        raise Exception(f"Engine {engine} failed with code: {process.returncode}")
 
 
 def stop_engine(engine: str):
