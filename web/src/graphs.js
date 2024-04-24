@@ -217,7 +217,7 @@ export function showContinuousGraphs() {
       let dataset_to_runs = {};
       for (const run_info of resp.run_infos) {
 	let dataset = run_info.track;
-	let display_name = getRunDisplayName(run_info);
+	let display_name = getRunDisplayName(run_info, /*include_hash=*/false);
 	if (!(dataset in dataset_to_runs)) {
 	  dataset_to_runs[dataset] = {};
 	}
