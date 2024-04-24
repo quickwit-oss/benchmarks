@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import configparser
 import datetime
 import fnmatch
 import getpass
@@ -39,6 +40,11 @@ RETRY_ON_FAILED_RESPONSE_SUBSTR = [
 # tool.
 JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
 
+# Config file used when there are placeholders in paths to resolve. It
+# should be an ini config file containing a 'paths' section mapping
+# path placeholder names (e.g. 'qwdata') to the actual data path to use.
+CONFIG_FILENAME = "~/.qw_benchmarks_runner.txt"
+
 AUTODETECT_GCP_INSTANCE_PLACEHOLDER = '{autodetect_gcp}'
 
 
@@ -52,6 +58,39 @@ def resolve_instance(instance_or_placeholder: str | None) -> str | None:
             logging.info("Could not get GCP machine type: %s", ex)
             return "GCP_UNKNOWN"
     return instance_or_placeholder
+
+
+def resolve_data_dir(engine: str, data_dir: str | None, config_path: str) -> str | None:
+    """Returns the data dir to use for an engine.
+
+    Args:
+      engine: name of the engine, e.g. quickwit.
+      data_dir: Optional data directory to use for the engine. It can
+        be a placholder, e.g. '{qwdata}' that will then be resolved
+        using the config.
+      config_path: Path to an ini config file containing a 'paths'
+        section mapping placeholder names (e.g. 'qwdata') to the
+        actual data path to use.
+
+    Returns:
+      The data path to use for the engine.
+    """
+    if not data_dir:
+        return os.path.join(os.getcwd(), "engines", engine, "data")
+    if data_dir[0] != '{' or data_dir[-1] != '}':
+        return data_dir
+    # Placeholder that must be resolved using the config.
+    parser = configparser.ConfigParser()
+    if not parser.read(os.path.expanduser(config_path)):
+        raise ValueError(
+            f"Path placeholder was passed ({data_dir}) but the config "
+            f"({config_path}) to resolve path placeholders could not be opened.")
+    try:
+        return parser.get("paths", data_dir[1:-1])
+    except configparser.NoOptionError as ex:
+        raise ValueError(
+            f"Path placeholder was passed ({data_dir}) but the config "
+            f"({config_path}) did not include a mapping for this placeholder")
 
 
 class BearerAuthentication(requests.auth.AuthBase):
@@ -574,13 +613,13 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
     client.create_index(index, index_config)
 
 
-def start_engine(engine: str):
+def start_engine(engine: str, engine_data_dir: str | None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by run_engine().")
     docker_client = docker.from_env()
     image = docker_client.images.pull("quickwit/quickwit", tag="edge", platform="linux/amd64")
     config_dir = os.path.join(os.getcwd(), "engines", engine, "configs")
-    data_dir = os.path.join(os.getcwd(), "engines", engine, "data")
+    data_dir = resolve_data_dir(engine, engine_data_dir, CONFIG_FILENAME)
     os.makedirs(data_dir, exist_ok=True)
     container = docker_client.containers.run(
         image.id,
@@ -620,11 +659,11 @@ def start_engine(engine: str):
         raise ValueError("Failed to start container '%s': status: '%s'", container.name, container.status)
 
 
-def start_engine_from_binary(engine: str, binary_path: str):
+def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str | None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
     config_path = os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
-    data_dir = os.path.join(os.getcwd(), "engines", engine, "data")
+    data_dir = resolve_data_dir(engine, engine_data_dir, CONFIG_FILENAME)
     os.makedirs(data_dir, exist_ok=True)
     process = subprocess.Popen(
         [binary_path, "run"],
@@ -904,6 +943,11 @@ def main():
         '--binary-path', type=str,
         help=("Path to the binary to run. Only makes sense with --manage-engine is set."),
         default="")
+    parser.add_argument(
+        '--engine-data-dir', type=str,
+        help=("If specified and --manage-engine is set, this overrides the default engine data "
+              "dir 'engines/$ENGINE/data'. This can contain a placeholder e.g. {qwdata} that will "
+              "be resolved with the config."))
 
     args = parser.parse_args()
 
@@ -917,9 +961,9 @@ def main():
         if args.manage_engine:
             stop_engine(args.engine)
             if args.binary_path:
-                start_engine_from_binary(args.engine, args.binary_path)
+                start_engine_from_binary(args.engine, args.binary_path, args.engine_data_dir)
             else:
-                start_engine(args.engine)
+                start_engine(args.engine, args.engine_data_dir)
 
         # When looping, we ignore errors.
         bench_ok = run_benchmark(args, exporter_token)
