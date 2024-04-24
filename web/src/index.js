@@ -60,7 +60,6 @@ class Benchmark extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tag: null, // TODO: remove.
       dataset: props.datasets[0],
       // List of selected runs, i.e. a list of:
       // {indexing: ID of the indexing run, search: ID of the search run}.
