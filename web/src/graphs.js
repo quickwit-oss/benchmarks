@@ -228,7 +228,7 @@ export function showContinuousGraphs() {
       }
       // Maps dataset to a list of:
       // {label: display names (e.g. "quickwit.ssd.c3-standard-4.continuous"),
-      //  value: {track, engine, storage, instance}}
+      //  value: {track, engine, storage, instance, tag, source}}
       // To be passed to a react Select.
       let dataset_to_selector_options = {}
       for (const dataset in dataset_to_runs) {
