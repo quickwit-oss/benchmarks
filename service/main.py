@@ -275,6 +275,7 @@ def list_runs(run_type: str | None = None,
               storage: str | None = None,
               instance: str | None = None,
               tag: str | None = None,
+              commit_hash: str | None = None,
               start_timestamp: datetime.datetime | None = None,
               end_timestamp: datetime.datetime | None = None,
               unsafe_user: str | None = None,
@@ -290,6 +291,7 @@ def list_runs(run_type: str | None = None,
         storage=storage,
         instance=instance,
         tag=tag,
+        commit_hash=commit_hash,
         start_timestamp=start_timestamp,
         end_timestamp=end_timestamp,
         unsafe_user=unsafe_user,
@@ -337,6 +339,15 @@ def get_runs(req: schemas.GetRunsRequest, db: Session = Depends(get_db)):
     return schemas.GetRunsResponse(
         runs=[crud.db_run_to_schema_run(db_run)
               for db_run in crud.get_runs(db=db, run_ids=req.run_ids)])
+
+
+def get_short_commit_hash(run: schemas.IndexingRunResults | schemas.SearchRunResults) -> str:
+    h = run.run_info.commit_hash
+    if h:
+        return h[0:9]
+    # For backward compatibility with old runs that did not have the
+    # commit hash field populated in the run_info.
+    return run.run_results.engine_info.get("build", {}).get("commit_short_hash", "")
 
 
 # TODO: If needed, results could be cached in-memory (and actually precomputed periodically).
@@ -396,8 +407,7 @@ def get_as_timeseries(
                     series = timeseries[key]
                     series.timestamps_s.append(int(run.run_info.timestamp.timestamp()))
                     series.data_points.append(measurements.median)
-                    series.tags.append(
-                        run.run_results.engine_info.get("build", {}).get("commit_short_hash", ""))
+                    series.tags.append(get_short_commit_hash(run))
                     series.run_ids.append(run.run_info.id)
 
         if run.run_info.run_type == "indexing":
@@ -412,8 +422,7 @@ def get_as_timeseries(
                 if point is not None:
                     series.timestamps_s.append(int(run.run_info.timestamp.timestamp()))
                     series.data_points.append(point)
-                    series.tags.append(
-                        run.run_results.engine_info.get("build", {}).get("commit_short_hash", ""))
+                    series.tags.append(get_short_commit_hash(run))
                     series.run_ids.append(run.run_info.id)
 
     return schemas.GetRunsAsTimeseriesResponse(timeseries=timeseries.values())

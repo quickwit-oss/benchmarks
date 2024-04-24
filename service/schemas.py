@@ -30,6 +30,8 @@ class RunInfo(BaseModel):
     storage: str
     instance: str
     tag: str
+    # Hash of the commit at which the benchmarked engine was built.
+    commit_hash: str | None = None
     # Don't specify this when inserting benchmark runs into the
     # service. The service will set it.
     timestamp: datetime.datetime | None = None

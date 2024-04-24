@@ -217,6 +217,10 @@ class SearchClient(ABC):
     def engine_info(self) -> dict[str, Any]:
         raise NotImplementedError
 
+    @abstractmethod
+    def commit_hash(self) -> str | None:
+        raise NotImplementedError
+
     @property
     @abstractmethod
     def docker_container_name(self) -> str:
@@ -233,7 +237,8 @@ def export_results(endpoint: str,
     The endpoint is supposed to implement the API of service/main.py.
     """
     results = results.copy()
-    info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user', 'source'}
+    info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
+                   'source', 'commit_hash'}
     run_info = {k: results.pop(k) for k in info_fields}
     run_results = results
 
@@ -271,6 +276,7 @@ def get_common_debug_info(engine_client: SearchClient):
         "command_line": ' '.join(sys.argv),
         "unsafe_user": getpass.getuser(),
         "engine_info": engine_client.engine_info(),
+        "commit_hash": engine_client.commit_hash(),
         "docker_info": get_docker_info(engine_client.docker_container_name),
         "platform_uname": ' '.join(platform.uname()),
     }
@@ -331,6 +337,9 @@ class ElasticClient(SearchClient):
             raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
         return response.json()
 
+    def commit_hash(self) -> str | None:
+        return self.engine_info().get("version", {}).get("build_hash")
+
     @property
     def docker_container_name(self) -> str:
         """The name of the docker container running this engine."""
@@ -387,6 +396,9 @@ class QuickwitClient(ElasticClient):
         if response.status_code != 200:
             raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
         return response.json()
+
+    def commit_hash(self) -> str | None:
+        return self.engine_info().get("build", {}).get("commit_hash")
 
     @property
     def docker_container_name(self) -> str:
@@ -463,6 +475,9 @@ class LokiClient(SearchClient):
         if response.status_code != 200:
             raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
         return response.json()
+
+    def commit_hash(self) -> str | None:
+        return self.engine_info().get("revision")
 
     @property
     def docker_container_name(self) -> str:

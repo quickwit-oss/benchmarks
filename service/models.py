@@ -24,6 +24,7 @@ class Run(Base):
     storage = Column(String, index=True)
     instance = Column(String, index=True)
     tag = Column(String, index=True)
+    commit_hash = Column(String, index=True)
     timestamp = Column(DateTime, index=True)
     unsafe_user = Column(String, index=True)
     verified_email = Column(String, index=True)

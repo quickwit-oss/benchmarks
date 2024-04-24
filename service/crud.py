@@ -41,6 +41,7 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
         storage=db_run.storage,
         instance=db_run.instance,
         tag=db_run.tag,
+        commit_hash=db_run.commit_hash,
         unsafe_user=db_run.unsafe_user,
         verified_email=db_run.verified_email,
         source=db_run.source)
@@ -93,6 +94,7 @@ def list_runs(db: Session,
               storage: str | None = None,
               instance: str | None = None,
               tag: str | None = None,
+              commit_hash: str | None = None,
               start_timestamp: datetime.datetime | None = None,
               end_timestamp: datetime.datetime | None = None,
               unsafe_user: str | None = None,
@@ -111,6 +113,7 @@ def list_runs(db: Session,
                   models.Run.storage,
                   models.Run.instance,
                   models.Run.tag,
+                  models.Run.commit_hash,
                   models.Run.timestamp,
                   models.Run.unsafe_user,
                   models.Run.verified_email,
@@ -129,6 +132,8 @@ def list_runs(db: Session,
         db_query = db_query.filter(models.Run.instance == instance)
     if tag is not None:
         db_query = db_query.filter(models.Run.tag == tag)
+    if commit_hash is not None:
+        db_query = db_query.filter(models.Run.commit_hash == commit_hash)
     if start_timestamp is not None:
         db_query = db_query.filter(models.Run.timestamp >= start_timestamp)
     if end_timestamp is not None:
