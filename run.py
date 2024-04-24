@@ -39,6 +39,20 @@ RETRY_ON_FAILED_RESPONSE_SUBSTR = [
 # tool.
 JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
 
+AUTODETECT_GCP_INSTANCE_PLACEHOLDER = '{autodetect_gcp}'
+
+
+def resolve_instance(instance_or_placeholder: str | None) -> str | None:
+    if instance_or_placeholder == AUTODETECT_GCP_INSTANCE_PLACEHOLDER:
+        try:
+            return requests.get(
+                "http://metadata.google.internal/computeMetadata/v1/instance/machine-type",
+                headers={"Metadata-Flavor": "Google"}).text.split('/')[-1]
+        except requests.exceptions.RequestException as ex:
+            logging.info("Could not get GCP machine type: %s", ex)
+            return "GCP_UNKNOWN"
+    return instance_or_placeholder
+
 
 class BearerAuthentication(requests.auth.AuthBase):
     """Helper to pass a bearer token as a header with requests."""
@@ -677,8 +691,9 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
     results_dir = f'{args.output_path}/{args.track}.{args.engine}'
     if args.tags:
         results_dir += f'.{args.tags}'
-    if args.instance:
-        results_dir += f'.{args.instance}'
+    instance = resolve_instance(args.instance)
+    if instance:
+        results_dir += f'.{instance}'
     if args.no_hits:
         results_dir += '_no_hits'
     os.makedirs(results_dir, exist_ok=True)
@@ -735,7 +750,7 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
             indexing_results = json.load(results_file)
             indexing_results['tag'] = args.tags
             indexing_results['storage'] = args.storage
-            indexing_results['instance'] = args.instance
+            indexing_results['instance'] = instance
             indexing_results['track'] = args.track
             indexing_results['qbench_returncode'] = completed_process.returncode
             indexing_results['qbench_command_line'] = ' '.join(qbench_command)
@@ -758,7 +773,7 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
         search_results = run_search_benchmark(engine_client, args.engine, index, num_iteration, queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
         search_results['tag'] = args.tags
         search_results['storage'] = args.storage
-        search_results['instance'] = args.instance
+        search_results['instance'] = instance
         search_results['track'] = args.track
         search_results['source'] = args.source
         search_results |= get_common_debug_info(engine_client)
@@ -847,7 +862,12 @@ def main():
     parser.add_argument('--overwrite-index', action='store_true',
                         help='If set, previous indexes will be overwritten without confirmation.')
     parser.add_argument('--storage', type=str, help='Storage: S3, 500GB gp3, ...', default='')
-    parser.add_argument('--instance', type=str, help='Instance short name: m1, c6a.2xlarge, ...', required=True)
+    parser.add_argument(
+        '--instance', type=str,
+        help=(f'Instance short name: m1, c6a.2xlarge, etc. If '
+              f'{AUTODETECT_GCP_INSTANCE_PLACEHOLDER} is provided, it will be '
+              'autodetected on GCP.'),
+        required=True)
     parser.add_argument('--search-only', action='store_true', help='Only run search')
     parser.add_argument('--no-hits', action='store_true', help='Do not retrieve docs')
     parser.add_argument('--query-filter', help='Only run queries matching the given pattern', default="*")
