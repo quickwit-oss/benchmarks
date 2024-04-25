@@ -230,12 +230,15 @@ class SearchClient(ABC):
 
 def export_results(endpoint: str,
                    results: dict[str, Any],
+                   results_type: str,
                    exporter_token: str | None,
-                   verify_https: bool = True):
+                   verify_https: bool = True,
+                   url_file: str | None = None):
     """Exports bench results to the a REST API endpoint.
 
     The endpoint is supposed to implement the API of service/main.py.
     """
+    api_endpoint = f'{endpoint}/api/v1/{results_type}_runs/'
     results = results.copy()
     info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
                    'source', 'commit_hash'}
@@ -251,11 +254,11 @@ def export_results(endpoint: str,
     }
     try:
         response = requests.post(
-            endpoint, json=request,
+            api_endpoint, json=request,
             verify=verify_https,
             auth=BearerAuthentication(exporter_token) if exporter_token else None)
     except requests.exceptions.ConnectionError as ex:
-        logging.error("Failed to export results to %s: %s", endpoint, ex)
+        logging.error("Failed to export results to %s: %s", api_endpoint, ex)
         return
     
     if response.status_code != 200:
@@ -265,10 +268,17 @@ def export_results(endpoint: str,
             resp_content = json.loads(resp_content)
         except json.JSONDecodeError:
             pass
-        logging.error(f'Failed exporting results to {endpoint}: {response} {pprint.pformat(resp_content)}')
+        logging.error(f'Failed exporting results to {api_endpoint}: {response} {pprint.pformat(resp_content)}')
         return
 
-    logging.info(f'Exported results to {endpoint}: {response.json()["run_info"]}')
+    run_info = response.json()["run_info"]
+    run_id = run_info["id"]
+    url = endpoint + f"/?run_ids={run_id}"
+    logging.info(f'Exported results to {api_endpoint}: {run_info}\nResults can be seen at address: {url}')
+    # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
+    if url_file:
+        with open(url_file, 'a') as out:
+            out.write(f"url={url}\n")
 
 
 def get_common_debug_info(engine_client: SearchClient):
@@ -686,8 +696,6 @@ def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str
              "QW_CONFIG": config_path,
              "QW_DATA_DIR": data_dir,
              },
-#        stdout=subprocess.DEVNULL,
-#        stderr=subprocess.DEVNULL,
     )
     logging.info("Started binary %s PID=%s", binary_path, process.pid)
     time.sleep(2)
@@ -819,10 +827,11 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
             with open(search_output_filepath , "w") as f:
                 json.dump(indexing_results, f, default=lambda obj: obj.__dict__, indent=4)
             if args.export_to_endpoint:
-                export_results(f'{args.export_to_endpoint}/api/v1/indexing_runs/', indexing_results,
-                               exporter_token, verify_https=not args.disable_exporter_https_verification)
+                export_results(args.export_to_endpoint, indexing_results, "indexing",
+                               exporter_token, verify_https=not args.disable_exporter_https_verification,
+                               url_file=args.write_exported_run_url_to_file)
         if completed_process.returncode != 0:
-            logging.error("Error while running indexing %s", completed_process.stderr)
+            logging.error("Error while running indexing")
             return False
 
     if not args.indexing_only:
@@ -838,8 +847,9 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
         with open(search_output_filepath , "w") as f:
             json.dump(search_results, f, default=lambda obj: obj.__dict__, indent=4)
         if args.export_to_endpoint:
-            export_results(f'{args.export_to_endpoint}/api/v1/search_runs/', search_results,
-                           exporter_token, verify_https=not args.disable_exporter_https_verification)
+            export_results(args.export_to_endpoint, search_results, "search",
+                           exporter_token, verify_https=not args.disable_exporter_https_verification,
+                           url_file=args.write_exported_run_url_to_file)
             
     return True
 
@@ -966,6 +976,10 @@ def main():
         help=("If specified and --manage-engine is set, this overrides the default engine data "
               "dir 'engines/$ENGINE/data'. This can contain a placeholder e.g. {qwdata} that will "
               "be resolved with the config."))
+    parser.add_argument(
+        '--write-exported-run-url-to-file', type=str,
+        help=("If specified, the URL of the exported run will be written to that file. "
+              "Useful in github workflows where this will typically be set to $GITHUB_OUTPUT."))
 
     args = parser.parse_args()
 
