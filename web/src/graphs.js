@@ -29,7 +29,6 @@ class GraphsWithSelector extends React.Component {
   // `initial_selector_option`
   constructor(props) {
     super(props);
-    let datasets = Object.keys(props.dataset_to_selector_options).sort();
     this.state = {
       dataset: this.props.initial_dataset,
       // E.g. "quickwit.ssd.c3-standard-4.continuous".
