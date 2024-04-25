@@ -25,15 +25,18 @@ import {genPlotOpts} from "./graphs_helpers.js";
 class GraphsWithSelector extends React.Component {
   // Expects in props:
   // `dataset_to_selector_options`
+  // `initial_dataset`
+  // `initial_selector_option`
   constructor(props) {
     super(props);
     let datasets = Object.keys(props.dataset_to_selector_options).sort();
     this.state = {
-      dataset: datasets[0],
-      run_filter: null,
-      run_filter_display_name: null,
+      dataset: this.props.initial_dataset,
+      // E.g. "quickwit.ssd.c3-standard-4.continuous".
+      run_filter_display_name: this.props.initial_selector_option?.label,
       timeseries: null,
     };
+    this.handleChangeRunFilter(this.props.initial_selector_option);
   }
 
   fetchTimeseries(run_filter) {
@@ -73,7 +76,7 @@ class GraphsWithSelector extends React.Component {
   }
 
   handleChangeDataset(evt) {
-    let dataset = evt.target.value;
+    let dataset = evt.value;
     if (dataset) {
       this.setState({ "dataset": dataset });
     } else {
@@ -83,15 +86,25 @@ class GraphsWithSelector extends React.Component {
   }
 
   handleChangeRunFilter(evt) {
+    if (!evt) return;
     let run_filter = evt.value;
+    let display_name = evt.label;
     if (run_filter) {
       this.setState({ "run_filter": run_filter});
-      this.setState({ "run_filter_display_name": evt.label});
+      this.setState({ "run_filter_display_name": display_name});
       this.fetchTimeseries(run_filter);
     } else {
       this.setState({ "run_filter": null });
       this.setState({ "run_filter_display_name": null});
     }
+    let params = {
+      page: "graphs",
+      track: this.state.dataset
+    };
+    if (display_name) {
+      params.run_filter_display_name = display_name;
+    }
+    window.history.pushState("", "", "?" +  new URLSearchParams(params));
   }
   
   render() {
@@ -102,11 +115,16 @@ class GraphsWithSelector extends React.Component {
 	<form>
           <fieldset>
             <label htmlFor="datasetField">Dataset</label>
-            <select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}>
-              {datasets.map((dataset) => <option value={dataset} key={dataset}>{dataset}</option>)}
-            </select>
+	    <Select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}
+		    option={datasets.map((ds) => ({value: ds, label: ds}))}
+		    defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
+	    />
 	    <label>Run filter</label>
-	    <Select options={this.props.dataset_to_selector_options[this.state.dataset]} className="basic-multi-select" classNamePrefix="select" onChange={(evt) => this.handleChangeRunFilter(evt)}/>
+	    <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
+		    className="basic-multi-select" classNamePrefix="select"
+		    onChange={(evt) => this.handleChangeRunFilter(evt)}
+		    defaultValue={this.props.initial_selector_option}
+	    />
           </fieldset>
 	</form>
 	<table>
@@ -207,7 +225,8 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
 	  uplot_data: plotData};
 }
 
-export function showContinuousGraphs() {
+export function showContinuousGraphs(opt_track_filter,
+				     opt_run_filter_display_name) {
   fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking`)
     .then((res) => { return res.json(); })
     .then((resp) => {
@@ -226,6 +245,7 @@ export function showContinuousGraphs() {
 	  storage: run_info.storage, instance: run_info.instance,
 	  tag: run_info.tag, source: run_info.source};
       }
+      let initial_selector_option = null
       // Maps dataset to a list of:
       // {label: display names (e.g. "quickwit.ssd.c3-standard-4.continuous"),
       //  value: {track, engine, storage, instance, tag, source}}
@@ -234,14 +254,26 @@ export function showContinuousGraphs() {
       for (const dataset in dataset_to_runs) {
 	dataset_to_selector_options[dataset] = [];
 	for (const display_name in dataset_to_runs[dataset]) {
-	  dataset_to_selector_options[dataset].push(
-	    {label: display_name, value: dataset_to_runs[dataset][display_name]});
+	  const option = {label: display_name, value: dataset_to_runs[dataset][display_name]};
+	  dataset_to_selector_options[dataset].push(option);
+	  if (dataset === opt_track_filter && display_name === opt_run_filter_display_name) {
+	    initial_selector_option = option;
+	  }
 	}
       }
       
+
+      let datasets = Object.keys(dataset_to_selector_options).sort();
+      let initial_dataset = opt_track_filter;
+      if (!initial_dataset || !datasets.includes(initial_dataset)) {
+	initial_dataset = datasets[0];
+      }
       let el = document.getElementById("app-container");
       ReactDOM.render(<React.StrictMode>
-			<GraphsWithSelector dataset_to_selector_options={dataset_to_selector_options}/>
+			<GraphsWithSelector dataset_to_selector_options={dataset_to_selector_options}
+					    initial_dataset={initial_dataset}
+					    initial_selector_option={initial_selector_option}
+			/>
 		      </React.StrictMode>, el);
       
     });

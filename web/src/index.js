@@ -642,7 +642,8 @@ $(function () {
   let searchParams = new URLSearchParams(window.location.search)
   if (searchParams.get("page") === "graphs") {
     console.log("Showing graphs");
-    showContinuousGraphs();
+    showContinuousGraphs(searchParams.get("track"),
+			 searchParams.get("run_filter_display_name"));
     return;
   }
 
