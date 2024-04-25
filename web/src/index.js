@@ -511,6 +511,7 @@ function showRaw(run_ids) {
 function shouldPreselectRun(opt_track_filter,
 			    opt_commit_hash_filter,
 			    opt_storage_filter,
+			    opt_source_filter,
 			    run_ids_filter,
 			    run_info) {
   if (!opt_commit_hash_filter &&
@@ -526,6 +527,9 @@ function shouldPreselectRun(opt_track_filter,
     return false;
   }
   if (opt_storage_filter && opt_storage_filter !== run_info.storage) {
+    return false;
+  }
+  if (opt_source_filter && opt_source_filter !== run_info.source) {
     return false;
   }
   if (run_ids_filter.size > 0 && !run_ids_filter.has(run_info.id)) {
@@ -546,11 +550,13 @@ function getMostRecentSelectedRun(left, right) {
 function showComparison(opt_track_filter,
 			opt_commit_hash_filter,
 			opt_storage_filter,
+			opt_source_filter,
 			run_ids_filter) {
   console.log("showComparison with filters:",
 	      opt_track_filter,
 	      opt_commit_hash_filter,
 	      opt_storage_filter,
+	      opt_source_filter,
 	      run_ids_filter);
   // TODO: consider only fetching the last N runs, or runs in the last
   // D days (but ideally, we should make sure to filter the list of
@@ -568,6 +574,7 @@ function showComparison(opt_track_filter,
 	opt_track_filter,
 	opt_commit_hash_filter,
 	opt_storage_filter,
+	opt_source_filter,
 	run_ids_filter,
 	run_info);
       if (!(dataset in dataset_to_most_recent_runs)) {
@@ -656,6 +663,7 @@ $(function () {
   showComparison(searchParams.get("track"),
 		 searchParams.get("commit_hash"),
 		 searchParams.get("storage"),
+		 searchParams.get("source"),
 		 new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))));
 });
 
