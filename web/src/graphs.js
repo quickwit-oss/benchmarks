@@ -118,7 +118,7 @@ class GraphsWithSelector extends React.Component {
 		    option={datasets.map((ds) => ({value: ds, label: ds}))}
 		    defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
 	    />
-	    <label>Run filter</label>
+	    <label>Run filter (format: &lt;engine&gt;.&lt;storage&gt;.&lt;instance&gt;.&lt;tag&gt;)</label>
 	    <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
 		    className="basic-multi-select" classNamePrefix="select"
 		    onChange={(evt) => this.handleChangeRunFilter(evt)}

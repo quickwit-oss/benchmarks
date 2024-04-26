@@ -179,8 +179,8 @@ class Benchmark extends React.Component {
         total = (total / engine_queries.length) | 0;
       }
       engines[taggedEngine] = engine_results;
-      engines[taggedEngine].indexing_run_id = this.state.runs[display_name].indexing?.run_info.id;
-      engines[taggedEngine].search_run_id = this.state.runs[display_name].search?.run_info.id;
+      engines[taggedEngine].indexing_run_info = this.state.runs[display_name].indexing?.run_info;
+      engines[taggedEngine].search_run_info = this.state.runs[display_name].search?.run_info;
       engines[taggedEngine].total = total;
       // Ratios with a similar formula as in the clickhouse benchmark.
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
@@ -248,7 +248,7 @@ class Benchmark extends React.Component {
 			 defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
 			 onChange={(evt) => this.handleChangeDataset(evt)}
 		 />		 
-		 <label>Runs to compare</label>
+		 <label>Runs to compare (format: &lt;engine&gt;.&lt;storage&gt;.&lt;instance&gt;.&lt;short_commit_hash&gt;.&lt;tag&gt;)</label>
 		 <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
 			 isMulti className="basic-multi-select" classNamePrefix="select"
 			 defaultValue={this.props.initial_selector_options}
@@ -265,7 +265,7 @@ class Benchmark extends React.Component {
 		       let engine = kv[0];
 		       let params = new URLSearchParams({
 			 page: "raw",
-			 run_ids: [kv[1].indexing_run_id, kv[1].search_run_id].filter(x => x != null)
+			 run_ids: [kv[1].indexing_run_info?.id, kv[1].search_run_info?.id].filter(x => x != null)
 		       });
 		       return (<th key={"col-" + engine}><a href={"?" + params}>{engine}</a></th>);
 		     })
@@ -273,6 +273,24 @@ class Benchmark extends React.Component {
 		 </tr>
                </thead>
                <tbody>
+		 <tr>
+		   <td>Indexing run timestamp</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+                       let engine_run_ts = kv[1].indexing_run_info?.timestamp;
+                       if (engine_run_ts !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_run_ts}
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
 		 <tr>
 		   <td>Indexing time</td>
 		   {
@@ -412,6 +430,24 @@ class Benchmark extends React.Component {
                        } else {
 			 return <td key={"result-" + engine}>
 				  Some Unsupported Queries
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
+		   <td>Search run timestamp</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+                       let engine_run_ts = kv[1].search_run_info?.timestamp;
+                       if (engine_run_ts !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_run_ts}
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
 				</td>;
                        }
 		     })
