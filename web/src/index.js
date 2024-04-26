@@ -44,7 +44,7 @@ function aggregate(query) {
     return { query: query.query, className: "unsupported", unsupported: true, id: query.id }
   }
   // TODO: support other metrics (total_cpu_time_s, etc.).
-  var res = stats(query.engine_duration.values);
+  let res = stats(query.engine_duration.values);
   res.count = query.count;
   res.query = query.query;
   res.name = query.name;
@@ -73,7 +73,7 @@ class Benchmark extends React.Component {
   }
 
   handleChangeDataset(evt) {
-    var dataset = evt.value;
+    let dataset = evt.value;
     if (dataset) {
       this.setState({ "dataset": dataset });
     } else {
@@ -147,9 +147,9 @@ class Benchmark extends React.Component {
   generateDataView() {
     // Maps display name to indexing run results, together with extra
     // info computed in this function.
-    var engines = {}
+    let engines = {}
     // query_name -> (engine display name -> query stats).
-    var queries = {}
+    let queries = {}
     for (let display_name in this.state.runs) {
       // {search: run, indexing: run}.
       let engine_results = this.state.runs[display_name].indexing?.run_results;
@@ -161,13 +161,12 @@ class Benchmark extends React.Component {
 	engine_queries = {};
       }
       
-      // var engine_queries = engine_results.queries;
       let taggedEngine = display_name;
       engine_queries = Array.from(engine_queries);
       engine_queries = engine_queries.map(aggregate);
-      var total = 0
-      var unsupported = false
-      for (var query of engine_queries) {
+      let total = 0
+      let unsupported = false
+      for (let query of engine_queries) {
 	if (query.unsupported) {
 	  unsupported = true;
         } else {
@@ -186,16 +185,16 @@ class Benchmark extends React.Component {
       // Ratios with a similar formula as in the clickhouse benchmark.
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
       // Sum(log(ratio)) for each query comparing the current engine to the first engine.
-      var sum_log_ratios = 0;
+      let sum_log_ratios = 0;
       for (let query of engine_queries) {
-        var query_data = {};
+        let query_data = {};
         if (queries[query.name] !== undefined) {
           query_data = queries[query.name];
         }
         query_data[taggedEngine] = query
         queries[query.name] = query_data
-        var reference_time_micros = Object.values(query_data)[0].median;
-        var ratio = 1.0;
+        let reference_time_micros = Object.values(query_data)[0].median;
+        let ratio = 1.0;
         if (Math.abs(reference_time_micros - query.median) >= 3 * 1000) {
           ratio = (query.median + 10 * 1000) / (reference_time_micros + 10 * 1000);
         }
@@ -278,8 +277,8 @@ class Benchmark extends React.Component {
 		   <td>Indexing time</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
-                       var engine_stats = kv[1].indexing_duration_secs?.toFixed(2);
+                       let engine = kv[0];
+                       let engine_stats = kv[1].indexing_duration_secs?.toFixed(2);
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {engine_stats} s
@@ -296,8 +295,8 @@ class Benchmark extends React.Component {
 		   <td>Indexing throughput</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
-                       var engine_stats = kv[1].mb_bytes_per_second?.toFixed(2);
+                       let engine = kv[0];
+                       let engine_stats = kv[1].mb_bytes_per_second?.toFixed(2);
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {engine_stats} MB/s
@@ -332,7 +331,7 @@ class Benchmark extends React.Component {
 		   <td>Number of documents</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
+                       let engine = kv[0];
 		       if ("num_indexed_docs" in kv[1]) {
 			 let engine_stats = (kv[1].num_indexed_docs / 1000000).toFixed(2);
 			 return <td key={"result-" + engine}>
@@ -350,8 +349,8 @@ class Benchmark extends React.Component {
 		   <td>Number of splits/segments</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
-                       var engine_stats = kv[1].num_splits;
+                       let engine = kv[0];
+                       let engine_stats = kv[1].num_splits;
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {engine_stats}
@@ -368,7 +367,7 @@ class Benchmark extends React.Component {
 		   <td>Docs per sec</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
+                       let engine = kv[0];
 		       if ("num_indexed_docs" in kv[1] && "indexing_duration_secs" in kv[1]) {
 			 let engine_stats = (kv[1].num_indexed_docs / 1000 / kv[1].indexing_duration_secs).toFixed(2);
 			 return <td key={"result-" + engine}>
@@ -386,8 +385,8 @@ class Benchmark extends React.Component {
 		   <td>Query time AVERAGE</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
-                       var engine_stats = kv[1].total;
+                       let engine = kv[0];
+                       let engine_stats = kv[1].total;
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {numberWithCommas(engine_stats / 1000)} ms
@@ -404,8 +403,8 @@ class Benchmark extends React.Component {
 		   <td>Geometric average of query time ratios</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
-                       var engine = kv[0];
-                       var engine_stats = kv[1].avg_ratios?.toFixed(2);
+                       let engine = kv[0];
+                       let engine_stats = kv[1].avg_ratios?.toFixed(2);
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {engine_stats}x
@@ -420,14 +419,14 @@ class Benchmark extends React.Component {
 		 </tr>
 		 {
 		   Object.entries(data_view.queries).map(kv => {
-		     var query_name = kv[0];
-		     var engine_queries = kv[1];
+		     let query_name = kv[0];
+		     let engine_queries = kv[1];
 		     let ref_engine = Object.keys(engine_queries)[0];
 		     return <tr key={query_name}>
 			      <td><Display name={query_name} query={engine_queries[ref_engine].query}></Display></td>
 			      {
 				Object.keys(data_view.engines).map(engine => {
-				  var cell_data = engine_queries[engine];
+				  let cell_data = engine_queries[engine];
 				  if (cell_data == null || cell_data.unsupported) {
 				    return <td key={query_name + engine} className={"data"}></td>;
 				  } else {
@@ -454,8 +453,8 @@ class Display extends React.Component {
   }
 
   render() {
-    var query = this.props.query;
-    var name = this.props.name;
+    let query = this.props.query;
+    let name = this.props.name;
     if (query.start_timestamp !== undefined) {
 
     }
@@ -476,10 +475,10 @@ class DisplayTimestampFilter extends React.Component {
     super(props);
   }
   render() {
-    var query = this.props.query;
+    let query = this.props.query;
     if (query.start_timestamp !== undefined) {
-      var start_date = new Date(query.start_timestamp * 1000).toISOString().substring(0, 10);
-      var end_date = new Date(query.end_timestamp * 1000).toISOString().substring(0, 10);
+      let start_date = new Date(query.start_timestamp * 1000).toISOString().substring(0, 10);
+      let end_date = new Date(query.end_timestamp * 1000).toISOString().substring(0, 10);
       return <><br/><small>from {start_date} to {end_date}</small></>
     } else {
       return <></>
@@ -630,7 +629,7 @@ function showComparison(opt_track_filter,
     if (initial_dataset === null) {
       initial_dataset = datasets[0];
     }
-    var el = document.getElementById("app-container");
+    let el = document.getElementById("app-container");
     console.log("Initial rendering of Benchmark react elmt");
 
     ReactDOM.render(<React.StrictMode>
