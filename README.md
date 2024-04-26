@@ -1,14 +1,12 @@
 # Benchmark for Logs & Traces Search Engines
 
-Last results are available at (not yet available) [https://benchmark.quickwit.io](https://benchmark.quickwit.io)
-
 ## Overview
 
 This benchmark is designed to measure the performance of various search engines for logs and traces use cases and more generally for append-only semi-structured data.
 
 The benchmark makes use of two datatsets:
 - A 1TB dataset sampled from the [GitHub Archive](https://www.gharchive.org/) dataset.
-- A 1TB log datasets generated with t
+- A 1TB log datasets generated with the [https://github.com/elastic/elastic-integration-corpus-generator-tool](elastic-integration-corpus-generator-tool)
 
 We plan to add a trace dataset soon.
 
@@ -18,7 +16,16 @@ The supported engines are:
 - [Loki](https://grafana.com/oss/loki/) (only for generated logs)
 
 
-## Running the benchmark
+## Prerequisites
+
+### Dependencies
+
+- [Make](https://www.gnu.org/software/make/) to ease the running of the benchmark.
+- [Docker](https://docs.docker.com/get-docker/) to run the benchmarked engines, including the Python API.
+- [Python3](https://www.python.org/downloads/) to download the dataset and run queries against the benchmarked engines.
+- [Rust](https://www.rust-lang.org/tools/install) and `openssl-devel` to build the ingestion tool `qbench`.
+- [gcloud](https://cloud.google.com/sdk/docs/install) to download datasets.
+- Various python packages installed with `pip install -r requirements.txt`
 
 ### Build qbench
 
@@ -29,49 +36,41 @@ cargo build --release
 
 ```
 
-### Run the benchmark
+### Download datasets
 
-```bash
-
-python3 run.py --engine elasticsearch --track generated-logs --instance m1
-
-```
-
-### Prerequisites
-
-- [Make](https://www.gnu.org/software/make/) to ease the running of the benchmark.
-- [Docker](https://docs.docker.com/get-docker/) to run the benchmarked engines, including the Python API.
-- [Python3](https://www.python.org/downloads/) to download the dataset and run queries against the benchmarked engines.
-- [Rust](https://www.rust-lang.org/tools/install) and `openssl-devel` to build the ingestion tool `qbench`.
-- [gcloud](https://cloud.google.com/sdk/docs/install) to download datasets.
-- Prometheus client python library.
-- psutil python library: `apt-get install python3-psutil`
-
-Alternatively, python deps can be installed with:
-`pip install -r requirements.txt`
-
-### Downloading datasets
+For the generated logs dataset:
 
 ```bash
 mkdir -p datasets
 gcloud storage cp "gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-????.ndjson.gz" datasets/
 ```
 
-### Compile qbench
+## Running the benchmark
 
-```
-make qbench
-```
+### Start engines
+
+Go to desired engines subdirs `engines/<engine_name>` and run `make start`.
 
 ### Indexing phase
 
+```bash
+
+python3 run.py --engine quickwit --storage SSD --track generated-logs --instance m1 --tags my-bench-run --indexing-only
+
 ```
 
-python3 run.py --engine elasticsearch --track generated-logs --instance m1 --indexing-only
+By default this will export results to the [benchmark
+service](service/README.md) accessible at [this
+address](https://qw-benchmarks.104.155.161.122.nip.io).
+The first time this runs, you will be re-directed to a web page where
+you should login with you Google account and pass back a token to run.py (just follow the
+instructions the tool prints).
+Exporting to the benchmark service can be disabled by passing the flag `--export-to-endpoint ""`
 
-```
+After indexing (and if exporting to the service was not disabled), the tool will print a URL to access results, e.g.:
+https://qw-benchmarks.104.155.161.122.nip.io/?run_ids=678
 
-After indexing, results will be saved in `results/{track}.{engine}.{tag}/indexing-results.json` file.
+Results will also be saved to a `results/{track}.{engine}.{tag}.{instance}/indexing-results.json` file.
 
 ```json
 {
@@ -88,24 +87,16 @@ After indexing, results will be saved in `results/{track}.{engine}.{tag}/indexin
 }
 ```
 
-### Disable Caches
-Disable request caches for each engine to avoid benchmarking the cache.
-
-#### Quickwit
-```yaml
-searcher:
-  partial_request_cache_capacity: 0
-```
 
 ### Execute the queries
 
 ```bash
 
-python3 run.py --engine elasticsearch --track generated-logs --instance m1 --search-only
+python3 run.py --engine quickwit --storage SSD --track generated-logs --instance m1 --tags my-bench-run --search-only
 
 ```
 
-The results will be saved in `results/{track}.{engine}.{tag}/search-results.json` file.
+The results will also be exported to the service and saved to a `results/{track}.{engine}.{tag}.{instance}/search-results.json` file.
 
 ```json
 {
@@ -138,44 +129,9 @@ The results will be saved in `results/{track}.{engine}.{tag}/search-results.json
 }
 ```
 
-#### Merging engine results
+## Exploring results
 
-There is a step to merge indexing results file and queries results file into a single file.
-
-```bash
-`make merge-results`
-```
-
-This step will be removed in the future.
-
-
-### Explore the results
-
-To explore the results, first merge the intermediate results file of the engine, then merge all results files from all engines and finally serve the results:
-
-```bash
-make merge-results
-make serve
-```
-
-and open your browser at [http://localhost:8080](http://localhost:8080).
-
-For `make serve` to work, `export NODE_OPTIONS=--openssl-legacy-provider` or a better fix might be needed (see [stackoverflow thread](https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported)).
-
-
-### Export results to the benchmark service
-
-> [!NOTE]
-> This is still WIP and subject to change.
-
-Use `run.py` with `--export-to-endpoint` to export benchmark results to the benchmark service.
-```bash
-python run.py --engine quickwit --storage SSD --track generated-logs --instance P14s_laptop --tags "$(date '+%Y%m%d')_${USER}_test_run"  --export-to-endpoint https://qw-benchmarks.104.155.161.122.nip.io
-```
-The first time this runs, you will be re-directed to a web page where
-you should login with you Google account and pass back a token to run.py (just follow the
-instructions the tool prints).
-
-Exported runs can then be seen in the [Benchmark Service](https://qw-benchmarks.104.155.161.122.nip.io).
+Use the [Benchmark Service web page](https://qw-benchmarks.104.155.161.122.nip.io).
 
 See [here](service/README.md) for running the benchmark service.
+

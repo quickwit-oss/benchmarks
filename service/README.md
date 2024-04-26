@@ -6,8 +6,6 @@ The Benchmark Service allows storing and fetching benchmark
 results. Benchmark results are then presented in a web page that
 allows comparing two runs and viewing graphs of runs over time.
 
-This is WIP and subject to change.
-
 ## Running the Benchmark Service
 
 ### Locally

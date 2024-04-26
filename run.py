@@ -958,6 +958,10 @@ def main():
               "and stopped at the end. It will be started from a docker image by default, "
               "unless --binary-path is specified."))
     parser.add_argument(
+        '--binary-path', type=str,
+        help=("Path to the binary to run. Only makes sense with --manage-engine is set."),
+        default="")
+    parser.add_argument(
         '--loop', action='store_true',
         help=("If set, the benchmark will be run repeatedly until this script is killed. "
               "Useful for continuous benchmarking"))
@@ -967,10 +971,6 @@ def main():
         help=("Source of the run. In the web UI, graph will typically only be "
               "shown for 'continuous_benchmarking' runs only."),
         default="manual")
-    parser.add_argument(
-        '--binary-path', type=str,
-        help=("Path to the binary to run. Only makes sense with --manage-engine is set."),
-        default="")
     parser.add_argument(
         '--engine-data-dir', type=str,
         help=("If specified and --manage-engine is set, this overrides the default engine data "
