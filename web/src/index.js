@@ -540,8 +540,8 @@ function shouldPreselectRun(opt_track_filter,
 
 function getMostRecentSelectedRun(left, right) {
   if (left === null) return right;
-  if (left.selected != right.selected) {
-    return left.selected ? left : right;
+  if (left.preselected != right.preselected) {
+    return left.preselected ? left : right;
   }
   return left.timestamp < right.timestamp ? right : left;
 }
