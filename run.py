@@ -942,7 +942,7 @@ def main():
     parser.add_argument('--qw-ingest-v2', action='store_true', help="If set, we will use Quickwit's ingest V2")
     parser.add_argument('--export-to-endpoint', type=str,
                         help="If set, run results will be exported to this endpoint.",
-                        default="https://qw-internal-benchmark-service.104.155.161.122.nip.io"
+                        default="https://qw-benchmarks.104.155.161.122.nip.io"
                         )
     parser.add_argument(
         '--disable-exporter-auth', action='store_true',

@@ -170,12 +170,12 @@ For `make serve` to work, `export NODE_OPTIONS=--openssl-legacy-provider` or a b
 
 Use `run.py` with `--export-to-endpoint` to export benchmark results to the benchmark service.
 ```bash
-python run.py --engine quickwit --storage SSD --track generated-logs --instance P14s_laptop --tags "$(date '+%Y%m%d')_${USER}_test_run"  --export-to-endpoint https://qw-benchmark-service.104.155.161.122.nip.io --disable-exporter-https-verification
+python run.py --engine quickwit --storage SSD --track generated-logs --instance P14s_laptop --tags "$(date '+%Y%m%d')_${USER}_test_run"  --export-to-endpoint https://qw-benchmarks.104.155.161.122.nip.io
 ```
 The first time this runs, you will be re-directed to a web page where
 you should login with you Google account and pass back a token to run.py (just follow the
 instructions the tool prints).
 
-Exported runs can then be seen in the [Benchmark Service](https://qw-benchmark-service.104.155.161.122.nip.io).
+Exported runs can then be seen in the [Benchmark Service](https://qw-benchmarks.104.155.161.122.nip.io).
 
 See [here](service/README.md) for running the benchmark service.
