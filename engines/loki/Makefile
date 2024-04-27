@@ -7,9 +7,9 @@ start:
 		--net benchmark \
 	    -p 3100:3100 \
 		-v $(PWD):/mnt/config \
-		-v /data1/benchmarks/loki:/loki \
+		-v /data/loki_2_9_6_data_100streams:/loki
 	    grafana/loki:${LOKI_VERSION} \
-		--config.file=/mnt/config/loki.yaml
+		--config.file=/mnt/config/loki_gcs.yaml
 	@echo "Waiting 10 seconds for Loki to start..."
 	@sleep 10
 

@@ -80,3 +80,18 @@ where loki_gcs points to gs://bench202403-loki-25000streams and has ingester.chu
 ````bash
 docker run -d  -v $(pwd)/:/etc/vector/ -v /data/benchmarks/datasets/generated-logs-v1/:/datasets/ --net benchmark --rm timberio/vector:0.36.0-debian --config /etc/vector/vector_25000streams.yaml
 ```
+
+
+```
+gsutil ls -lR gs://bench20240414-loki-2-9-6--100streams | tail -n 1
+```
+
+## Benchmark results
+
+Ingest time: 55 min
+Mean vCPU: 2.75
+CPU time: ~150 min
+Number of files on GCS: 149598
+Bucket size: 52.71 GiB
+
+TOTAL: 145756 objects, 55137804027 bytes (51.35 GiB)
