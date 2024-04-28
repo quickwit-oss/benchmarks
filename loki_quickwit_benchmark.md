@@ -4,14 +4,14 @@
 ## Goals
 
 The purpose of this benchmark is to help Quickwit's users understand the tradeoffs between Loki and Quicwkit.
-Even though both engines have the same decoupled compute and storage architecture, they are very different when it comes to compare the
-datastructure used to query the data:
+
+Even though both engines have the same decoupled compute and storage architecture, they are very different when it comes to compare the datastructure used to query the data:
 - Quickwit is a search engine equipped with an inverted index and a columnar storage for analytics
 - Loki does not have those datastructure but has the concept of `labels`. Those lables are used to split the incoming data into unique streams identified by their labels.
 
 Each engine has its pros and cons. Building datastructures like an inverted index is costly and Quickwit will take more CPU at ingestion.
+
 On the contrary, Quickwit will be faster at search time. This benchmark will highlight this tradeoff.
-ery basic queries.
 
 ## Dataset
 
@@ -23,76 +23,25 @@ For this benchmark, we only used the first 200 files. You can download them from
 gcloud storage cp "gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-{0..200}.ndjson.gz" datasets/
 ```
 
-This dataset contains 243,527,673 log lines totalling 212.40 GB.
-
-Here is a sample log line:
-
-```json
-{
-  "agent": {
-    "ephemeral_id": "9d0fd4b2-0cf1-4b9b-9ad1-61e46657134d",
-    "id": "9d0fd4b2-0cf1-4b9b-9ad1-61e46657134d",
-    "name": "coldraccoon",
-    "type": "filebeat",
-    "version": "8.8.0"
-  },
-  "aws.cloudwatch": {
-    "ingestion_time": "2023-09-17T13:31:04.741Z",
-    "log_stream": "novachopper"
-  },
-  "cloud": {
-    "region": "us-east-1"
-  },
-  "event": {
-    "dataset": "generic",
-    "id": "peachmare",
-    "ingested": "2023-09-17T12:48:00.741424Z"
-  },
-  "host": {
-    "name": "coldraccoon"
-  },
-  "input": {
-    "type": "aws-cloudwatch"
-  },
-  "level": "INFO",
-  "log.file.path": "/var/log/messages/novachopper",
-  "message": "2023-09-17T13:31:04.741Z Sep 17 13:31:04 ip-187-57-167-52 systemd: jackal fancier hero griffin finger scale fireroar",
-  "metrics": {
-    "size": 390145,
-    "tmin": 68811
-  },
-  "process": {
-    "name": "systemd"
-  },
-  "tags": [
-    "preserve_original_event"
-  ],
-  "timestamp": 1673247599,
-  "trace_id": "5161051656584663225"
-}
-```
+This dataset contains 243,527,673 logs totalling 212.40 GB. A log is structured JSON document, see this [example](tracks/generated-logs-for-loki/log_example.json).
 
 ## Metrics
 ### Ingestion
-At ingestion, we will compare the ingestion time, the total CPU time and the RAM peak usage.
+At ingestion, we will compare the ingestion time, the total CPU time, the index size and the number of files stored on the object storage.
 
-### Query
-To keep things both simple and relevant, we chose to focus on the two types of queries fired by Grafana Explore view:
+### Benchmarked queries
+To keep things both simple and relevant, we chose to focus on the two types of queries used by the Grafana Explore view:
 - The query which fetches the last 100 or 1000 logs.
 - The query which fetches the log volume per log level.
 
-At query time, we benchmarked the following logs queries:
-- Get the last 100 logs containing the term `queen`.
-- Get the last 100 logs containing the label region `us-east-2`. This will show the benefit for using labels.
-- Get the last 100 logs containing the term `queen` and a label region `us-east-2`.
+| Query   |   Last 100 logs   | Log volume per log level   |
+|----------|----------|------------|
+| Match all | [ ]   | [x] |
+| Contain `queen` | [x]   | [x] |
+| Contain label region `us-east-2` | [x] | [x] |
+| Contain label region `us-east-2` and `queen` | [x] | [x] |
 
-And the following logs volume queries:
-- Get the logs volume per log level on all the dataset.
-- Get the logs volume per log level on logs containing the term `queen`.
-- Get the logs volume per log level on logs containing the label region `us-east-2`.
-- Get the logs volume per log level on logs containing dataset the term `queen` and a label region `us-east-2`.
-
-For each query, we track the latency, the total cpu time, and the number of GET requests on the object storage.
+For each query, we track the query latency, the total CPU time, and the number of GET requests on the object storage.
 
 ### Setup
 ### Object storage
@@ -102,9 +51,11 @@ We used Google Cloud Storage (GCS).
 Quickwit and Loki caching mechanisms were all disabled (as much as we can).
 
 ### Loki setup
-We tried different sets of labels, we found it difficult to choose the right set of labels for this dataset so we finally
-decided to choose only region and log level as labels. With 25 regions and 4 log levels, Loki ends up with 100 streams.
+We used labels for region and log levels, this makes up to 100 streams. We tried different sets of labels, but it was too difficult to control the cardinality which generally exploded and made the ingestion slow and eating a lot of RAM.
 
+You can find loki config file [here](engines/loki/loki_gcs.yaml).
+
+Vector was used to send logs in Loki.
 
 ## Results
 
@@ -123,15 +74,24 @@ decided to choose only region and log level as labels. With 25 regions and 4 log
 ### Query last 100 logs
 
 <table>
-    <tr>
-        <th> Query </th>
-        <th>Latency Loki (s)</th>
-        <th>Latency Quickwit (s)</th>
-        <th>CPU Time Loki (s)</th>
-        <th>CPU Time Quickwit (s)</th>
-        <th>Get Requests Loki</th>
-        <th>Get Requests Quickwit</th>
-    </tr>
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Latency</th>
+            <th colspan="2">CPU Time (s)</th>
+            <th colspan="2">Get Requests</th>
+        </tr>
+        <tr>
+            <th>Query \ Engine</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+        </tr>
+    </thead>
+    <tbody>
     <tr>
         <td>Logs containing `queen`</td>
         <td>15.0</td>
@@ -159,21 +119,31 @@ decided to choose only region and log level as labels. With 25 regions and 4 log
         <td>585</td>
         <td>255</td>
     </tr>
+    </tbody>
 </table>
 
 
 ### Query log volume by level
 
 <table>
-    <tr>
-        <th> </th>
-        <th>Latency Loki (s)</th>
-        <th>Latency Quickwit (s)</th>
-        <th>CPU Time Loki (s)</th>
-        <th>CPU Time Quickwit (s)</th>
-        <th>Get Requests Loki</th>
-        <th>Get Requests Quickwit</th>
-    </tr>
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Latency</th>
+            <th colspan="2">CPU Time (s)</th>
+            <th colspan="2">Get Requests</th>
+        </tr>
+        <tr>
+            <th>Query \ Engine</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+            <th>Loki</th>
+            <th>Quickwit</th>
+        </tr>
+    </thead>
+    <tbody>
     <tr>
         <td>Log volume on all dataset</td>
         <td>85.0</td>
@@ -210,6 +180,7 @@ decided to choose only region and log level as labels. With 25 regions and 4 log
         <td>5,471</td>
         <td>195</td>
     </tr>
+    </tbody>
 </table>
 
 ## Reproducing the benchmark
