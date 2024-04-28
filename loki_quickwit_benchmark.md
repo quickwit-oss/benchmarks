@@ -43,7 +43,7 @@ The following table illustrates the query configurations tested:
 
 Metrics recorded for each query include latency, CPU time, and the number of GET requests on the object storage.
 
-### Setup
+## Setup
 ### Object storage
 We used Google Cloud Storage (GCS).
 
