@@ -37,6 +37,8 @@ querier:
 
 ingester:
   chunk_encoding: snappy
+  max_chunk_age: 48h
+
   # chunk_idle_period: 2m
   # chunk_retain_period: 2m
   # chunk_target_size: 572864

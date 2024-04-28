@@ -1,5 +1,5 @@
 {
     "start": "2023-01-01T00:00:00+00:00",
     "end": "2023-02-01T00:00:00+00:00",
-    "query": "sum by (level)(count_over_time({cloud_region=\"us-east-2\"} | drop __error__[1m]))"
+    "query": "sum by (level)(count_over_time({agent=\"benchmark\"} | drop __error__[1m]))"
 }

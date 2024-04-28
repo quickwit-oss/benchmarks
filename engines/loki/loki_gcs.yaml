@@ -57,6 +57,7 @@ querier:
 
 ingester:
   chunk_encoding: snappy
+  max_chunk_age: 24h
   # chunk_idle_period: 2m
   # chunk_retain_period: 2m
   # default: 1572864
@@ -66,7 +67,7 @@ ingester:
 
 schema_config:
   configs:
-    - from: "2023-01-05"
+    - from: "2015-12-01"
       store: tsdb
       object_store: gcs
       schema: v12
