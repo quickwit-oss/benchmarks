@@ -2,11 +2,7 @@
   "track_total_hits": false,
   "size": 0,
   "query": {
-    "term": {
-      "cloud.region": {
-        "value": "us-east-2"
-      }
-    }
+    "match_all": {}
   },
   "aggs": {
     "by_time_bucket": {
