@@ -64,10 +64,10 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
 
 | Engine   |   Loki   | Quickwit   |
 |----------|----------|------------|
-| Ingest time | 55 min   | 123 min |
+| Ingest time | 55 min   | 123 min (+123%) |
 | Mean vCPU | 2.75 | 2.2 |
-| Total CPU time | ~151 min | ~270 min |
-| Number of files on GCS | 145,756 | 25 |
+| Total CPU time | ~151 min | ~270 min (+78%) |
+| Number of files on GCS | 145,756 (x5829) | 25 |
 | Bucket size | 55 GiB | 53 GiB |
 
 ## Queries
@@ -147,38 +147,38 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     <tbody>
     <tr>
         <td>Log volume on all dataset</td>
-        <td>85 (39x)</td>
+        <td>85 (x39)</td>
         <td>2.1</td>
-        <td>1151 (50x)</td>
+        <td>1151 (x50)</td>
         <td>22.3</td>
-        <td>204,808 (2300x)</td>
+        <td>204,808 (x2300)</td>
         <td>88</td>
     </tr>
     <tr>
         <td>Log volume containing `queen`</td>
         <td>560.0</td>
-        <td>0.4 (1399x)</td>
-        <td>8688 (2713x)</td>
+        <td>0.4 (x1399)</td>
+        <td>8688 (x2713)</td>
         <td>3.2</td>
-        <td>203,910 (1386x)</td>
+        <td>203,910 (x1386)</td>
         <td>147</td>
     </tr>
     <tr>
         <td>Log volume containing `us-east-2` (label)</td>
         <td>4.1 (+580%)</td>
         <td>0.6</td>
-        <td>41 (13x)</td>
+        <td>41 (x13)</td>
         <td>2.85</td>
         <td>6,180</td>
-        <td>146 (41x)</td>
+        <td>146 (x41)</td>
     </tr>
     <tr>
         <td>Log volume containing `us-east-2` (label) and `queen`</td>
-        <td>27 (53x)</td>
+        <td>27 (x53)</td>
         <td>0.5</td>
-        <td>337 (115x)</td>
+        <td>337 (x115)</td>
         <td>2.93</td>
-        <td>5,471 (27x)</td>
+        <td>5,471 (x27)</td>
         <td>195</td>
     </tr>
     </tbody>
