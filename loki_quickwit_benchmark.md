@@ -95,29 +95,29 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     <tbody>
     <tr>
         <td>Logs containing `queen`</td>
-        <td>15.0</td>
+        <td>9.3 (+1425%)</td>
         <td>0.6</td>
-        <td>229</td>
-        <td>2.89</td>
-        <td>24,682</td>
-        <td>207</td>
+        <td>165 (+6000%)</td>
+        <td>2.7</td>
+        <td>17,655 (+8400%)</td>
+        <td>206</td>
     </tr>
     <tr>
         <td>Logs containing `us-east-2` (label)</td>
-        <td>1.0</td>
+        <td>1.0 (+74%)</td>
         <td>0.6</td>
-        <td>2.05</td>
-        <td>2.82</td>
-        <td>47</td>
-        <td>203</td>
+        <td>2.1</td>
+        <td>2.8 (+30%)</td>
+        <td>85</td>
+        <td>203 (+138%)</td>
     </tr>
     <tr>
         <td>Logs containing `us-east-2` (label) and `queen`</td>
-        <td>0.8</td>
-        <td>0.5</td>
-        <td>10</td>
-        <td>3</td>
-        <td>585</td>
+        <td>0.98 (+60%)</td>
+        <td>0.6</td>
+        <td>15 (+435%)</td>
+        <td>2.8</td>
+        <td>661 (+159%)</td>
         <td>255</td>
     </tr>
     </tbody>
@@ -147,38 +147,38 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     <tbody>
     <tr>
         <td>Log volume on all dataset</td>
-        <td>85.0</td>
+        <td>85 (39x)</td>
         <td>2.1</td>
-        <td>1151</td>
+        <td>1151 (50x)</td>
         <td>22.3</td>
-        <td>204,808</td>
+        <td>204,808 (2300x)</td>
         <td>88</td>
     </tr>
     <tr>
         <td>Log volume containing `queen`</td>
         <td>560.0</td>
-        <td>0.4</td>
-        <td>8688</td>
+        <td>0.4 (1399x)</td>
+        <td>8688 (2713x)</td>
         <td>3.2</td>
-        <td>203,910</td>
+        <td>203,910 (1386x)</td>
         <td>147</td>
     </tr>
     <tr>
         <td>Log volume containing `us-east-2` (label)</td>
-        <td>4.1</td>
+        <td>4.1 (+580%)</td>
         <td>0.6</td>
-        <td>41</td>
+        <td>41 (13x)</td>
         <td>2.85</td>
         <td>6,180</td>
-        <td>146</td>
+        <td>146 (41x)</td>
     </tr>
     <tr>
         <td>Log volume containing `us-east-2` (label) and `queen`</td>
-        <td>27.0</td>
+        <td>27 (53x)</td>
         <td>0.5</td>
-        <td>337</td>
+        <td>337 (115x)</td>
         <td>2.93</td>
-        <td>5,471</td>
+        <td>5,471 (27x)</td>
         <td>195</td>
     </tr>
     </tbody>
