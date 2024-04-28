@@ -51,8 +51,12 @@ We used Google Cloud Storage (GCS).
 All caching mechanisms within Quickwit and Loki were disabled to ensure a fair comparison.
 
 ### Loki setup
+Loki 2.9 was used.
+
 Loki was configured with labels for region and log levels, creating up to 100 distinct streams. Configurations are detailed in the [Loki configuration file](engines/loki/loki_gcs.yaml). Vector was used to route logs to Loki.
 
+### Quickwit setup
+Quickwit latest build was used, it should be more or less the same than 0.8.1.
 
 ## Results
 
