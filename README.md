@@ -135,3 +135,6 @@ Use the [Benchmark Service web page](https://qw-benchmarks.104.155.161.122.nip.i
 
 See [here](service/README.md) for running the benchmark service.
 
+## Loki VS Quickwit (WIP)
+
+Details of the comparison can be found [here](loki_quickwit_benchmark.md).
