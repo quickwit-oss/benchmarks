@@ -310,6 +310,24 @@ class Benchmark extends React.Component {
 		   }
 		 </tr>
 		 <tr>
+		   <td>Indexing CPU time</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+                       let engine_stats = kv[1].total_cpu_time_s?.toFixed(2);
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats} s
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
 		   <td>Indexing throughput</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {

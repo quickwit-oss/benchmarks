@@ -115,14 +115,18 @@ def get_docker_info(container_name: str):
             "image_hash": container.attrs["Image"]}
 
 
-def find_process_by_name(process_name) -> psutil.Process | None:
+def find_process(process_name, cmdline_component: str | None = None) -> psutil.Process | None:
+    """Finds a process by name and optionnaly cmdline component."""
     process = None
-    for proc in psutil.process_iter(['pid', 'name']):
-        if proc.name() == process_name:
-            if process:
-                raise ValueError(
-                    f'Found multiple processes with name {process_name}: {process.pid}, {proc.pid}')
-            process = proc
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        if cmdline_component is not None and cmdline_component not in proc.cmdline():
+            continue
+        if proc.name() != process_name:
+            continue
+        if process:
+            raise ValueError(
+                f'Found multiple processes with name {process_name}: {process.pid}, {proc.pid}')
+        process = proc
     return process
 
 
@@ -166,7 +170,7 @@ class ProcessMonitor:
         if bool(process_id) == bool(process_name):
             raise ValueError('Either process_id or process_name should be specified')
         if not process_id:
-            process_id = find_process_by_name(process_name).pid
+            process_id = find_process(process_name).pid
             if process_id is None:
                 raise ValueError(
                     f"Can't monitor a process that was not found {process_name=}")
@@ -190,17 +194,23 @@ class ProcessMonitor:
     def start(self):
         self._cpu_times = self.process.cpu_times()
         self._metrics_values = self._read_metrics()
+        return self
 
     def get_stats_since_start(self) -> dict[str, float]:
         cpu_times = self.process.cpu_times()
         stats = {
-            'total_cpu_time_s': (cpu_times.user + cpu_times.system
-                                 - self._cpu_times.user - self._cpu_times.system),
+            'total_cpu_time_s': max(
+                cpu_times.user + cpu_times.system -
+                self._cpu_times.user - self._cpu_times.system,
+                0)
         }
         for name, new_v in self._read_metrics().items():
             stats[name] = new_v - self._metrics_values[name]
         return stats
-        
+
+    def __repr__(self) -> str:
+        return f"ProcessMonitor({self.process=}, {self.metrics_addr=}, {self.watched_metrics=})"
+
 
 class Query(object):
     def __init__(self, name, query):
@@ -225,6 +235,11 @@ class SearchClient(ABC):
     @abstractmethod
     def docker_container_name(self) -> str:
         """The name of the docker container running this engine."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def create_started_monitor(self) -> ProcessMonitor:
+        """Creates a ProcessMonitor and starts it."""
         raise NotImplementedError
 
 
@@ -320,13 +335,27 @@ class ElasticClient(SearchClient):
             raise Exception("Error while checking index", response.text)
         return True
 
+    def create_started_monitor(self) -> ProcessMonitor:
+        process = find_process(
+            "java",
+            cmdline_component=(
+                "org.opensearch.bootstrap.OpenSearch"
+                if self._docker_container_name == "opensearch-node"
+                else "org.elasticsearch.server/org.elasticsearch.bootstrap.Elasticsearch"))
+        if process is None:
+            raise ValueError(
+                f"Can't monitor a process that was not found for {self._docker_container_name=}")
+        return ProcessMonitor(process_id=process.pid).start()
+    
     def query(self, index: str, query, extra_url_component=None):
         if self.no_hits:
             query["size"] = 0
         url = self.root_api
         if extra_url_component:
             url += '/' + extra_url_component
+        monitor = self.create_started_monitor()
         response = requests.post(f"{url}/{index}/_search", json=query)
+        monitor_stats = monitor.get_stats_since_start()
         if response.status_code != 200:
             print("Error while querying", query, response.text)
             return {
@@ -339,7 +368,7 @@ class ElasticClient(SearchClient):
         return {
             "num_hits": data["hits"]["total"]["value"] if "total" in data["hits"] else 0,
             "elapsed_time_micros": data["took"] * 1000
-        }
+        } | monitor_stats
 
     def engine_info(self):
         response = requests.get(f"{self.root_api}/")
@@ -380,10 +409,10 @@ class QuickwitClient(ElasticClient):
             raise Exception("Error while checking index", response.text)
         return True
 
-    def query(self, index: str, query):
+    def create_started_monitor(self) -> ProcessMonitor:
         # TODO: Improve hack.
         metrics_url = self.root_api.removesuffix('/api/v1') + '/metrics'
-        monitor = ProcessMonitor(
+        return ProcessMonitor(
             process_name='quickwit',
             metrics_addr=metrics_url,
             watched_metrics={
@@ -395,8 +424,10 @@ class QuickwitClient(ElasticClient):
                 labels={},
                 # bytes to megabytes.
                 factor=1. / (2 ** 20)),
-            })
-        monitor.start()
+            }).start()
+    
+    def query(self, index: str, query):
+        monitor = self.create_started_monitor()
         results = super().query(index, query, extra_url_component='_elastic')
         monitor_stats = monitor.get_stats_since_start()
         return results | monitor_stats
@@ -437,19 +468,21 @@ class LokiClient(SearchClient):
 
         return False
 
-    def query(self, index: str, query):
-        del index  # Loki does not have the concept of an index.
-        # Sanity check.
-        if 'query' not in query:
-            raise ValueError(f'Expected the json query to have a "query" field. Got {query}')
-        monitor = ProcessMonitor(
+    def create_started_monitor(self) -> ProcessMonitor:
+        return ProcessMonitor(
             process_name='loki', metrics_addr=f'{self.root_api}/metrics',
             watched_metrics={
                 'object_storage_fetch_requests': WatchedMetric(
                     name='loki_gcs_request_duration_seconds_count',
                     labels={'operation': 'GET', 'status_code': '200'}),
-            })
-        monitor.start()
+            }).start()
+
+    def query(self, index: str, query):
+        del index  # Loki does not have the concept of an index.
+        # Sanity check.
+        if 'query' not in query:
+            raise ValueError(f'Expected the json query to have a "query" field. Got {query}')
+        monitor = self.create_started_monitor()
         response = requests.get(f"{self.root_api}/loki/api/v1/query_range", params=query)
         monitor_stats = monitor.get_stats_since_start()
         if response.status_code != 200:
@@ -569,8 +602,7 @@ def run_search_benchmark(search_client: SearchClient, engine: str, index: str, n
 
     print("--- Start measuring response times ...")
     for i in range(num_iteration):
-        if i % 10 == 0:
-            print("- Run #%s of %s" % (i + 1, num_iteration))
+        print("- Run #%s of %s" % (i + 1, num_iteration))
         for drive_results in drive(index, queries_shuffled, search_client):
             query = drive_results.pop('query')
             count = drive_results.pop('num_hits')
@@ -640,7 +672,7 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
 
 def start_engine(engine: str, engine_data_dir: str | None):
     if engine != 'quickwit':
-        raise ValueError(f"Engine {engine} not supported by run_engine().")
+        raise ValueError(f"Engine {engine} not supported by start_engine().")
     docker_client = docker.from_env()
     image = docker_client.images.pull("quickwit/quickwit", tag="edge", platform="linux/amd64")
     config_dir = os.path.join(os.getcwd(), "engines", engine, "configs")
@@ -706,7 +738,7 @@ def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str
 def stop_engine(engine: str):
     """Stops both docker containers and non-docker processes of an engine."""
     if engine != 'quickwit':
-        raise ValueError(f"Engine {engine} not supported by run_engine().")
+        raise ValueError(f"Engine {engine} not supported by stop_engine().")
     docker_client = docker.from_env()
     try:
         container = docker_client.containers.get(engine)
@@ -718,10 +750,14 @@ def stop_engine(engine: str):
     except docker.errors.NotFound as ex:
         logging.info("Attempted to stop %s but it was not found: %s", engine, ex)
 
-    process = find_process_by_name(engine)
+    process = find_process(engine)
     if process is not None:
         process.kill()
         logging.info("Killed %s process with ID %s", engine, process.pid)
+        # Bad way to make sure the port was released, which does not
+        # happen immediately when killing a process.
+        time.sleep(1)
+
 
 
 def prune_docker_images(engine: str, until_days: int = 3):
@@ -750,6 +786,37 @@ def prune_docker_images(engine: str, until_days: int = 3):
     except docker.errors.APIError as ex:
         logging.info("Failed to prune images for engine %s", engine)
 
+def run_indexing_benchmark(
+        engine_client: SearchClient, engine: str, index: str,
+        qw_ingest_v2: bool, track_config: dict[str, Any],
+        output_path: str) -> tuple[subprocess.CompletedProcess, dict[str, Any]]:
+    """Runs the indexing.
+
+    Returns:
+      (Completed qbench process, monitor stats)
+    """
+    print("Run indexing...")
+    qbench_command = [
+        "./qbench/target/release/qbench",
+        "--engine",
+        engine,
+        "--index",
+        index,
+        "--dataset-uri",
+        track_config["dataset_uri"],
+        "--output-path",
+        output_path,
+        "--retry-indexing-errors",
+    ]
+    print(qbench_command)
+    if qw_ingest_v2:
+        qbench_command.append("--qw-ingest-v2")
+
+    monitor = engine_client.create_started_monitor()
+    completed_process = subprocess.run(qbench_command)
+    monitor_stats = monitor.get_stats_since_start()
+    return completed_process, monitor_stats
+        
 
 def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
     """Prepares indices and runs the benchmark."""
@@ -795,41 +862,28 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
         prepare_index(args.engine, args.track, index, args.overwrite_index)
 
     if not args.search_only:
-        print("Run indexing...")
-        qbench_command = [
-            "./qbench/target/release/qbench",
-            "--engine",
-            args.engine,
-            "--index",
-            index,
-            "--dataset-uri",
-            track_config["dataset_uri"],
-            "--output-path",
-            f'{results_dir}/indexing-results.json',
-            "--retry-indexing-errors",
-        ]
-        if args.qw_ingest_v2:
-            qbench_command.append("--qw-ingest-v2")
-        completed_process = subprocess.run(qbench_command)
-        with open(f'{results_dir}/indexing-results.json') as results_file:
+        output_path = f'{results_dir}/indexing-results.json'
+        completed_process, monitor_stats = run_indexing_benchmark(
+            engine_client, args.engine, index, args.qw_ingest_v2, track_config, output_path)
+        with open(output_path) as results_file:
             indexing_results = json.load(results_file)
             indexing_results['tag'] = args.tags
             indexing_results['storage'] = args.storage
             indexing_results['instance'] = instance
             indexing_results['track'] = args.track
             indexing_results['qbench_returncode'] = completed_process.returncode
-            indexing_results['qbench_command_line'] = ' '.join(qbench_command)
+            indexing_results['qbench_command_line'] = ' '.join(completed_process.args)
             indexing_results['source'] = args.source
             indexing_results |= get_common_debug_info(engine_client)
+            indexing_results |= monitor_stats
             # TODO: add config (/api/v1/config)?
 
-            search_output_filepath = f'{results_dir}/indexing-results.json'
-            with open(search_output_filepath , "w") as f:
-                json.dump(indexing_results, f, default=lambda obj: obj.__dict__, indent=4)
-            if args.export_to_endpoint:
-                export_results(args.export_to_endpoint, indexing_results, "indexing",
-                               exporter_token, verify_https=not args.disable_exporter_https_verification,
-                               url_file=args.write_exported_run_url_to_file)
+        with open(output_path , "w") as f:
+            json.dump(indexing_results, f, default=lambda obj: obj.__dict__, indent=4)
+        if args.export_to_endpoint:
+            export_results(args.export_to_endpoint, indexing_results, "indexing",
+                           exporter_token, verify_https=not args.disable_exporter_https_verification,
+                           url_file=args.write_exported_run_url_to_file)
         if completed_process.returncode != 0:
             logging.error("Error while running indexing")
             return False
