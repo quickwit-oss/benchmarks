@@ -162,10 +162,10 @@ async fn main() -> anyhow::Result<()> {
 
     let elapsed_time: f64 = start.elapsed().as_secs_f64();
     let doc_per_second = index_info.num_docs as f64 / elapsed_time;
-    let mb_bytes_per_second = num_ingested_bytes as f64 / 1_000_000.0 / elapsed_time;
+    let megabytes_per_second = num_ingested_bytes as f64 / 1_000_000.0 / elapsed_time;
     info!("Indexing ended in {:.2} min. Final indexing throughput: {:.2} MB/s, {:.2} docs/s.\n\
           {:.2} MBs successfully ingested, {:.2} MBs with ingestion errors.",
-        elapsed_time / 60.0, mb_bytes_per_second, doc_per_second,
+        elapsed_time / 60.0, megabytes_per_second, doc_per_second,
         num_ingested_bytes as f64 / 1_000_000., num_ingestion_error_bytes as f64 / 1_000_000.);
 
     let results = json!({
@@ -177,7 +177,7 @@ async fn main() -> anyhow::Result<()> {
         "num_splits": index_info.num_splits,
         "indexing_duration_secs": elapsed_time,
         "doc_per_second": doc_per_second,
-        "mb_bytes_per_second": mb_bytes_per_second,
+        "megabytes_per_second": megabytes_per_second,
         "build_info": build_info,
     });
     std::fs::write(output_path, serde_json::to_string_pretty(&results)?)?;
@@ -216,9 +216,9 @@ fn handle_result(
         Ok(bytes) => {
             *num_ingested_bytes += bytes;
             let elapsed_time: f64 = start.elapsed().as_secs_f64();
-            let mb_bytes_per_second =
+            let megabytes_per_second =
                 *num_ingested_bytes as f64 / 1_000_000.0 / elapsed_time;
-            info!("Ingest throughput: {:.2} MB/s", mb_bytes_per_second);
+            info!("Ingest throughput: {:.2} MB/s", megabytes_per_second);
         },
         Err(bytes) => {
             *num_ingestion_error_bytes += bytes;

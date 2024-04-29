@@ -57,7 +57,9 @@ class IndexingRunResults(BaseModel):
     build_info: BuildInfo | None = None
     doc_per_second: float | None = None
     indexing_duration_secs: float | None = None
+    # Deprecated.
     mb_bytes_per_second: float | None = None
+    megabytes_per_second: float | None = None
     num_indexed_bytes: int | None = None
     num_indexed_docs: int | None = None
     num_ingested_bytes: int | None = None

@@ -246,6 +246,9 @@ def create_indexing_run(req: schemas.CreateIndexingRunRequest,
     if req.run.run_info.run_type is not None:
         raise HTTPException(status_code=400, detail="run type should not be provided")
     req.run.run_info.verified_email = email_current_user
+    if req.run.run_results.megabytes_per_second is None:
+        # Backwards compatibility with old clients.
+        req.run.run_results.megabytes_per_second = req.run.run_results.mb_bytes_per_second
     return crud.db_run_to_indexing_run(crud.create_run(db=db, run=req.run))
 
 
@@ -379,7 +382,7 @@ def get_as_timeseries(
         ordering=crud.Ordering.ASC)
     runs = [crud.db_run_to_schema_run(db_run) for db_run in db_runs]
     INDEXING_METRICS = [
-        "mb_bytes_per_second",
+        "megabytes_per_second",
         "indexing_duration_secs",
         "num_splits",
     ]

@@ -46,21 +46,30 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
         verified_email=db_run.verified_email,
         source=db_run.source)
 
+def upgrade_indexing_run(run: schemas.IndexingRun):
+    if run.run_results.megabytes_per_second is None:
+        # Backwards compatibility with old data in the DB.
+        run.run_results.megabytes_per_second = run.run_results.mb_bytes_per_second
+    run.run_results.mb_bytes_per_second = None
 
 def db_run_to_schema_run(run: models.Run) -> schemas.IndexingRun | schemas.SearchRun:
     """Converts a DB run (models.Run) into a schemas.IndexingRun or SearchRun."""
     schema_cls = schemas.IndexingRun if run.run_type == 'indexing' else schemas.SearchRun
     schema_run = schema_cls(run_info=db_run_to_run_info(run),
                             run_results=run.run_results)
+    if run.run_type == 'indexing':
+        upgrade_indexing_run(schema_run)
     return schema_run
 
 
 def db_run_to_indexing_run(run: models.Run) -> schemas.IndexingRun:
     if run.run_type != 'indexing':
         raise ValueError(f'Unexpected run, got run type "{run.run_type}"')
-    return schemas.IndexingRun(
+    schema_run = schemas.IndexingRun(
         run_info=db_run_to_run_info(run),
         run_results=run.run_results)
+    upgrade_indexing_run(schema_run)
+    return schema_run
 
 
 def db_run_to_search_run(run: models.Run) -> schemas.SearchRun:
