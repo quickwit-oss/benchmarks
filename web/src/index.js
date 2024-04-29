@@ -17,13 +17,8 @@ function formatPercentVariation(p) {
   }
 }
 
-function numberWithCommas(x) {
-  x = x.toString();
-  let pattern = /(-?\d+)(\d{3})/
-  while (pattern.test(x)) {
-    x = x.replace(pattern, "$1,$2");
-  }
-  return x;
+function numberWithCommas(x, max_fraction_digits=2) {
+  return x.toLocaleString("en-US", {maximumFractionDigits: max_fraction_digits});
 }
 
 function stats(timings) {
