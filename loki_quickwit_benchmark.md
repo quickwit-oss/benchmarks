@@ -156,8 +156,8 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     </tr>
     <tr>
         <td>Log volume containing `queen`</td>
-        <td>560.0</td>
-        <td>0.4 (x1399)</td>
+        <td>560.0 (x1399)</td>
+        <td>0.4 </td>
         <td>8688 (x2713)</td>
         <td>3.2</td>
         <td>203,910 (x1386)</td>
@@ -169,8 +169,8 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
         <td>0.6</td>
         <td>41 (x13)</td>
         <td>2.85</td>
-        <td>6,180</td>
-        <td>146 (x41)</td>
+        <td>6,180 (x41)</td>
+        <td>146</td>
     </tr>
     <tr>
         <td>Log volume containing `us-east-2` (label) and `queen`</td>
