@@ -37,7 +37,7 @@ The following table illustrates the query configurations tested:
 | Query   |   Last 100 logs   | Log volume per log level   |
 |----------|----------|------------|
 | Match all logs | [ ]   | [x] |
-| Logs containing `queen` | [x]   | [x] |
+| Logs with `queen` | [x]   | [x] |
 | Logs labeled `region: us-east-2` | [x] | [x] |
 | Logs with `region: us-east-2` and `queen` | [x] | [x] |
 
@@ -78,7 +78,7 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     <thead>
         <tr>
             <th></th>
-            <th colspan="2">Latency</th>
+            <th colspan="2">Latency (s)</th>
             <th colspan="2">CPU Time (s)</th>
             <th colspan="2">Get Requests</th>
         </tr>
@@ -94,29 +94,29 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     </thead>
     <tbody>
     <tr>
-        <td>Logs containing `queen`</td>
-        <td>9.3 (+1425%)</td>
-        <td>0.6</td>
-        <td>165 (+6000%)</td>
-        <td>2.7</td>
+        <td>`queen`</td>
+        <td>9.3s (+1425%)</td>
+        <td>0.6s</td>
+        <td>165s (+6000%)</td>
+        <td>2.7s</td>
         <td>17,655 (+8400%)</td>
         <td>206</td>
     </tr>
     <tr>
-        <td>Logs containing `us-east-2` (label)</td>
-        <td>1.0 (+74%)</td>
-        <td>0.6</td>
-        <td>2.1</td>
-        <td>2.8 (+30%)</td>
+        <td>`us-east-2` (label)</td>
+        <td>1.0s (+74%)</td>
+        <td>0.6s</td>
+        <td>2.1s</td>
+        <td>2.8s (+30%)</td>
         <td>85</td>
         <td>203 (+138%)</td>
     </tr>
     <tr>
-        <td>Logs containing `us-east-2` (label) and `queen`</td>
-        <td>0.98 (+60%)</td>
-        <td>0.6</td>
-        <td>15 (+435%)</td>
-        <td>2.8</td>
+        <td>`us-east-2` (label) and `queen`</td>
+        <td>0.98s (+60%)</td>
+        <td>0.6s</td>
+        <td>15s (+435%)</td>
+        <td>2.8s</td>
         <td>661 (+159%)</td>
         <td>255</td>
     </tr>
@@ -146,34 +146,34 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     </thead>
     <tbody>
     <tr>
-        <td>Log volume on all dataset</td>
-        <td>85 (x39)</td>
-        <td>2.1</td>
-        <td>1151 (x50)</td>
-        <td>22.3</td>
+        <td>All dataset</td>
+        <td>85s (x39)</td>
+        <td>2.1s</td>
+        <td>1151s (x50)</td>
+        <td>22.3s</td>
         <td>204,808 (x2300)</td>
         <td>88</td>
     </tr>
     <tr>
-        <td>Log volume containing `queen`</td>
-        <td>560.0 (x1399)</td>
-        <td>0.4 </td>
-        <td>8688 (x2713)</td>
-        <td>3.2</td>
+        <td>`queen`</td>
+        <td>560s (x1399)</td>
+        <td>0.4s </td>
+        <td>8688s (x2713)</td>
+        <td>3.2s</td>
         <td>203,910 (x1386)</td>
         <td>147</td>
     </tr>
     <tr>
-        <td>Log volume containing `us-east-2` (label)</td>
-        <td>4.1 (+580%)</td>
-        <td>0.6</td>
-        <td>41 (x13)</td>
-        <td>2.85</td>
+        <td>`us-east-2` (label)</td>
+        <td>4.1s (+580%)</td>
+        <td>0.6s</td>
+        <td>41s (x13)</td>
+        <td>2.85s</td>
         <td>6,180 (x41)</td>
         <td>146</td>
     </tr>
     <tr>
-        <td>Log volume containing `us-east-2` (label) and `queen`</td>
+        <td>`us-east-2` (label) and `queen`</td>
         <td>27 (x53)</td>
         <td>0.5</td>
         <td>337 (x115)</td>
