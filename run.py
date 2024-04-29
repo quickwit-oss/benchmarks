@@ -40,12 +40,24 @@ RETRY_ON_FAILED_RESPONSE_SUBSTR = [
 # tool.
 JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
 
-# Config file used when there are placeholders in paths to resolve. It
-# should be an ini config file containing a 'paths' section mapping
-# path placeholder names (e.g. 'qwdata') to the actual data path to use.
-CONFIG_FILENAME = "~/.qw_benchmarks_runner.txt"
+# Path to the optional runner config file. If it exists, it should be
+# an ini config file with sections:
+# - a 'paths' section mapping path placeholder names (e.g. 'qwdata')
+#   to the actual data path to use. Used for resolving placeholders in
+#   --engine-data-dir.
+# - an 'engine_env' section with env variables to pass to the engine
+#   at startup.
+RUNNER_CONFIG_FILENAME = "~/.qw_benchmarks_runner.txt"
 
 AUTODETECT_GCP_INSTANCE_PLACEHOLDER = '{autodetect_gcp}'
+
+
+def read_runner_config(runner_config_path: str):
+    parser = configparser.ConfigParser()
+    if not parser.read(os.path.expanduser(runner_config_path)):
+        raise ValueError(
+            f"Runner config ({runner_config_path}) could not be opened.")
+    return parser
 
 
 def resolve_instance(instance_or_placeholder: str | None) -> str | None:
@@ -60,7 +72,7 @@ def resolve_instance(instance_or_placeholder: str | None) -> str | None:
     return instance_or_placeholder
 
 
-def resolve_data_dir(engine: str, data_dir: str | None, config_path: str) -> str | None:
+def resolve_engine_data_dir(engine: str, data_dir: str | None, runner_config_path: str) -> str | None:
     """Returns the data dir to use for an engine.
 
     Args:
@@ -68,7 +80,7 @@ def resolve_data_dir(engine: str, data_dir: str | None, config_path: str) -> str
       data_dir: Optional data directory to use for the engine. It can
         be a placholder, e.g. '{qwdata}' that will then be resolved
         using the config.
-      config_path: Path to an ini config file containing a 'paths'
+      runner_config_path: Path to an ini config file containing a 'paths'
         section mapping placeholder names (e.g. 'qwdata') to the
         actual data path to use.
 
@@ -80,17 +92,37 @@ def resolve_data_dir(engine: str, data_dir: str | None, config_path: str) -> str
     if data_dir[0] != '{' or data_dir[-1] != '}':
         return data_dir
     # Placeholder that must be resolved using the config.
-    parser = configparser.ConfigParser()
-    if not parser.read(os.path.expanduser(config_path)):
-        raise ValueError(
-            f"Path placeholder was passed ({data_dir}) but the config "
-            f"({config_path}) to resolve path placeholders could not be opened.")
     try:
-        return parser.get("paths", data_dir[1:-1])
+        config = read_runner_config(runner_config_path)
+    except ValueError as ex:
+        raise ValueError(
+            f"Path placeholder was passed ({data_dir}) but the config to resolve placeholders could not be opened: {ex}.")
+    try:
+        return config.get("paths", data_dir[1:-1])
     except configparser.NoOptionError as ex:
         raise ValueError(
             f"Path placeholder was passed ({data_dir}) but the config "
-            f"({config_path}) did not include a mapping for this placeholder")
+            f"({runner_config_path}) did not include a mapping for this placeholder")
+
+
+def resolve_engine_config_filename(engine: str, config_filename: str | None) -> str:
+    if engine != "quickwit":
+        raise ValueError("Only quickwit is supported in resolve_engine_config_filename()")
+    if config_filename:
+        return config_filename
+    return os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
+
+
+def get_engine_env(runner_config_path: str) -> dict[str, str]:
+    """Returns additional engine env variables if present in the runner cfg."""
+    try:
+        config = read_runner_config(runner_config_path)
+    except ValueError as ex:
+        logging.info(f"Could not read runner config {runner_config_path}. This is not necessarily a problem. Original exception {ex}")
+        return {}
+    if "engine_env" not in config:
+        return {}
+    return dict(config.items("engine_env"))
 
 
 class BearerAuthentication(requests.auth.AuthBase):
@@ -681,13 +713,14 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
     client.create_index(index, index_config)
 
 
-def start_engine(engine: str, engine_data_dir: str | None):
+def start_engine(engine: str, engine_data_dir: str | None = None, engine_config_filename: str | None = None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by start_engine().")
     docker_client = docker.from_env()
     image = docker_client.images.pull("quickwit/quickwit", tag="edge", platform="linux/amd64")
-    config_dir = os.path.join(os.getcwd(), "engines", engine, "configs")
-    data_dir = resolve_data_dir(engine, engine_data_dir, CONFIG_FILENAME)
+    config_filename = resolve_engine_config_filename(engine, engine_config_filename)
+    data_dir = resolve_engine_data_dir(engine, engine_data_dir, RUNNER_CONFIG_FILENAME)
+    env_vars = get_engine_env(RUNNER_CONFIG_FILENAME)
     os.makedirs(data_dir, exist_ok=True)
     container = docker_client.containers.run(
         image.id,
@@ -697,8 +730,8 @@ def start_engine(engine: str, engine_data_dir: str | None):
         detach=True,
         init=True,
         environment={"QW_DISABLE_TELEMETRY": "1",
-                     "QW_CONFIG": "/var/lib/quickwit/configs/quickwit.yaml",
-                     },
+                     "QW_CONFIG": os.path.join("/var/lib/quickwit/configs", os.path.basename(config_filename)),
+                     } | env_vars,
         mounts=[
             docker.types.Mount("/quickwit/qwdata",
                                data_dir,
@@ -707,7 +740,7 @@ def start_engine(engine: str, engine_data_dir: str | None):
                                read_only=False,
                                ),
             docker.types.Mount("/var/lib/quickwit/configs",
-                               config_dir,
+                               os.path.dirname(config_filename),
                                type="bind",
                                propagation="rprivate",
                                read_only=False,
@@ -727,18 +760,19 @@ def start_engine(engine: str, engine_data_dir: str | None):
         raise ValueError("Failed to start container '%s': status: '%s'", container.name, container.status)
 
 
-def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str | None):
+def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str | None, engine_config_filename: str | None = None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
-    config_path = os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
-    data_dir = resolve_data_dir(engine, engine_data_dir, CONFIG_FILENAME)
+    config_filename = resolve_engine_config_filename(engine, engine_config_filename)
+    data_dir = resolve_engine_data_dir(engine, engine_data_dir, RUNNER_CONFIG_FILENAME)
+    env_vars = get_engine_env(RUNNER_CONFIG_FILENAME)
     os.makedirs(data_dir, exist_ok=True)
     process = subprocess.Popen(
         [binary_path, "run"],
         env={"QW_DISABLE_TELEMETRY": "1",
-             "QW_CONFIG": config_path,
+             "QW_CONFIG": config_filename,
              "QW_DATA_DIR": data_dir,
-             },
+             } | env_vars,
     )
     logging.info("Started binary %s PID=%s", binary_path, process.pid)
     time.sleep(2)
@@ -1042,6 +1076,10 @@ def main():
               "dir 'engines/$ENGINE/data'. This can contain a placeholder e.g. {qwdata} that will "
               "be resolved with the config."))
     parser.add_argument(
+        '--engine-config-file', type=str,
+        help=("If specified and --manage-engine is set, this overrides the default engine config file "
+              "(typically 'engines/$ENGINE/data/quickwit.yaml for quickwit)'."))
+    parser.add_argument(
         '--write-exported-run-url-to-file', type=str,
         help=("If specified, the URL of the exported run will be written to that file. "
               "Useful in github workflows where this will typically be set to $GITHUB_OUTPUT."))
@@ -1058,9 +1096,11 @@ def main():
         if args.manage_engine:
             stop_engine(args.engine)
             if args.binary_path:
-                start_engine_from_binary(args.engine, args.binary_path, args.engine_data_dir)
+                start_engine_from_binary(
+                    args.engine, args.binary_path,
+                    args.engine_data_dir, args.engine_config_file)
             else:
-                start_engine(args.engine, args.engine_data_dir)
+                start_engine(args.engine, args.engine_data_dir, args.engine_config_file)
 
         # When looping, we ignore errors.
         bench_ok = run_benchmark(args, exporter_token)
