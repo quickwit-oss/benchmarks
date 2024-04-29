@@ -109,7 +109,7 @@ def resolve_engine_config_filename(engine: str, config_filename: str | None) -> 
     if engine != "quickwit":
         raise ValueError("Only quickwit is supported in resolve_engine_config_filename()")
     if config_filename:
-        return config_filename
+        return os.path.join(os.getcwd(), os.path.expanduser(config_filename))
     return os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
 
 
@@ -1078,7 +1078,7 @@ def main():
     parser.add_argument(
         '--engine-config-file', type=str,
         help=("If specified and --manage-engine is set, this overrides the default engine config file "
-              "(typically 'engines/$ENGINE/data/quickwit.yaml for quickwit)'."))
+              "(typically 'engines/$ENGINE/configs/quickwit.yaml for quickwit)'."))
     parser.add_argument(
         '--write-exported-run-url-to-file', type=str,
         help=("If specified, the URL of the exported run will be written to that file. "
