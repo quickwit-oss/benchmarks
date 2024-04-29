@@ -327,7 +327,7 @@ class Benchmark extends React.Component {
 		   {
 		     Object.entries(data_view.engines).map(kv => {
                        let engine = kv[0];
-                       let engine_stats = kv[1].mb_bytes_per_second?.toFixed(2);
+                       let engine_stats = kv[1].megabytes_per_second?.toFixed(2);
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
 				  {engine_stats} MB/s
