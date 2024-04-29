@@ -384,7 +384,10 @@ def get_as_timeseries(
     INDEXING_METRICS = [
         "megabytes_per_second",
         "indexing_duration_secs",
+        "total_cpu_time_s",
         "num_splits",
+        "object_storage_upload_megabytes",
+        "object_storage_put_requests",
     ]
     SEARCH_METRICS = [
         "engine_duration",
