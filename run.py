@@ -419,11 +419,19 @@ class QuickwitClient(ElasticClient):
                 'object_storage_fetch_requests': WatchedMetric(
                     name='quickwit_storage_object_storage_gets_total',
                     labels={}),
-            'object_storage_download_megabytes': WatchedMetric(
-                name='quickwit_storage_object_storage_download_num_bytes_total',
-                labels={},
-                # bytes to megabytes.
-                factor=1. / (2 ** 20)),
+                'object_storage_put_requests': WatchedMetric(
+                    name='quickwit_storage_object_storage_puts_total',
+                    labels={}),
+                'object_storage_download_megabytes': WatchedMetric(
+                    name='quickwit_storage_object_storage_download_num_bytes_total',
+                    labels={},
+                    # bytes to megabytes.
+                    factor=1. / (2 ** 20)),
+                'object_storage_upload_megabytes': WatchedMetric(
+                    name='quickwit_storage_object_storage_upload_num_bytes_total',
+                    labels={},
+                    # bytes to megabytes.
+                    factor=1. / (2 ** 20)),
             }).start()
     
     def query(self, index: str, query):
@@ -475,6 +483,9 @@ class LokiClient(SearchClient):
                 'object_storage_fetch_requests': WatchedMetric(
                     name='loki_gcs_request_duration_seconds_count',
                     labels={'operation': 'GET', 'status_code': '200'}),
+                'object_storage_put_requests': WatchedMetric(
+                    name='loki_gcs_request_duration_seconds_count',
+                    labels={'operation': 'PUT', 'status_code': '200'}),
             }).start()
 
     def query(self, index: str, query):

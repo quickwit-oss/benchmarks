@@ -71,7 +71,9 @@ class IndexingRunResults(BaseModel):
     command_line: str | None = None
     total_cpu_time_s: float | None = None
     object_storage_download_megabytes: float | None = None
+    object_storage_upload_megabytes: float | None = None
     object_storage_fetch_requests: float | None = None
+    object_storage_put_requests: float | None = None
 
 
 class IndexingRun(BaseModel):
@@ -107,7 +109,9 @@ class QueryResult(BaseModel):
     engine_duration: QueryMeasurements
     total_cpu_time_s: QueryMeasurements | None = None
     object_storage_download_megabytes: QueryMeasurements | None = None
+    object_storage_upload_megabytes: QueryMeasurements | None = None
     object_storage_fetch_requests: QueryMeasurements | None = None
+    object_storage_put_requests: QueryMeasurements | None = None
 
 
 class SearchRunResults(BaseModel):
