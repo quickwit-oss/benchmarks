@@ -45,7 +45,7 @@ mkdir -p datasets
 gcloud storage cp "gs://quickwit-datasets-public/benchmarks/generated-logs/generated-logs-v1-????.ndjson.gz" datasets/
 ```
 
-## Running the benchmark
+## Running the benchmark manually
 
 ### Start engines
 
@@ -132,6 +132,47 @@ The results will also be exported to the service and saved to a `results/{track}
 ## Exploring results
 
 Use the [Benchmark Service web page](https://qw-benchmarks.104.155.161.122.nip.io).
+
+### Run comparison
+
+The default page allows selecting and comparing runs:
+[example](https://qw-benchmarks.104.155.161.122.nip.io/?run_ids=779,780,771,772).
+
+Runs are identified by a numerical ID and are automatically named
+`<engine>.<storage>.<instance>.<short_commit_hash>.<tag>`.
+For now, names are allowed to collide, i.e. a given name can refer to
+multiple runs. In that case, selecting a name in the list of runs to
+compare will show the most recent indexing run with that name, and the
+most recent search run with that name.
+
+Tips:
+- The URL of the page is a permanent link to the runs shown. This is
+  convenient way to share results.
+- Clicking on the run name in the comparison shows the raw run results
+  with additional information.
+- It's fine if a run only has indexing or search results.
+- The full list of runs is loaded when the web page is loaded, so you
+  may need to reload it to see your latest runs.
+
+### Graphs
+
+The [graphs
+page](https://qw-benchmarks.104.155.161.122.nip.io/?page=graphs)
+allows plotting graphs of indexing and search run results over time
+([example](https://qw-benchmarks.104.155.161.122.nip.io/?page=graphs&track=generated-logs&run_filter_display_name=quickwit.pd-ssd.c3-standard-4.docker_edge)). Only
+runs with `source` `continuous_benchmarking` or `github_workflow` are
+shown there. Runs are identified by a string
+`<engine>.<storage>.<instance>.<tag>` (note the absence of commit
+hash) which refers to a series of indexing and search runs over time.
+
+Tip:
+- The URL of the page is a permanent link to the series of runs
+  shown. Later visits can contain additional data points.
+- Clicking on a point in any graph shows the raw results of the run
+  that contributed the point.
+
+
+### Running the service
 
 See [here](service/README.md) for running the benchmark service.
 
