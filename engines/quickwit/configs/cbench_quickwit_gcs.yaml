@@ -1,0 +1,30 @@
+# Copyright 2024 The benchmarks Authors
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
+
+version: 0.7
+listen_address: 0.0.0.0
+rest_listen_port: 7280
+gossip_listen_port: 7281
+
+default_index_root_uri: s3://quickwit-continuous-benchmark/indexes/docker_edge
+
+storage:
+  s3:
+    flavor: gcs
+    region: us-east1
+    endpoint: https://storage.googleapis.com
+    access_key_id: ${QW_GCS_ACCESS_KEY_ID}
+    secret_access_key: ${QW_GCS_ACCESS_KEY}
+
+ingest_api:
+  max_queue_memory_usage: 4GB
+  max_queue_disk_usage: 8GB
+
+searcher:
+  fast_field_cache_capacity: 0G
+  split_footer_cache_capacity: 0G
+  partial_request_cache_capacity: 0G
+  aggregation_memory_limit: 1G

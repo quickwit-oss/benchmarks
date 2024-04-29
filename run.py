@@ -122,7 +122,7 @@ def get_engine_env(runner_config_path: str) -> dict[str, str]:
         return {}
     if "engine_env" not in config:
         return {}
-    return dict(config.items("engine_env"))
+    return {key.upper(): value for key, value in config.items("engine_env")}
 
 
 class BearerAuthentication(requests.auth.AuthBase):
