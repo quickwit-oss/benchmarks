@@ -34,12 +34,11 @@ function stats(timings) {
   };
 }
 
-function aggregate(query) {
+function aggregate(query, metric="engine_duration", multiplier=1.) {
   if (query.duration.length === 0) {
     return { query: query.query, className: "unsupported", unsupported: true, id: query.id }
   }
-  // TODO: support other metrics (total_cpu_time_s, etc.).
-  let res = stats(query.engine_duration.values);
+  let res = stats(query[metric].values.map((x) => x * multiplier));
   res.count = query.count;
   res.query = query.query;
   res.name = query.name;
@@ -56,13 +55,53 @@ class Benchmark extends React.Component {
   // `initial_selector_options`
   constructor(props) {
     super(props);
+    // TODO: permalink
+    this.search_metrics = [
+      {
+	label: "Search Latency",
+	value: {
+	  field: "engine_duration",
+	  // Microseconds -> milliseconds.
+	  field_multiplier: 1. / 1000.,
+	  unit: "ms"
+	}
+      },
+      {
+	label: "Search CPU time",
+	value: {
+	  field: "total_cpu_time_s",
+	  // Seconds -> milliseconds.
+	  field_multiplier: 1000.,
+	  unit: "ms"
+	},
+      },
+      {
+	label: "Search object storage GETs",
+	value: {
+	  field: "object_storage_fetch_requests",
+	  field_multiplier: 1,
+	  unit: ""
+	}
+      },
+      {
+	label: "Search object storage download MBs",
+	value: {
+	  field: "object_storage_download_megabytes",
+	  field_multiplier: 1,
+	  unit: "MB"
+	}
+      }
+    ];
+    this.initial_search_metric = this.search_metrics[0];
     this.state = {
       dataset: this.props.initial_dataset,
       // List of selected runs, i.e. a list of:
       // {indexing: ID of the indexing run, search: ID of the search run}.
       selected_runs: null,
       // Maps display name to {indexing: run_results, search: run_results}
-      runs: {}
+      runs: {},
+      // This search metric to display.
+      search_metric: this.initial_search_metric,
     };
     this.handleChangeRun(this.props.initial_selector_options);
   }
@@ -75,6 +114,10 @@ class Benchmark extends React.Component {
       this.setState({ "dataset": null });
     }
     // TODO: clear the run multi-select.
+  }
+
+  handleChangeSearchMetric(evt) {
+    this.setState({ "search_metric": evt });
   }
 
   // get_runs_response: schemas.GetRunsResponse.
@@ -158,25 +201,28 @@ class Benchmark extends React.Component {
       
       let taggedEngine = display_name;
       engine_queries = Array.from(engine_queries);
-      engine_queries = engine_queries.map(aggregate);
-      let total = 0
+      engine_queries = engine_queries.map(
+	(query_results) => aggregate(query_results,
+				     this.state.search_metric.value.field,
+				     this.state.search_metric.value.field_multiplier));
+      let metric_average_over_queries = 0
       let unsupported = false
       for (let query of engine_queries) {
 	if (query.unsupported) {
 	  unsupported = true;
         } else {
-          total += query.median;
+          metric_average_over_queries += query.median;
         }
       }
       if (unsupported) {
-        total = undefined;
+        metric_average_over_queries = undefined;
       } else {
-        total = (total / engine_queries.length) | 0;
+        metric_average_over_queries = (metric_average_over_queries / engine_queries.length) | 0;
       }
       engines[taggedEngine] = engine_results;
       engines[taggedEngine].indexing_run_info = this.state.runs[display_name].indexing?.run_info;
       engines[taggedEngine].search_run_info = this.state.runs[display_name].search?.run_info;
-      engines[taggedEngine].total = total;
+      engines[taggedEngine].metric_average_over_queries = metric_average_over_queries;
       // Ratios with a similar formula as in the clickhouse benchmark.
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
       // Sum(log(ratio)) for each query comparing the current engine to the first engine.
@@ -248,6 +294,10 @@ class Benchmark extends React.Component {
 			 isMulti className="basic-multi-select" classNamePrefix="select"
 			 defaultValue={this.props.initial_selector_options}
 			 onChange={(evt) => this.handleChangeRun(evt)}/>
+		 <label>Search metrics to compare</label>
+		 <Select options={this.search_metrics}
+			 defaultValue={this.initial_search_metric}
+			 onChange={(evt) => this.handleChangeSearchMetric(evt)}/>
                </fieldset>
 	     </form>
 	     <hr />
@@ -413,14 +463,14 @@ class Benchmark extends React.Component {
 		   }
 		 </tr>
 		 <tr className="average-row">
-		   <td>Query time AVERAGE</td>
+		   <td>{this.state.search_metric.label} AVERAGE</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
                        let engine = kv[0];
-                       let engine_stats = kv[1].total;
+                       let engine_stats = kv[1].metric_average_over_queries;
                        if (engine_stats !== undefined) {
 			 return <td key={"result-" + engine}>
-				  {numberWithCommas(engine_stats / 1000)} ms
+				  {numberWithCommas(engine_stats)} {this.state.search_metric.value.unit}
 				</td>;
                        } else {
 			 return <td key={"result-" + engine}>
@@ -431,7 +481,7 @@ class Benchmark extends React.Component {
 		   }
 		 </tr>
 		 <tr className="average-row">
-		   <td>Geometric average of query time ratios</td>
+		   <td>Geometric average of {this.state.search_metric.label} ratios</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
                        let engine = kv[0];
@@ -480,7 +530,7 @@ class Benchmark extends React.Component {
 				    return <td key={query_name + engine} className={"data"}></td>;
 				  } else {
 				    return <td key={query_name + engine} className={"data " + cell_data.className}>
-					     <div className="timing">{numberWithCommas(cell_data.median / 1000 )}  ms</div>
+					     <div className="timing">{numberWithCommas(cell_data.median)} {this.state.search_metric.value.unit}</div>
 					     <div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
 					     <div className="count">{numberWithCommas(cell_data.count)} docs</div>
 					   </td>;
