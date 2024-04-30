@@ -1,0 +1,25 @@
+{
+  "track_total_hits": true,
+  "size": 0,
+  "aggs": {
+    "station": {
+      "terms": {
+        "field": "log",
+        "size": 100
+      },
+      "aggs": {
+        "tavg": {
+          "avg": {
+            "field": "metrics.size"
+          }
+        },
+        "tmax": {
+          "max": {
+            "field": "metrics.size"
+          }
+        }
+      }
+    }
+  }
+}
+
