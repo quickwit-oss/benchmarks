@@ -35,8 +35,16 @@ function stats(timings) {
 }
 
 function aggregate(query, metric="engine_duration", multiplier=1.) {
-  if (query.duration.length === 0) {
-    return { query: query.query, className: "unsupported", unsupported: true, id: query.id }
+  if (!query.hasOwnProperty(metric) ||
+      query[metric] == null ||
+      query[metric].values == null ||
+      query[metric].values.length === 0) {
+    return {
+      name: query.name,
+      query: query.query,
+      className: "unsupported",
+      unsupported: true
+    }
   }
   let res = stats(query[metric].values.map((x) => x * multiplier));
   res.count = query.count;
@@ -137,9 +145,6 @@ class Benchmark extends React.Component {
 
   handleChangeSearchMetric(evt) {
     this.setState({ "search_metric": evt });
-//    window.history.pushState(
-//      "", "",
-//      "?search_metric=" + evt.value.field);
   }
 
   // get_runs_response: schemas.GetRunsResponse.
@@ -242,6 +247,7 @@ class Benchmark extends React.Component {
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
       // Sum(log(ratio)) for each query comparing the current engine to the first engine.
       let sum_log_ratios = 0;
+      let ratio_has_unsupported = false;
       for (let query of engine_queries) {
         let query_data = {};
         if (queries[query.name] !== undefined) {
@@ -249,20 +255,24 @@ class Benchmark extends React.Component {
         }
         query_data[taggedEngine] = query
         queries[query.name] = query_data
-        let reference_time_micros = Object.values(query_data)[0].median;
+	if (query.unsupported || Object.values(query_data)[0].unsupported) {
+	  ratio_has_unsupported = true;
+	  continue;
+	}
+	let reference_metric = Object.values(query_data)[0].median;
         let ratio = 1.0;
-        if (Math.abs(reference_time_micros - query.median) >=
+        if (Math.abs(reference_metric - query.median) >=
 	    this.state.search_metric.value.ratio_ignore_diff_lt) {
           ratio = (query.median + this.state.search_metric.value.ratio_num_denum_constant) /
-	    (reference_time_micros + this.state.search_metric.value.ratio_num_denum_constant);
+	    (reference_metric + this.state.search_metric.value.ratio_num_denum_constant);
         }
         sum_log_ratios += Math.log(ratio);
       }
       const num_queries = Object.keys(engine_queries).length;
-      if (num_queries >= 1) {
+      if (ratio_has_unsupported || num_queries === 0) {
+	engines[taggedEngine].avg_ratios = null;
+      } else if (num_queries >= 1) {
 	engines[taggedEngine].avg_ratios = Math.exp(sum_log_ratios / num_queries);
-      } else {
-	engines[taggedEngine].avg_ratios = 1;
       }
     }
 
