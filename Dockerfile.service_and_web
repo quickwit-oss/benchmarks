@@ -16,13 +16,18 @@ COPY ./service/requirements.txt /service/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /service/requirements.txt --break-system-packages
 
+# Trick not to rebuild app's deps every time there is a code change.
+# https://bitjudo.com/blog/2014/03/13/building-efficient-dockerfiles-node-dot-js/
+COPY ./web/package.json /tmp/package.json
+WORKDIR /tmp
+RUN npm install
+
+WORKDIR /
 COPY ./web /web
+RUN rm -Rf /web/node_modules
+RUN cp -a /tmp/node_modules /web
 
 WORKDIR /web
-
-# TODO: consider these tricks for faster Docker builds:
-# https://bitjudo.com/blog/2014/03/13/building-efficient-dockerfiles-node-dot-js/
-RUN npm install
 RUN npm run build
 
 # Now the website is built under /web/build
