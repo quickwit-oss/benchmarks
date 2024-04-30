@@ -208,6 +208,10 @@ class Benchmark extends React.Component {
     let engines = {}
     // query_name -> (engine display name -> query stats).
     let queries = {}
+    let reference_engine = null;
+    if (Object.keys(this.state.runs).length > 0) {
+      reference_engine = Object.keys(this.state.runs)[0];
+    }
     for (let display_name in this.state.runs) {
       // {search: run, indexing: run}.
       let engine_results = this.state.runs[display_name].indexing?.run_results;
@@ -249,17 +253,18 @@ class Benchmark extends React.Component {
       let sum_log_ratios = 0;
       let ratio_has_unsupported = false;
       for (let query of engine_queries) {
-        let query_data = {};
-        if (queries[query.name] !== undefined) {
-          query_data = queries[query.name];
-        }
+	if (!(query.name in queries)) {
+	  queries[query.name] = {};
+	}
+	let query_data = queries[query.name];
         query_data[taggedEngine] = query
-        queries[query.name] = query_data
-	if (query.unsupported || Object.values(query_data)[0].unsupported) {
+	if (query.unsupported ||
+	    !(reference_engine in query_data) ||
+	    query_data[reference_engine].unsupported) {
 	  ratio_has_unsupported = true;
 	  continue;
 	}
-	let reference_metric = Object.values(query_data)[0].median;
+	let reference_metric = query_data[reference_engine].median;
         let ratio = 1.0;
         if (Math.abs(reference_metric - query.median) >=
 	    this.state.search_metric.value.ratio_ignore_diff_lt) {
