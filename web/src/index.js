@@ -63,7 +63,14 @@ class Benchmark extends React.Component {
 	  field: "engine_duration",
 	  // Microseconds -> milliseconds.
 	  field_multiplier: 1. / 1000.,
-	  unit: "ms"
+	  unit: "ms",
+	  // For the ratio computations, ignore diffs (after the
+	  // field_multiplier has been applied) less than this number.
+	  ratio_ignore_diff_lt: 3,
+	  // Add this value to the numerator and denominator of the
+	  // ratio computation (after the field_multiplier has been
+	  // applied), not to have huge ratios for small values.
+	  ratio_num_denum_constant: 10
 	}
       },
       {
@@ -72,7 +79,9 @@ class Benchmark extends React.Component {
 	  field: "total_cpu_time_s",
 	  // Seconds -> milliseconds.
 	  field_multiplier: 1000.,
-	  unit: "ms"
+	  unit: "ms",
+	  ratio_ignore_diff_lt: 3,
+	  ratio_num_denum_constant: 10
 	},
       },
       {
@@ -80,7 +89,9 @@ class Benchmark extends React.Component {
 	value: {
 	  field: "object_storage_fetch_requests",
 	  field_multiplier: 1,
-	  unit: ""
+	  unit: "",
+	  ratio_ignore_diff_lt: 0,
+	  ratio_num_denum_constant: 5
 	}
       },
       {
@@ -88,7 +99,9 @@ class Benchmark extends React.Component {
 	value: {
 	  field: "object_storage_download_megabytes",
 	  field_multiplier: 1,
-	  unit: "MB"
+	  unit: "MB",
+	  ratio_ignore_diff_lt: 10,
+	  ratio_num_denum_constant: 10
 	}
       }
     ];
@@ -238,8 +251,10 @@ class Benchmark extends React.Component {
         queries[query.name] = query_data
         let reference_time_micros = Object.values(query_data)[0].median;
         let ratio = 1.0;
-        if (Math.abs(reference_time_micros - query.median) >= 3 * 1000) {
-          ratio = (query.median + 10 * 1000) / (reference_time_micros + 10 * 1000);
+        if (Math.abs(reference_time_micros - query.median) >=
+	    this.state.search_metric.value.ratio_ignore_diff_lt) {
+          ratio = (query.median + this.state.search_metric.value.ratio_num_denum_constant) /
+	    (reference_time_micros + this.state.search_metric.value.ratio_num_denum_constant);
         }
         sum_log_ratios += Math.log(ratio);
       }
