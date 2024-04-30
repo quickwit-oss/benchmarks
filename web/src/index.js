@@ -53,9 +53,9 @@ class Benchmark extends React.Component {
   // `dataset_to_selector_options`
   // `initial_dataset`
   // `initial_selector_options`
+  // `initial_search_metric_field`
   constructor(props) {
     super(props);
-    // TODO: permalink
     this.search_metrics = [
       {
 	label: "Search Latency",
@@ -93,11 +93,17 @@ class Benchmark extends React.Component {
       }
     ];
     this.initial_search_metric = this.search_metrics[0];
+    for (let metric of this.search_metrics) {
+      if (metric.value.field == this.props.initial_search_metric_field) {
+	this.initial_search_metric = metric;
+	break;
+      }
+    }
     this.state = {
       dataset: this.props.initial_dataset,
-      // List of selected runs, i.e. a list of:
+      // Array of selected runs, i.e. an array of:
       // {indexing: ID of the indexing run, search: ID of the search run}.
-      selected_runs: null,
+      selected_runs: this.props.initial_selector_options.map((opt) => opt.value),
       // Maps display name to {indexing: run_results, search: run_results}
       runs: {},
       // This search metric to display.
@@ -118,6 +124,9 @@ class Benchmark extends React.Component {
 
   handleChangeSearchMetric(evt) {
     this.setState({ "search_metric": evt });
+//    window.history.pushState(
+//      "", "",
+//      "?search_metric=" + evt.value.field);
   }
 
   // get_runs_response: schemas.GetRunsResponse.
@@ -165,17 +174,10 @@ class Benchmark extends React.Component {
   handleChangeRun(evt) {
     // Array of {indexing: numerical run ID, search: numerical run ID}.
     let selected_runs = [];
-    let all_run_ids = [];  // Only for the permalink
     for (let run_info of evt) {
       selected_runs.push(run_info.value);
-      all_run_ids.push(run_info.value.indexing);
-      all_run_ids.push(run_info.value.search);
     }
     this.setState({"selected_runs": selected_runs})
-    // Update URL so that it becomes a permalink.
-    window.history.pushState(
-      "", "",
-      "?run_ids=" + all_run_ids.filter(x => x !== null).map(x => x.toString()).join(","));
     this.fetchRuns(selected_runs);
   }
   
@@ -277,7 +279,23 @@ class Benchmark extends React.Component {
     return { engines, queries };
   }
 
+  // Updates the URL so that it becomes a permalink.
+  setPermalink() {
+    let all_run_ids = [];
+    if (this.state.selected_runs != null) {
+      for (let run of this.state.selected_runs) {
+	all_run_ids.push(run.indexing);
+	all_run_ids.push(run.search);
+      }
+    }
+    window.history.pushState(
+      "", "",
+      "?run_ids=" + all_run_ids.filter(x => x !== null).map(x => x.toString()).join(",") +
+	"&search_metric=" + this.state.search_metric.value.field);
+  }
+
   render() {
+    this.setPermalink();
     let data_view = this.generateDataView();
     return <div>
 	     <form>
@@ -649,13 +667,15 @@ function showComparison(opt_track_filter,
 			opt_commit_hash_filter,
 			opt_storage_filter,
 			opt_source_filter,
-			run_ids_filter) {
+			run_ids_filter,
+			initial_search_metric_field) {
   console.log("showComparison with filters:",
 	      opt_track_filter,
 	      opt_commit_hash_filter,
 	      opt_storage_filter,
 	      opt_source_filter,
-	      run_ids_filter);
+	      run_ids_filter,
+	      initial_search_metric_field);
   // TODO: consider only fetching the last N runs, or runs in the last
   // D days (but ideally, we should make sure to filter the list of
   // run IDs provided even if they are old).
@@ -735,6 +755,7 @@ function showComparison(opt_track_filter,
 		      <Benchmark datasets={datasets} initial_dataset={initial_dataset}
 				 dataset_to_selector_options={dataset_to_selector_options}
 				 initial_selector_options={initial_selector_options}
+				 initial_search_metric_field={initial_search_metric_field}
 		      />
 		    </React.StrictMode>, el);
   });
@@ -762,7 +783,8 @@ $(function () {
 		 searchParams.get("commit_hash"),
 		 searchParams.get("storage"),
 		 searchParams.get("source"),
-		 new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))));
+		 new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))),
+		 searchParams.get("search_metric"));
 });
 
 // If you want your app to work offline and load faster, you can change
