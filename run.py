@@ -1004,6 +1004,17 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
     return token
 
 
+# Temporary hacks to fix args for the github workflow running quickwit on GCS.
+def tmp_fix_args_for_gh_workflow(args):
+    if (args.source == 'github_workflow' and
+        args.storage == 'gcs' and
+        args.engine_data_dir == '{qwdata_gcs}' and
+        not args.engine_config_file):
+        args.engine_config_file = 'engines/quickwit/configs/cbench_quickwit_gcs.yaml'
+        logging.info("Setting --engine-config-file to %s to fix gh workflow",
+                     args.engine_config_file)
+
+
 def main():
     import sys
     logging.basicConfig(
@@ -1085,6 +1096,8 @@ def main():
               "Useful in github workflows where this will typically be set to $GITHUB_OUTPUT."))
 
     args = parser.parse_args()
+
+    tmp_fix_args_for_gh_workflow(args)
 
     if args.export_to_endpoint and not args.disable_exporter_auth:
         exporter_token = get_exporter_token(args.export_to_endpoint,
