@@ -3,6 +3,7 @@
 import argparse
 import configparser
 import datetime
+import enum
 import fnmatch
 import getpass
 import json
@@ -51,6 +52,11 @@ JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
 RUNNER_CONFIG_FILENAME = "~/.qw_benchmarks_runner.txt"
 
 AUTODETECT_GCP_INSTANCE_PLACEHOLDER = '{autodetect_gcp}'
+
+
+class BenchType(enum.StrEnum):
+    INDEXING = "indexing"
+    SEARCH = "search"
 
 
 def read_runner_config(runner_config_path: str):
@@ -790,9 +796,35 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
     client.create_index(index, index_config)
 
 
-def start_engine(engine: str, engine_data_dir: str | None = None, engine_config_filename: str | None = None):
+def start_engine_from_binary(
+        engine: str, binary_path: str,
+        engine_data_dir: str | None, engine_config_filename: str | None = None,
+        extra_args: list[str] = None):
     if engine != 'quickwit':
-        raise ValueError(f"Engine {engine} not supported by start_engine().")
+        raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
+    config_filename = resolve_engine_config_filename(engine, engine_config_filename)
+    data_dir = resolve_engine_data_dir(engine, engine_data_dir, RUNNER_CONFIG_FILENAME)
+    env_vars = get_engine_env(RUNNER_CONFIG_FILENAME)
+    os.makedirs(data_dir, exist_ok=True)
+    process = subprocess.Popen(
+        [binary_path, "run"] + (extra_args or []),
+        env={"QW_DISABLE_TELEMETRY": "1",
+             "QW_CONFIG": config_filename,
+             "QW_DATA_DIR": data_dir,
+             } | env_vars,
+    )
+    logging.info("Started binary %s PID=%s", binary_path, process.pid)
+    time.sleep(2)
+    if process.poll() is not None:
+        raise Exception(f"Engine {engine} failed with code: {process.returncode}")
+
+
+def start_engine_from_docker(
+        engine: str, binary_path: str | None,
+        engine_data_dir: str | None = None, engine_config_filename: str | None = None,
+        extra_args: list[str] = None):
+    if engine != 'quickwit':
+        raise ValueError(f"Engine {engine} not supported by start_engine_from_docker().")
     docker_client = docker.from_env()
     image = docker_client.images.pull("quickwit/quickwit", tag="edge", platform="linux/amd64")
     config_filename = resolve_engine_config_filename(engine, engine_config_filename)
@@ -801,7 +833,7 @@ def start_engine(engine: str, engine_data_dir: str | None = None, engine_config_
     os.makedirs(data_dir, exist_ok=True)
     container = docker_client.containers.run(
         image.id,
-        "run",
+        ["run"] + (extra_args or []),
         name=engine,
         auto_remove=True,
         detach=True,
@@ -837,24 +869,21 @@ def start_engine(engine: str, engine_data_dir: str | None = None, engine_config_
         raise ValueError("Failed to start container '%s': status: '%s'", container.name, container.status)
 
 
-def start_engine_from_binary(engine: str, binary_path: str, engine_data_dir: str | None, engine_config_filename: str | None = None):
+def start_engine(
+        engine: str, binary_path: str | None,
+        engine_data_dir: str | None = None, engine_config_filename: str | None = None,
+        for_search_only: bool = False):
     if engine != 'quickwit':
-        raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
-    config_filename = resolve_engine_config_filename(engine, engine_config_filename)
-    data_dir = resolve_engine_data_dir(engine, engine_data_dir, RUNNER_CONFIG_FILENAME)
-    env_vars = get_engine_env(RUNNER_CONFIG_FILENAME)
-    os.makedirs(data_dir, exist_ok=True)
-    process = subprocess.Popen(
-        [binary_path, "run"],
-        env={"QW_DISABLE_TELEMETRY": "1",
-             "QW_CONFIG": config_filename,
-             "QW_DATA_DIR": data_dir,
-             } | env_vars,
-    )
-    logging.info("Started binary %s PID=%s", binary_path, process.pid)
-    time.sleep(2)
-    if process.poll() is not None:
-        raise Exception(f"Engine {engine} failed with code: {process.returncode}")
+        raise ValueError(f"Engine {engine} not supported by start_engine().")
+    extra_args = []
+    if for_search_only:
+        extra_args.extend(["--service", "metastore", "--service", "searcher"])
+    if binary_path:
+        return start_engine_from_binary(
+            engine, binary_path, engine_data_dir, engine_config_filename, extra_args)
+    else:
+        return start_engine_from_docker(
+            engine, binary_path, engine_data_dir, engine_config_filename, extra_args)
 
 
 def stop_engine(engine: str):
@@ -940,7 +969,8 @@ def run_indexing_benchmark(
     return completed_process, monitor_stats
         
 
-def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
+def run_benchmark(benchs_to_run: list[BenchType],
+                  args: argparse.Namespace, exporter_token: str | None):
     """Prepares indices and runs the benchmark."""
     results_dir = f'{args.output_path}/{args.track}.{args.engine}'
     if args.tags:
@@ -979,11 +1009,11 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
             continue
         break
 
-    if not args.search_only:
+    if BenchType.INDEXING in benchs_to_run:
         # TODO: use 'engine_client'.
         prepare_index(args.engine, args.track, index, args.overwrite_index)
 
-    if not args.search_only:
+    if BenchType.INDEXING in benchs_to_run:
         output_path = f'{results_dir}/indexing-results.json'
         completed_process, monitor_stats = run_indexing_benchmark(
             engine_client, args.engine, index, args.qw_ingest_v2, track_config, output_path)
@@ -1010,7 +1040,7 @@ def run_benchmark(args: argparse.Namespace, exporter_token: str | None):
             logging.error("Error while running indexing")
             return False
 
-    if not args.indexing_only:
+    if BenchType.SEARCH in benchs_to_run:
         print("Run search bench...")
         search_results = run_search_benchmark(engine_client, args.engine, index, num_iteration, queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
         search_results['tag'] = args.tags
@@ -1182,18 +1212,40 @@ def main():
     else:
         exporter_token = None
 
-    while True:
-        if args.manage_engine:
-            stop_engine(args.engine)
-            if args.binary_path:
-                start_engine_from_binary(
-                    args.engine, args.binary_path,
-                    args.engine_data_dir, args.engine_config_file)
-            else:
-                start_engine(args.engine, args.engine_data_dir, args.engine_config_file)
+    benchs_to_run = []
+    if args.indexing_only and args.search_only:
+        raise ValueError("Conflicting args: --indexing-only and --search-only")
+    if args.indexing_only:
+        benchs_to_run = [BenchType.INDEXING]
+    elif args.search_only:
+        benchs_to_run = [BenchType.SEARCH]
+    else:
+        benchs_to_run = [BenchType.INDEXING, BenchType.SEARCH]
 
-        # When looping, we ignore errors.
-        bench_ok = run_benchmark(args, exporter_token)
+    bench_ok = True
+    while True:
+        if BenchType.INDEXING in benchs_to_run:
+            if args.manage_engine:
+                stop_engine(args.engine)
+                start_engine(args.engine, args.binary_path,
+                             args.engine_data_dir, args.engine_config_file)
+            # When looping, we ignore errors.
+            bench_ok = run_benchmark([BenchType.INDEXING], args, exporter_token)
+
+        if BenchType.SEARCH in benchs_to_run and bench_ok:
+            if args.manage_engine:
+                # We stop/start the engine after indexing so that the peak
+                # memory usage metrics for search queries is more accurate
+                # (otherwise, some engines may keep indexing-related
+                # datastructures in memory).
+                # We only start what is necessary for search
+                # (for_search_only=True), so that the memory usage
+                # (and other metrics to a lesser extend) are not
+                # polluted by background tasks such as slit merges
+                stop_engine(args.engine)
+                start_engine(args.engine, args.binary_path,
+                             args.engine_data_dir, args.engine_config_file, for_search_only=True)
+            bench_ok = run_benchmark([BenchType.SEARCH], args, exporter_token)
 
         if args.manage_engine:
             stop_engine(args.engine)
