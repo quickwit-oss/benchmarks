@@ -11,6 +11,7 @@ import os
 import platform
 import pprint
 import random
+import re
 import statistics
 import subprocess
 import sys
@@ -192,24 +193,32 @@ class ProcessMonitor:
       monitor.get_stats_since_start()
     will return a dict with the following stats since monitor.start() was called:
     - 'total_cpu_time_s' with the total CPU time (user+system) of the process
-        with name 'loki'.
+       with name 'loki'.
+    - 'peak_memory_megabytes' with the peak resident memory of the
+      process. Drawing conclusions from this metric should be done
+      with care, e.g. the process's allocator might not have released
+      previously allocated memory to the OS.
     - 'object_storage_fetch_requests' with the diff of the Prometheus metric
-        'loki_gcs_request_duration_seconds_count' with labels
-        {'operation': 'GET', 'status_code': '200'}.
+      'loki_gcs_request_duration_seconds_count' with labels
+      {'operation': 'GET', 'status_code': '200'}.
+
     """
     def __init__(self, process_id=None, process_name=None, metrics_addr=None,
                  watched_metrics: dict[str, WatchedMetric] = None):
         if bool(process_id) == bool(process_name):
             raise ValueError('Either process_id or process_name should be specified')
         if not process_id:
-            process_id = find_process(process_name).pid
-            if process_id is None:
+            process = find_process(process_name)
+            if process is None:
                 raise ValueError(
                     f"Can't monitor a process that was not found {process_name=}")
+            process_id = process.pid
         self.process = psutil.Process(process_id)
         self.metrics_addr = metrics_addr
         self.watched_metrics = watched_metrics
         self._metrics_values = {}
+        self._reset_vm_hwm_success = True
+        self._docker_client = docker.from_env()
        
     def _read_metrics(self):
         if not self.metrics_addr or not self.watched_metrics:
@@ -222,8 +231,73 @@ class ProcessMonitor:
                     if watched.sample_matches(sample):
                         metrics[name] = sample.value * watched.factor
         return metrics
+
+    def _get_docker_container_id(self) -> str | None:
+        """Return the container ID of the process."""
+        # See man cgroups and
+        # https://docs.docker.com/config/containers/runmetrics/#find-the-cgroup-for-a-given-container.
+        with open(f'/proc/{self.process.pid}/cgroup', 'r') as process_cgroup:
+            match = re.search(r"docker-(?P<containerid1>.*)\.scope|docker/(?P<containerid2>.*)",
+                              process_cgroup.read().split(":")[-1])
+            if not match:
+                return None
+            return match.group("containerid1") or match.group("containerid2")
     
+    def _reset_vm_hwm(self) -> bool:
+        """Reset VmHWM for the process in /proc. See `man proc` for details."""
+        # /proc/$PID/clear_refs is only writeable by the owner of the
+        # process, which in case of an engine running in a docker
+        # container is typically...root.
+        # In that case, we run the commands inside the docker
+        # container. This is annoying as we also need to translate
+        # between between the PID namespace of the host and of the
+        # docker container, and because available commands inside a
+        # container are typically limited.
+        container_id = self._get_docker_container_id()
+        if container_id:
+            container = self._docker_client.containers.get(container_id)
+            # This will return a \n separated list of /proc/PID/status
+            # files for the processes matching self.process.name()
+            # inside the container.
+            grep_result = container.exec_run(
+                # We don't use pgrep or fancier tools, as they are
+                # often not available in a docker image.
+                ["sh", "-c", r"grep -l  -s -e '^Name:\s*" + self.process.name() + r"$' /proc/*/status"])
+            matching_processes_status = grep_result.output.decode("ascii").strip().split("\n")
+            if grep_result.exit_code != 0 or not matching_processes_status:
+                logging.error("Failed to get processes with name %s inside container %s",
+                              self.process.name(), container_id)
+                return False
+            if len(matching_processes_status) > 1:
+                # Typically java, as the memory usage is not very
+                # representative because of xms, xmx, we don't
+                # disambiguate using the command line.
+                logging.error("Found multiple processes with name name %s inside container %s",
+                              self.process.name(), container_id)
+                return False
+            # Finally, reset VmHWM inside the container.
+            clear_refs_result = container.exec_run(
+                ["sh", "-c", "echo 5 > " + matching_processes_status[0].replace("/status", "/clear_refs")])
+            if clear_refs_result.exit_code != 0:
+                logging.error("Failed to reset VmHWM of process with name name %s inside container %s",
+                              self.process.name(), container_id)
+                return False
+            return True
+        else:  # Not running in docker.
+            with open(f'/proc/{self.process.pid}/clear_refs', 'w') as clear_refs:
+                clear_refs.write("5\n")
+            return True
+
+    def _get_vm_hwm_megabytes(self) -> int | None:
+        """Read /proc/pid/status to get the VmHWM (see man proc)."""
+        with open(f'/proc/{self.process.pid}/status', 'r') as status:
+            match = re.search(r"VmHWM:\s*(?P<size>\d*)\s*kB", status.read())
+            if match:
+                return int(match.group("size")) / 1024
+            return None
+
     def start(self):
+        self._reset_vm_hwm_success = self._reset_vm_hwm()
         self._cpu_times = self.process.cpu_times()
         self._metrics_values = self._read_metrics()
         return self
@@ -234,8 +308,11 @@ class ProcessMonitor:
             'total_cpu_time_s': max(
                 cpu_times.user + cpu_times.system -
                 self._cpu_times.user - self._cpu_times.system,
-                0)
+                0),
         }
+        if self._reset_vm_hwm_success:
+            stats['peak_memory_megabytes'] = self._get_vm_hwm_megabytes()
+
         for name, new_v in self._read_metrics().items():
             stats[name] = new_v - self._metrics_values[name]
         return stats
