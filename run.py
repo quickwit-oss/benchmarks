@@ -1246,7 +1246,7 @@ def main():
                 # We only start what is necessary for search
                 # (for_search_only=True), so that the memory usage
                 # (and other metrics to a lesser extend) are not
-                # polluted by background tasks such as slit merges
+                # polluted by background tasks such as split merges.
                 stop_engine(args.engine)
                 start_engine(args.engine, args.binary_path,
                              args.engine_data_dir, args.engine_config_file, for_search_only=True)
