@@ -749,6 +749,11 @@ def run_search_benchmark(search_client: SearchClient, engine: str, index: str, n
             if results_key not in keys_with_multiple_values:
                 continue
             values = results_values["values"]
+            if len(values) < 2:
+                # This should not happen as we check that
+                # --num-iteration >= 2. However, it does happen, so we
+                # raise an exception with details to investigate.
+                raise ValueError(f"Too few values for {results_key=} {query=} {engine=}")
             values.sort()
             results_values["min"] = values[0]
             results_values["max"] = values[-1]
