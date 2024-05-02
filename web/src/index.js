@@ -111,11 +111,21 @@ class Benchmark extends React.Component {
 	  ratio_ignore_diff_lt: 10,
 	  ratio_num_denum_constant: 10
 	}
+      },
+      {
+	label: "Peak resident memory usage (caveats)",
+	value: {
+	  field: "peak_memory_megabytes",
+	  field_multiplier: 1.,
+	  unit: "MB",
+	  ratio_ignore_diff_lt: 3,
+	  ratio_num_denum_constant: 32
+	},
       }
     ];
     this.initial_search_metric = this.search_metrics[0];
     for (let metric of this.search_metrics) {
-      if (metric.value.field == this.props.initial_search_metric_field) {
+      if (metric.value.field === this.props.initial_search_metric_field) {
 	this.initial_search_metric = metric;
 	break;
       }
@@ -421,6 +431,24 @@ class Benchmark extends React.Component {
 		   }
 		 </tr>
 		 <tr>
+		   <td>Indexing peak resident memory usage</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+                       let engine_stats = kv[1].peak_memory_megabytes?.toFixed(0);
+                       if (engine_stats !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {engine_stats} MB
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
+		 <tr>
 		   <td>Indexing throughput</td>
 		   {
 		     Object.entries(data_view.engines).map(kv => {
@@ -661,7 +689,7 @@ function shouldPreselectRun(opt_track_filter,
 			    run_ids_filter,
 			    run_info) {
   if (!opt_commit_hash_filter &&
-      run_ids_filter.size == 0) {
+      run_ids_filter.size === 0) {
     // Require strong filters to be set to avoid preselecting too many
     // runs.
     return false;
@@ -686,7 +714,7 @@ function shouldPreselectRun(opt_track_filter,
 
 function getMostRecentSelectedRun(left, right) {
   if (left === null) return right;
-  if (left.preselected != right.preselected) {
+  if (left.preselected !== right.preselected) {
     return left.preselected ? left : right;
   }
   return left.timestamp < right.timestamp ? right : left;

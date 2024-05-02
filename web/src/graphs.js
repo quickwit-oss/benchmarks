@@ -193,6 +193,9 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
   } else if (series.metric_name === "total_cpu_time_s") {
     yAxisLabel = "CPU Time seconds";
     title = "Engine CPU Time";
+  } else if (series.metric_name === "peak_memory_megabytes") {
+    yAxisLabel = "Memory MBs";
+    title = "Peak resident memory usage (caveats)";
   }
   
   let uplot_series = [

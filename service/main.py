@@ -385,6 +385,7 @@ def get_as_timeseries(
         "megabytes_per_second",
         "indexing_duration_secs",
         "total_cpu_time_s",
+        "peak_memory_megabytes",
         "num_splits",
         "object_storage_upload_megabytes",
         "object_storage_put_requests",
@@ -392,6 +393,7 @@ def get_as_timeseries(
     SEARCH_METRICS = [
         "engine_duration",
         "total_cpu_time_s",
+        "peak_memory_megabytes",
         "object_storage_download_megabytes",
         "object_storage_fetch_requests",
     ]
