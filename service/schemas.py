@@ -96,12 +96,12 @@ class ListRunsResponse(BaseModel):
 
 class QueryMeasurements(BaseModel):
     values: list[float]
-    min: float
-    max: float
-    mean: float
-    median: float
-    stddev: float
-    p90: float
+    min: float | None = None
+    max: float | None = None
+    mean: float | None = None
+    median: float | None = None
+    stddev: float | None = None
+    p90: float | None = None
 
 
 class QueryResult(BaseModel):
@@ -116,6 +116,8 @@ class QueryResult(BaseModel):
     object_storage_upload_megabytes: QueryMeasurements | None = None
     object_storage_fetch_requests: QueryMeasurements | None = None
     object_storage_put_requests: QueryMeasurements | None = None
+    # For debugging, so we don't bother to validate.
+    errors: list[dict] | None = None
 
 
 class SearchRunResults(BaseModel):

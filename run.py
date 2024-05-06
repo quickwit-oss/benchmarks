@@ -34,10 +34,14 @@ import yaml
 logger = logging.getLogger(__name__)
 
 WARMUP_ITER = 1
-# Any failed query whose response contains one of those strings will be retried.
+# Any failed query whose response contains one of those strings will
+# be retried indefinitely.
 RETRY_ON_FAILED_RESPONSE_SUBSTR = [
     "there are no available searcher nodes in the pool"
 ]
+# Number of retries for errors that don't match
+# RETRY_ON_FAILED_RESPONSE_SUBSTR.
+NUM_QUERY_RETRIES = 4
 # File where the JWT token will be cached across invocation of this
 # tool.
 JWT_TOKEN_FILENAME = "~/.jwt_token_benchmark_service.txt"
@@ -656,19 +660,25 @@ class LokiClient(SearchClient):
 
 def drive(index: str, queries: list[Query], client: SearchClient):
     for query in queries:
+        tries = 0
         while True:
             start = time.monotonic()
             result = client.query(index, query.query)
+            tries += 1
             stop = time.monotonic()
-            if (result.get("response_status_code") != 200 and
-                any([sub in result.get("response", "")
-                     for sub in RETRY_ON_FAILED_RESPONSE_SUBSTR])):
-                logging.info(
-                    "Retrying query %s because the engine does not "
-                    "seem ready to take requests.",
-                    query.name)
-                continue
-            break
+            if result.get("response_status_code") != 200:
+                if any([sub in result.get("response", "")
+                        for sub in RETRY_ON_FAILED_RESPONSE_SUBSTR]):
+                    logging.info(
+                        "Retrying query %s because the engine does not "
+                        "seem ready to take requests.",
+                        query.name)
+                    continue
+                if tries <= NUM_QUERY_RETRIES:
+                    logging.info("Retrying query %s", query.name)
+                    continue
+                logging.info("Not retrying failed query %s", query.name)
+                break
         # This could move under the ProcessMonitor and we could get rid of this drive() function.
         duration = int((stop - start) * 1e6)
         yield result | {'query': query, 'duration': duration}
@@ -701,7 +711,7 @@ def get_engine_client(engine: str, no_hits: bool) -> SearchClient:
         raise ValueError(f"Unknown engine {engine}")
 
 
-def run_search_benchmark(search_client: SearchClient, engine: str, index: str, num_iteration: int,
+def run_search_benchmark(search_client: SearchClient, engine: str, index: str, num_iterations: int,
                          queries_dir: str, query_filter, output_filepath: str, no_hits: bool) -> dict:
     """Run the benchmark."""
     queries: list[Query] = list(read_queries(queries_dir, query_filter))
@@ -714,6 +724,7 @@ def run_search_benchmark(search_client: SearchClient, engine: str, index: str, n
             "count": 0,
             "duration": { "values": []},
             "engine_duration": { "values": []},
+            "errors": [],
         }
         queries_results[query.name] = query_result
     keys_with_multiple_values = {"duration", "engine_duration"}
@@ -727,10 +738,17 @@ def run_search_benchmark(search_client: SearchClient, engine: str, index: str, n
             pass
 
     print("--- Start measuring response times ...")
-    for i in range(num_iteration):
-        print("- Run #%s of %s" % (i + 1, num_iteration))
+    for i in range(num_iterations):
+        print("- Run #%s of %s" % (i + 1, num_iterations))
         for drive_results in drive(index, queries_shuffled, search_client):
             query = drive_results.pop('query')
+            response_status_code = drive_results.get('response_status_code', 200)
+            if response_status_code != 200:
+                queries_results[query.name]["errors"].append({
+                    "response_status_code": drive_results["response_status_code"],
+                    "response": drive_results.get("response", "")[:4096],
+                    })
+                continue
             count = drive_results.pop('num_hits')
             engine_duration = drive_results.pop('elapsed_time_micros')
             duration = drive_results.pop('duration')
@@ -749,18 +767,15 @@ def run_search_benchmark(search_client: SearchClient, engine: str, index: str, n
             if results_key not in keys_with_multiple_values:
                 continue
             values = results_values["values"]
-            if len(values) < 2:
-                # This should not happen as we check that
-                # --num-iteration >= 2. However, it does happen, so we
-                # raise an exception with details to investigate.
-                raise ValueError(f"Too few values for {results_key=} {query=} {engine=}")
-            values.sort()
-            results_values["min"] = values[0]
-            results_values["max"] = values[-1]
-            results_values["mean"] = statistics.mean(values)
-            results_values["median"] = statistics.median(values)
-            results_values["stddev"] = statistics.stdev(values)
-            results_values["p90"] = statistics.quantiles(values, n=10)[8]
+            if values:
+                values.sort()
+                results_values["min"] = values[0]
+                results_values["max"] = values[-1]
+                results_values["mean"] = statistics.mean(values)
+                results_values["median"] = statistics.median(values)
+                results_values["stddev"] = statistics.stdev(values) if len(values) >= 2 else 0
+                results_values["p90"] = (statistics.quantiles(values, n=10)[8]
+                                         if len(values) >= 2 else values[0])
 
     results = {
         "engine": engine,
@@ -998,10 +1013,7 @@ def run_benchmark(benchs_to_run: list[BenchType],
     if args.engine_specific_queries_subdir:
         queries_dir = os.path.join(queries_dir, args.engine_specific_queries_subdir)
     index = track_config["index"]
-    num_iteration = args.num_iteration
-    if num_iteration < 2:
-        raise ValueError(
-            'We require at least two iterations as stats computed downstream require at least two points.')
+    num_iterations = args.num_iteration
 
     engine_client = get_engine_client(args.engine, args.no_hits)
 
@@ -1047,7 +1059,8 @@ def run_benchmark(benchs_to_run: list[BenchType],
 
     if BenchType.SEARCH in benchs_to_run:
         print("Run search bench...")
-        search_results = run_search_benchmark(engine_client, args.engine, index, num_iteration, queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
+        search_results = run_search_benchmark(engine_client, args.engine, index, num_iterations,
+                                              queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
         search_results['tag'] = args.tags
         search_results['storage'] = args.storage
         search_results['instance'] = instance
@@ -1160,7 +1173,7 @@ def main():
     parser.add_argument('--search-only', action='store_true', help='Only run search')
     parser.add_argument('--no-hits', action='store_true', help='Do not retrieve docs')
     parser.add_argument('--query-filter', help='Only run queries matching the given pattern', default="*")
-    parser.add_argument('--num-iteration', type=int, help='Number of iterations of the search benchmark. Must be >= 2.', default=10)
+    parser.add_argument('--num-iteration', type=int, help='Number of iterations of the search benchmark.', default=10)
     parser.add_argument('--qw-ingest-v2', action='store_true', help="If set, we will use Quickwit's ingest V2")
     parser.add_argument('--export-to-endpoint', type=str,
                         help="If set, run results will be exported to this endpoint.",
