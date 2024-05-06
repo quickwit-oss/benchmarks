@@ -28,7 +28,7 @@ services:
         soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
         hard: 65536
     volumes:
-      - data:/usr/share/opensearch/data:z # Creates volume called data and mounts it to the container
+      - ./data:/usr/share/opensearch/data:z # Creates volume called data and mounts it to the container
     ports:
       - 9301:9301 # REST API
       - 9600:9600 # Performance Analyzer
@@ -50,9 +50,6 @@ services:
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
     networks:
       - opensearch-net
-
-volumes:
-  data:
 
 networks:
   opensearch-net:
