@@ -282,8 +282,10 @@ class ProcessMonitor:
                 # Typically java, as the memory usage is not very
                 # representative because of xms, xmx, we don't
                 # disambiguate using the command line.
-                logging.error("Found multiple processes with name name %s inside container %s",
-                              self.process.name(), container_id)
+                logging.error(
+                    ("Found multiple processes with name name '%s' inside container '%s'."
+                     "Cannot reset VmHWM and won't report peak memory usage"),
+                    self.process.name(), container_id)
                 return False
             # Finally, reset VmHWM inside the container.
             clear_refs_result = container.exec_run(
