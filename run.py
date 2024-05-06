@@ -669,7 +669,10 @@ def drive(index: str, queries: list[Query], client: SearchClient):
             result = client.query(index, query.query)
             tries += 1
             stop = time.monotonic()
-            if result.get("response_status_code") != 200:
+            if result.get("response_status_code", 200) == 200:
+                # Success, no need to retry.
+                break
+            else:  # Failure
                 if any([sub in result.get("response", "")
                         for sub in RETRY_ON_FAILED_RESPONSE_SUBSTR]):
                     logging.info(
@@ -678,7 +681,8 @@ def drive(index: str, queries: list[Query], client: SearchClient):
                         query.name)
                     continue
                 if tries <= NUM_QUERY_RETRIES:
-                    logging.info("Retrying query %s", query.name)
+                    logging.info("Retrying query %s (try %d of %d)",
+                                 query.name, tries, NUM_QUERY_RETRIES + 1)
                     continue
                 logging.info("Not retrying failed query %s", query.name)
                 break
