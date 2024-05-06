@@ -408,7 +408,8 @@ def export_results(endpoint: str,
     run_info = response.json()["run_info"]
     run_id = run_info["id"]
     url = endpoint + f"/?run_ids={run_id}"
-    logging.info(f'Exported results to {api_endpoint}: {run_info}\nResults can be seen at address: {url}')
+    color = '' if os.environ.get("NO_COLOR") else '\033[92m'
+    logging.info(f'Exported results to {api_endpoint}: {run_info}\n{color}Results can be seen at address: {url} \033[0m')
     # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
     if url_file:
         with open(url_file, 'a') as out:
