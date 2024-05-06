@@ -1,0 +1,12 @@
+{
+  "track_total_hits": true,
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "timestamp": {"order": "desc"}
+    }
+  ],
+  "search_after": ["1672617600000"]
+}

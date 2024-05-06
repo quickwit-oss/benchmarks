@@ -33,5 +33,5 @@ serve:
 	@echo "--- Serving results ---"
 	@python3 scripts/merge_all_results.py
 	@cp results.json web/public/results.json
-	@cd web/build && npm install && npm run build
+	@cd web && npm install && npm run build
 	@cd web/build && python3 -m http.server $(PORT)
