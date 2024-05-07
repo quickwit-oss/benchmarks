@@ -284,6 +284,7 @@ def list_runs(run_type: str | None = None,
               unsafe_user: str | None = None,
               verified_email: str | None = None,
               source: schemas.RunSource | None = None,
+              index_uid: str | None = None,
               db: Session = Depends(get_db)):
     """Return the list of runs according to filters."""
     db_runs = crud.list_runs(
@@ -300,6 +301,7 @@ def list_runs(run_type: str | None = None,
         unsafe_user=unsafe_user,
         verified_email=verified_email,
         source=source,
+        index_uid=index_uid,
         ordering=crud.Ordering.DESC)
     return schemas.ListRunsResponse(
         run_infos=[crud.db_run_to_run_info(db_run)

@@ -339,6 +339,12 @@ class Query(object):
         self.query = query
 
 
+@dataclass
+class IndexInfo:
+    engine_index_info: dict
+    index_uid: str | None
+
+
 class SearchClient(ABC):
     @abstractmethod
     def query(self, index: str, query: Query):
@@ -363,6 +369,10 @@ class SearchClient(ABC):
         """Creates a ProcessMonitor and starts it."""
         raise NotImplementedError
 
+    @abstractmethod
+    def index_info(self, index_name: str) -> IndexInfo | None:
+        raise NotImplementedError
+
 
 def export_results(endpoint: str,
                    results: dict[str, Any],
@@ -377,7 +387,7 @@ def export_results(endpoint: str,
     api_endpoint = f'{endpoint}/api/v1/{results_type}_runs/'
     results = results.copy()
     info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
-                   'source', 'commit_hash'}
+                   'source', 'commit_hash', 'index_uid'}
     run_info = {k: results.pop(k) for k in info_fields}
     run_results = results
 
@@ -418,7 +428,8 @@ def export_results(endpoint: str,
             out.write(f"url={url}\n")
 
 
-def get_common_debug_info(engine_client: SearchClient):
+def get_common_debug_info(engine_client: SearchClient, index_name: str):
+    index_info: IndexInfo = engine_client.index_info(index_name)
     return {
         "command_line": ' '.join(sys.argv),
         "unsafe_user": getpass.getuser(),
@@ -426,6 +437,8 @@ def get_common_debug_info(engine_client: SearchClient):
         "commit_hash": engine_client.commit_hash(),
         "docker_info": get_docker_info(engine_client.docker_container_name),
         "platform_uname": ' '.join(platform.uname()),
+        "index_info": index_info.engine_index_info if index_info else None,
+        "index_uid": index_info.index_uid if index_info else None,
     }
 
 
@@ -506,6 +519,14 @@ class ElasticClient(SearchClient):
         """The name of the docker container running this engine."""
         return self._docker_container_name
 
+    def index_info(self, index_name: str) -> IndexInfo | None:
+        response = requests.get(f"{self.root_api}/{index_name}")
+        if response.status_code != 200:
+            return None
+        from_engine = response.json().get(index_name)
+        return IndexInfo(engine_index_info=from_engine,
+                         index_uid=from_engine.get("settings", {}).get("index", {}).get("uuid"))
+
 
 class QuickwitClient(ElasticClient):
     def __init__(self, endpoint="http://127.0.0.1:7280/api/v1", no_hits=False):
@@ -530,6 +551,16 @@ class QuickwitClient(ElasticClient):
         if response.status_code != 200:
             raise Exception("Error while checking index", response.text)
         return True
+
+    def index_info(self, index_name: str) -> IndexInfo | None:
+        response = requests.get(f"{self.root_api}/indexes/{index_name}")
+        if response.status_code != 200:
+            return None
+        engine_index_info = response.json()
+        if not engine_index_info:
+            return None
+        return IndexInfo(engine_index_info=engine_index_info,
+                         index_uid=engine_index_info.get("index_uid"))
 
     def create_started_monitor(self) -> ProcessMonitor:
         # TODO: Improve hack.
@@ -659,6 +690,11 @@ class LokiClient(SearchClient):
     def docker_container_name(self) -> str:
         """The name of the docker container running this engine."""
         return "loki"
+
+    def index_info(self, index_name: str) -> dict[str, str] | None:
+        del index_name  # unused
+        # Loki does not have the concept of an index.
+        return None
 
 
 def drive(index: str, queries: list[Query], client: SearchClient):
@@ -1050,7 +1086,7 @@ def run_benchmark(benchs_to_run: list[BenchType],
             indexing_results['qbench_returncode'] = completed_process.returncode
             indexing_results['qbench_command_line'] = ' '.join(completed_process.args)
             indexing_results['source'] = args.source
-            indexing_results |= get_common_debug_info(engine_client)
+            indexing_results |= get_common_debug_info(engine_client, index)
             indexing_results |= monitor_stats
             # TODO: add config (/api/v1/config)?
 
@@ -1073,7 +1109,7 @@ def run_benchmark(benchs_to_run: list[BenchType],
         search_results['instance'] = instance
         search_results['track'] = args.track
         search_results['source'] = args.source
-        search_results |= get_common_debug_info(engine_client)
+        search_results |= get_common_debug_info(engine_client, index)
         search_output_filepath = f'{results_dir}/search-results.json'
         with open(search_output_filepath , "w") as f:
             json.dump(search_results, f, default=lambda obj: obj.__dict__, indent=4)

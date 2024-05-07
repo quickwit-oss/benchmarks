@@ -33,4 +33,5 @@ class Run(Base):
     # on 'run_type'.
     run_results = Column(JSON)
     source = Column(String, index=True)
+    index_uid = Column(String, index=True)
 

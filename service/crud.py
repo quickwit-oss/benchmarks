@@ -44,7 +44,8 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
         commit_hash=db_run.commit_hash,
         unsafe_user=db_run.unsafe_user,
         verified_email=db_run.verified_email,
-        source=db_run.source)
+        source=db_run.source,
+        index_uid=db_run.index_uid)
 
 def upgrade_indexing_run(run: schemas.IndexingRun):
     if run.run_results.megabytes_per_second is None:
@@ -109,6 +110,7 @@ def list_runs(db: Session,
               unsafe_user: str | None = None,
               verified_email: str | None = None,
               source: schemas.RunSource | None = None,
+              index_uid: str | None = None,
               return_full_runs: bool = False,
               ordering: Ordering = Ordering.DESC) -> list[sqlalchemy.engine.row.Row]:
     """Finds the runs with the given filters from the DB."""
@@ -127,6 +129,7 @@ def list_runs(db: Session,
                   models.Run.unsafe_user,
                   models.Run.verified_email,
                   models.Run.source,
+                  models.Run.index_uid,
                   ]
     db_query = db.query(*fields)
     if run_type is not None:
@@ -153,6 +156,8 @@ def list_runs(db: Session,
         db_query = db_query.filter(models.Run.verified_email == verified_email)
     if source is not None:
         db_query = db_query.filter(models.Run.source == source)
+    if index_uid is not None:
+        db_query = db_query.filter(models.Run.index_uid == index_uid)
     if ordering == Ordering.ASC:
         db_query = db_query.order_by(models.Run.timestamp.asc())
     elif ordering == Ordering.DESC:

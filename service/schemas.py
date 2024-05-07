@@ -43,6 +43,7 @@ class RunInfo(BaseModel):
     # service. The service will set it.
     verified_email: str | None = None
     source: RunSource = RunSource.MANUAL
+    index_uid: str | None = None
 
 
 class BuildInfo(BaseModel):
@@ -67,8 +68,10 @@ class IndexingRunResults(BaseModel):
     qbench_returncode: int | None = None
     qbench_command_line: str | None = None
     platform_uname: str | None = None
-    # Each engine has its own info format.
+    # Each engine has its own info format, so we don't validate.
     engine_info: dict | None = None
+    # Each engine has its own info format, so we don't validate.
+    index_info: dict | None = None
     docker_info: dict | None = None
     command_line: str | None = None
     total_cpu_time_s: float | None = None
@@ -126,6 +129,8 @@ class SearchRunResults(BaseModel):
     platform_uname: str | None = None
     # Each engine has its own info format.
     engine_info: dict | None = None
+    # Each engine has its own info format, so we don't validate.
+    index_info: dict | None = None
     docker_info: dict | None = None
     command_line: str | None = None
 
