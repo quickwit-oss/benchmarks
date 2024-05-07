@@ -8,6 +8,7 @@ import './style.css'
 import * as serviceWorker from './serviceWorker';
 import {showContinuousGraphs} from "./graphs.js";
 import {BENCHMARK_SERVICE_ADDRESS, getRunDisplayName} from "./utils.js";
+import {showRunList} from "./runlist.js";
 
 function formatPercentVariation(p) {
   if (p !== undefined) {
@@ -57,11 +58,8 @@ function aggregate(query, metric="engine_duration", multiplier=1.) {
 class Benchmark extends React.Component {
 
   // Expects in props:
-  // `datasets`
-  // `dataset_to_selector_options`
-  // `initial_dataset`
-  // `initial_selector_options`
   // `initial_search_metric_field`
+  // `ids_to_display`, a list of {indexing: run_id or null, search: run_id or null} to display.
   constructor(props) {
     super(props);
     this.search_metrics = [
@@ -131,26 +129,13 @@ class Benchmark extends React.Component {
       }
     }
     this.state = {
-      dataset: this.props.initial_dataset,
-      // Array of selected runs, i.e. an array of:
-      // {indexing: ID of the indexing run, search: ID of the search run}.
-      selected_runs: this.props.initial_selector_options.map((opt) => opt.value),
-      // Maps display name to {indexing: run_results, search: run_results}
+      // Maps opaque unique IDs to run pairs to display: {indexing:
+      // run, search: run}.
       runs: {},
       // This search metric to display.
       search_metric: this.initial_search_metric,
     };
-    this.handleChangeRun(this.props.initial_selector_options);
-  }
-
-  handleChangeDataset(evt) {
-    let dataset = evt.value;
-    if (dataset) {
-      this.setState({ "dataset": dataset });
-    } else {
-      this.setState({ "dataset": null });
-    }
-    // TODO: clear the run multi-select.
+    this.fetchRuns(this.props.ids_to_display);
   }
 
   handleChangeSearchMetric(evt) {
@@ -158,22 +143,31 @@ class Benchmark extends React.Component {
   }
 
   // get_runs_response: schemas.GetRunsResponse.
-  handleGetRunsResponse(get_runs_response) {
-    // Maps run display names to {indexing: run, search: run}.
-    let name_to_runs = {};
+  // run_ids: Array of {indexing: numerical run ID, search: numerical run ID}.
+  // Sets the `runs` state to a map from opaque unique IDs to a run
+  // pairs to display: {indexing: run, search: run}.
+  handleGetRunsResponse(get_runs_response, run_ids) {
+    let id_to_run = {};
     for (const run of get_runs_response.runs) {
-      const name = getRunDisplayName(run.run_info);
-      if (!(name in name_to_runs)) {
-	name_to_runs[name] = {indexing: null, search: null};
-      }
-      if (run.run_info.run_type !== "indexing" &&
-	  run.run_info.run_type !== "search") {
-	console.error("Got run with unexpected type:", run);
-	continue;
-      }
-      name_to_runs[name][run.run_info.run_type] = run;
+      id_to_run[run.run_info.id] = run;
     }
-    this.setState({"runs": name_to_runs});
+    let runs = {};
+    for (let id_pair of run_ids) {
+      let run_pair = {indexing: null, search: null};
+      let id = null;
+      if (id_pair.search != null) {
+	id = id_pair.search;
+	run_pair.search = id_to_run[id_pair.search];
+      }
+      if (id_pair.indexing != null) {
+	if (id === null) {
+	  id = id_pair.indexing;
+	}
+	run_pair.indexing = id_to_run[id_pair.indexing];
+      }
+      runs[id] = run_pair;
+    }
+    this.setState({"runs": runs});
   }
   
   // run_ids: Array of {indexing: numerical run ID, search: numerical run ID}.
@@ -190,50 +184,37 @@ class Benchmark extends React.Component {
 	      headers: {
 		"Content-Type": "application/json",
 	      },
-	      body: JSON.stringify({run_ids: all_run_ids.filter(x => x !== null)})
+	      body: JSON.stringify({run_ids: all_run_ids.filter(x => x != null)})
 	    })
 	.then((res) => { return res.json(); })
-	.then((resp) => { this.handleGetRunsResponse(resp); });
+	.then((resp) => { this.handleGetRunsResponse(resp, run_ids); });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   }
-  
-  handleChangeRun(evt) {
-    // Array of {indexing: numerical run ID, search: numerical run ID}.
-    let selected_runs = [];
-    for (let run_info of evt) {
-      selected_runs.push(run_info.value);
-    }
-    this.setState({"selected_runs": selected_runs})
-    this.fetchRuns(selected_runs);
-  }
-  
-  // TODO: make sure the order of display is the same as the order in
-  // which the runs were selected. It's not the case right now (seems
-  // lexicographic in the run name).
+
   generateDataView() {
-    // Maps display name to indexing run results, together with extra
+    // Maps opaque run IDs to indexing run results, together with extra
     // info computed in this function.
     let engines = {}
-    // query_name -> (engine display name -> query stats).
+    // query_name -> (run ID -> query stats).
     let queries = {}
     let reference_engine = null;
     if (Object.keys(this.state.runs).length > 0) {
       reference_engine = Object.keys(this.state.runs)[0];
     }
-    for (let display_name in this.state.runs) {
+    for (let run_id in this.state.runs) {
       // {search: run, indexing: run}.
-      let engine_results = this.state.runs[display_name].indexing?.run_results;
+      let run_pair = this.state.runs[run_id];
+      let engine_results = run_pair.indexing?.run_results;
       if (engine_results == null) {
 	engine_results = {};
       }
-      let engine_queries = this.state.runs[display_name].search?.run_results.queries
+      let engine_queries = run_pair.search?.run_results.queries
       if (engine_queries == null) {
 	engine_queries = {};
       }
       
-      let taggedEngine = display_name;
       engine_queries = Array.from(engine_queries);
       engine_queries = engine_queries.map(
 	(query_results) => aggregate(query_results,
@@ -253,10 +234,10 @@ class Benchmark extends React.Component {
       } else {
         metric_average_over_queries = (metric_average_over_queries / engine_queries.length) | 0;
       }
-      engines[taggedEngine] = engine_results;
-      engines[taggedEngine].indexing_run_info = this.state.runs[display_name].indexing?.run_info;
-      engines[taggedEngine].search_run_info = this.state.runs[display_name].search?.run_info;
-      engines[taggedEngine].metric_average_over_queries = metric_average_over_queries;
+      engines[run_id] = engine_results;
+      engines[run_id].indexing_run_info = run_pair.indexing?.run_info;
+      engines[run_id].search_run_info = run_pair.search?.run_info;
+      engines[run_id].metric_average_over_queries = metric_average_over_queries;
       // Ratios with a similar formula as in the clickhouse benchmark.
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
       // Sum(log(ratio)) for each query comparing the current engine to the first engine.
@@ -267,7 +248,7 @@ class Benchmark extends React.Component {
 	  queries[query.name] = {};
 	}
 	let query_data = queries[query.name];
-        query_data[taggedEngine] = query
+        query_data[run_id] = query
 	if (query.unsupported ||
 	    !(reference_engine in query_data) ||
 	    query_data[reference_engine].unsupported) {
@@ -285,9 +266,9 @@ class Benchmark extends React.Component {
       }
       const num_queries = Object.keys(engine_queries).length;
       if (ratio_has_unsupported || num_queries === 0) {
-	engines[taggedEngine].avg_ratios = null;
+	engines[run_id].avg_ratios = null;
       } else if (num_queries >= 1) {
-	engines[taggedEngine].avg_ratios = Math.exp(sum_log_ratios / num_queries);
+	engines[run_id].avg_ratios = Math.exp(sum_log_ratios / num_queries);
       }
     }
 
@@ -322,15 +303,16 @@ class Benchmark extends React.Component {
   // Updates the URL so that it becomes a permalink.
   setPermalink() {
     let all_run_ids = [];
-    if (this.state.selected_runs != null) {
-      for (let run of this.state.selected_runs) {
-	all_run_ids.push(run.indexing);
-	all_run_ids.push(run.search);
+    // Apparently buggy
+    if (this.state.runs != null) {
+      for (let id in this.state.runs) {
+	all_run_ids.push(this.state.runs[id].indexing?.run_info.id);
+	all_run_ids.push(this.state.runs[id].search?.run_info.id);
       }
     }
     window.history.pushState(
       "", "",
-      "?run_ids=" + all_run_ids.filter(x => x !== null).map(x => x.toString()).join(",") +
+      "?run_ids=" + all_run_ids.filter(x => x != null).map(x => x.toString()).join(",") +
 	"&search_metric=" + this.state.search_metric.value.field);
   }
 
@@ -340,18 +322,6 @@ class Benchmark extends React.Component {
     return <div>
 	     <form>
                <fieldset>
-		 <label htmlFor="datasetField">Dataset</label>
-		 <Select id="datasetField2" options={
-			   this.props.datasets.map((ds) => ({value: ds, label: ds}))
-			 }
-			 defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
-			 onChange={(evt) => this.handleChangeDataset(evt)}
-		 />		 
-		 <label>Runs to compare (format: &lt;engine&gt;.&lt;storage&gt;.&lt;instance&gt;.&lt;short_commit_hash&gt;.&lt;tag&gt;)</label>
-		 <Select options={this.props.dataset_to_selector_options[this.state.dataset]}
-			 isMulti className="basic-multi-select" classNamePrefix="select"
-			 defaultValue={this.props.initial_selector_options}
-			 onChange={(evt) => this.handleChangeRun(evt)}/>
 		 <label>Search metrics to compare</label>
 		 <Select options={this.search_metrics}
 			 defaultValue={this.initial_search_metric}
@@ -366,16 +336,43 @@ class Benchmark extends React.Component {
 		   {
 		     Object.entries(data_view.engines).map((kv) => {
 		       let engine = kv[0];
+		       let display_name = "Unknown";
+		       if (kv[1].indexing_run_info) {
+			 display_name = getRunDisplayName(kv[1].indexing_run_info);
+		       } else if (kv[1].search_run_info) {
+			 display_name = getRunDisplayName(kv[1].search_run_info);
+		       }
 		       let params = new URLSearchParams({
 			 page: "raw",
 			 run_ids: [kv[1].indexing_run_info?.id, kv[1].search_run_info?.id].filter(x => x != null)
 		       });
-		       return (<th key={"col-" + engine}><a href={"?" + params}>{engine}</a></th>);
+		       return (<th key={"col-" + engine}><a href={"?" + params}>{display_name}</a></th>);
 		     })
 		   }
 		 </tr>
                </thead>
                <tbody>
+		 <tr>
+		   <td>Dataset</td>
+		   {
+		     Object.entries(data_view.engines).map(kv => {
+                       let engine = kv[0];
+                       let track = kv[1].indexing_run_info?.track;
+		       if (!track) {
+			 track = kv[1].search_run_info?.track;
+		       }
+                       if (track !== undefined) {
+			 return <td key={"result-" + engine}>
+				  {track}
+				</td>;
+                       } else {
+			 return <td key={"result-" + engine}>
+				  Unknown
+				</td>;
+                       }
+		     })
+		   }
+		 </tr>
 		 <tr>
 		   <td>Indexing run timestamp</td>
 		   {
@@ -680,147 +677,145 @@ function showRaw(run_ids) {
     });
 }
 
-// `run_info` corresponds to schemas.RunInfo of the service.
-// `run_ids_filter` is a Set of integer run ids.
-function shouldPreselectRun(opt_track_filter,
-			    opt_commit_hash_filter,
-			    opt_storage_filter,
-			    opt_source_filter,
-			    run_ids_filter,
-			    run_info) {
-  if (!opt_commit_hash_filter &&
-      run_ids_filter.size === 0) {
-    // Require strong filters to be set to avoid preselecting too many
-    // runs.
-    return false;
-  }
-  if (opt_track_filter && opt_track_filter !== run_info.track) {
-    return false;
-  }
-  if (opt_commit_hash_filter && opt_commit_hash_filter !== run_info.commit_hash) {
-    return false;
-  }
-  if (opt_storage_filter && opt_storage_filter !== run_info.storage) {
-    return false;
-  }
-  if (opt_source_filter && opt_source_filter !== run_info.source) {
-    return false;
-  }
-  if (run_ids_filter.size > 0 && !run_ids_filter.has(run_info.id)) {
-    return false;
-  }
-  return true;
-}
-
 function getMostRecentSelectedRun(left, right) {
-  if (left === null) return right;
+  if (left == null) return right;
   if (left.preselected !== right.preselected) {
     return left.preselected ? left : right;
   }
   return left.timestamp < right.timestamp ? right : left;
 }
 
-// `run_ids_filter` is a Set of integer run ids.
-function showComparison(opt_track_filter,
-			opt_commit_hash_filter,
-			opt_storage_filter,
-			opt_source_filter,
-			run_ids_filter,
-			initial_search_metric_field) {
-  console.log("showComparison with filters:",
-	      opt_track_filter,
-	      opt_commit_hash_filter,
-	      opt_storage_filter,
-	      opt_source_filter,
-	      run_ids_filter,
-	      initial_search_metric_field);
-  // TODO: consider only fetching the last N runs, or runs in the last
-  // D days (but ideally, we should make sure to filter the list of
-  // run IDs provided even if they are old).
-  $.getJSON(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`, (list_runs_resp) => {
-    // Maps dataset name to:
-    // {display_name -> {indexing: most recent indexing run,
-    //                   search: most recent search run}
-    // }
-    let dataset_to_most_recent_runs = {};
-    for (const run_info of list_runs_resp.run_infos) {
-      let dataset = run_info.track;
-      let display_name = getRunDisplayName(run_info);
-      run_info.preselected = shouldPreselectRun(
-	opt_track_filter,
-	opt_commit_hash_filter,
-	opt_storage_filter,
-	opt_source_filter,
-	run_ids_filter,
-	run_info);
-      if (!(dataset in dataset_to_most_recent_runs)) {
-	dataset_to_most_recent_runs[dataset] = {};
-      }
-      let most_recent_runs = dataset_to_most_recent_runs[dataset];
-      if (!(display_name in most_recent_runs)) {
-	most_recent_runs[display_name] = {
-	  indexing: null,
-	  search: null
-	};
-      }
-      let previous_run_info = most_recent_runs[display_name][run_info.run_type];
-      most_recent_runs[display_name][run_info.run_type] = getMostRecentSelectedRun(previous_run_info, run_info);
-    }
-    let initial_dataset = null;
-    // Pick the latest for each combination.
-    // Map from dataset name to an array of
-    // {value: {indexing: ID of the indexing run, search: ID of the search run}, label: display name of the run}
-    let dataset_to_selector_options = {};
-    // Array of preselected selector options.
-    let initial_selector_options = [];
-    for (const dataset in dataset_to_most_recent_runs) {
-      if (!(dataset in dataset_to_selector_options)) {
-	dataset_to_selector_options[dataset] = [];
-      }
-      for (const display_name in dataset_to_most_recent_runs[dataset]) {
-	const search_run_info = dataset_to_most_recent_runs[dataset][display_name].search;
-	const indexing_run_info = dataset_to_most_recent_runs[dataset][display_name].indexing;
-	let preselected = false;
-	if (indexing_run_info !== null && indexing_run_info.preselected) {
-	  preselected = true;
-	}
-	if (search_run_info !== null && search_run_info.preselected) {
-	  preselected = true;
-	}
-	const selector_option = {
-	  value: {
-	    indexing: indexing_run_info === null ? null : indexing_run_info.id,
-	    search: search_run_info === null ? null : search_run_info.id
-	  },
-	  label: display_name
-	};
-	dataset_to_selector_options[dataset].push(selector_option);
-	if (preselected) {
-	  initial_selector_options.push(selector_option);
-	  initial_dataset = dataset;
-	}
-      }
-    }
-    
-    const datasets = Object.keys(dataset_to_most_recent_runs).sort();
-    if (initial_dataset === null) {
-      initial_dataset = datasets[0];
-    }
-    let el = document.getElementById("app-container");
-    console.log("Initial rendering of Benchmark react elmt");
+// From a list of RunInfos and of selected run IDs, computes the list
+// of runs that should be displayed and matches the indexing and search
+// runs that should be displayed together.
+// Matching indexing and search runs is a bit tricky, since we might
+// not have have an ID linking a search run to the corresponding
+// indexing run, and besides, one indexing run can correspond to many
+// search runs.
+// Here is how the heuristic works:
+// - For each search run selected, we match it with:
+//   * If it has an index UID (runs after commit 0996acf on engines
+//     that support it), to the indexing run with the same index UID
+//     and same relevant run_info fields (see
+//     `build_full_run_name`). There should not be multiple matching
+//     indexing runs, but for robustness, if there are multiple, we
+//     pick the most recent one among those whose IDs are in
+//     `selected_run_ids` (or among all of them if none is in
+//     `selected_run_ids`).
+//   * If it does not have an index UID, to the indexing run with the
+//     same relevant run_info fields (see `build_run_name`). There can
+//     be multiple indexing runs matching (e.g. users ran multiple
+//     indexing benchmarks with the same run_info fields), in which
+//     case, we pick the most recent one among those whose IDs are
+//     in `selected_run_ids` (or among all of them if none is in
+//     `selected_run_ids`).
+// - Indexing runs whose IDs are in `selected_run_ids` and that are
+//   not matched to a selected search runs are displayed
+//   independently.
+// Note that an indexing run can be showed multiple times if it
+// corresponds to multiple selected search runs.
+//
+// Args:
+//   - run_infos: List of schemas.RunInfo.
+//   - selected_run_ids: List of selected numerical run IDs.
+// Returns:
+//   A list of {indexing: run_id or null, search: run_id or null} to display.
+function assemble_runs_to_display(run_infos, selected_run_ids) {
+  let build_run_name = function(run_info) {
+    return `${run_info.track}.${run_info.engine}.${run_info.storage}.${run_info.instance}.${run_info.tag}.${run_info.commit_hash}.${run_info.commit_hash}.${run_info.verified_email}.${run_info.source}`;
+  };
+  let build_full_run_name = function(run_info) {
+    return `${run_info.track}.${run_info.engine}.${run_info.storage}.${run_info.instance}.${run_info.tag}.${run_info.commit_hash}.${run_info.commit_hash}.${run_info.verified_email}.${run_info.source}.${run_info.index_uid}`;
+  };
 
-    ReactDOM.render(<React.StrictMode>
-		      <Benchmark datasets={datasets} initial_dataset={initial_dataset}
-				 dataset_to_selector_options={dataset_to_selector_options}
-				 initial_selector_options={initial_selector_options}
-				 initial_search_metric_field={initial_search_metric_field}
-		      />
-		    </React.StrictMode>, el);
-  });
+  let selected_run_ids_set = new Set(selected_run_ids);
+  let id_to_run_info = {};
+  // Name to most recent run (among the selected ones if some are
+  // selected). Only for indexing runs.
+  let name_to_run_info = {};
+  // Full name to most recent run (among the selected ones if some are
+  // selected). Only for indexing runs.
+  let full_name_to_run_info = {};
+  for (let run_info of run_infos) {
+    id_to_run_info[run_info.id] = run_info;
+    if (run_info.run_type != "indexing") {
+      continue;
+    }
+    run_info.preselected = selected_run_ids_set.has(run_info.id);
+    let name = build_run_name(run_info);
+    name_to_run_info[name] = getMostRecentSelectedRun(name_to_run_info[name], run_info);
+    let full_name = build_full_run_name(run_info);
+    full_name_to_run_info[full_name] = getMostRecentSelectedRun(full_name_to_run_info[full_name], run_info);
+  }
+  console.debug("name_to_run_info:", name_to_run_info);
+  console.debug("full_name_to_run_info:", full_name_to_run_info);
+
+  // List of {indexing: run_id or null, search: run_id or null} to display.
+  let to_display = [];
+  for (let run_id of selected_run_ids) {
+    const run_info = id_to_run_info[run_id];
+    if (run_info.run_type != "search") {
+      continue;
+    }
+    // Now, we use an heuristic to find a corresponding indexing run
+    // of this search run.
+    if (run_info.index_uid != null) {
+      // Use the index_uid to find a corresponding indexing run.
+      to_display.push({
+	indexing: full_name_to_run_info[build_full_run_name(run_info)]?.id,
+	search: run_info.id
+      });
+    } else {
+      // We don't have an index_uid (legacy run, or the engine does
+      // not provide one, e.g. Loki). We don't use it, so matching is
+      // more error-prone.
+      to_display.push({
+	indexing: name_to_run_info[build_run_name(run_info)]?.id,
+	search: run_info.id
+      });
+    }
+  }
+
+  // We also need to add the selected indexing runs that were not
+  // matched to search runs.
+  let matched_indexing_ids = new Set(to_display.map((id_pair) => id_pair.indexing));
+
+  for (let run_info of run_infos) {   
+    if (run_info.run_type == "indexing" &&
+	run_info.preselected &&
+	!matched_indexing_ids.has(run_info.id)) {
+      to_display.push({indexing: run_info.id, search: null});
+    }
+  }
+  return to_display;
 }
 
-// TODO: make it work with local jsons as well if needed. Doable (just
-// have a global param 'local_json')
+// `run_ids_filter` is a Set of integer run ids.
+function showComparison(run_ids_filter,
+			initial_search_metric_field) {
+  console.log("showComparison with filters:",
+	      run_ids_filter,
+	      initial_search_metric_field);
+  document.getElementById("body").style.maxWidth = "1500px";
+
+  fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/`)
+    .then((res) => res.json())
+    .then((list_runs_resp) => {
+      const ids_to_display = assemble_runs_to_display(
+	list_runs_resp.run_infos, run_ids_filter)
+      console.log("Runs to compare:", ids_to_display);
+
+      let el = document.getElementById("app-container");
+      console.log("Initial rendering of Benchmark react elmt");
+
+      ReactDOM.render(<React.StrictMode>
+			<Benchmark initial_search_metric_field={initial_search_metric_field}
+				   ids_to_display={ids_to_display}
+			/>
+		      </React.StrictMode>, el);
+    });
+}
+
 $(function () {
 
   let searchParams = new URLSearchParams(window.location.search)
@@ -837,11 +832,15 @@ $(function () {
     return;
   }
 
-  showComparison(searchParams.get("track"),
-		 searchParams.get("commit_hash"),
-		 searchParams.get("storage"),
-		 searchParams.get("source"),
-		 new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))),
+  if (searchParams.get("page") === "runlist" ||
+      (!searchParams.get("page") && !searchParams.get("run_ids"))) {
+    console.log("Showing list of runs");
+    showRunList();
+    return;
+  }
+  // It would have been nicer to have this under "page=comparison",
+  // but we don't want to break old permalinks.
+  showComparison(new Set(searchParams.get("run_ids")?.split(",")?.map((s) => parseInt(s))),
 		 searchParams.get("search_metric"));
 });
 

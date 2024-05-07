@@ -3,7 +3,7 @@ html {
 }
 
 body {
-  max-width: 1000px;
+/*  max-width: 1000px;  */
   margin: 0 auto;
   padding: 30px 10px;
 }
@@ -136,9 +136,15 @@ td div.count {
     font-family: monospace;
 }
 
-/*
-body {
-    padding: 1em;
-    margin: 0;
+.react-data-grid {
+  block-size: 100%;
 }
-*/
+
+.runlist-column-filter-name {
+    float: left;
+}
+
+.runlist-filter {
+    flex-grow: 1;
+    padding-left: 1em;
+}

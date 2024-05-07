@@ -200,8 +200,10 @@ export function genPlotOpts({
     plugins: [
       tooltipPlugin({
         onclick(_u, _seriesIdx, dataIdx) {
+	  if (dataIdx == 0) return;
 	  let run_id = commits[dataIdx][1];
-          window.open(`/?page=raw&run_ids=${run_id}`);
+	  let previous_run_id = commits[dataIdx - 1][1];
+	  window.open(`/?run_ids=${run_id},${previous_run_id}`);
         },
         commits,
         isInterpolated,

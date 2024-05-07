@@ -10,12 +10,15 @@ export const BENCHMARK_SERVICE_ADDRESS = "";
 // Does not include the track on purpose, because there is a specific
 // selector in the UI for that.
 // run_info: schemas.RunInfo
-export function getRunDisplayName(run_info, include_hash=true) {
+export function getRunDisplayName(run_info, include_hash=true, include_index_uid=false) {
   let display_name = run_info.engine + "." + run_info.storage + "." + run_info.instance;
   if (include_hash && run_info.commit_hash != null) {
     display_name += "." + run_info.commit_hash.substring(0, 8);
   }
   display_name += "." + run_info.tag;
+  if (include_index_uid && run_info.index_uid != null) {
+    display_name += ":" + run_info.index_uid;
+  }
   return display_name;
 }
 

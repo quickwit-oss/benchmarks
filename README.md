@@ -168,8 +168,9 @@ hash) which refers to a series of indexing and search runs over time.
 Tip:
 - The URL of the page is a permanent link to the series of runs
   shown. Later visits can contain additional data points.
-- Clicking on a point in any graph shows the raw results of the run
-  that contributed the point.
+- Clicking on a point in any graph opens the comparison page between
+  the run that contributed the point to the run that contributed the
+  previous point.
 
 
 ### Running the service
