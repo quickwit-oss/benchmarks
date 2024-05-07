@@ -30,8 +30,6 @@ export function tooltipPlugin({
   let seriesIdx = null;
   let dataIdx = null;
 
-  const fmtDate = uPlot.fmtDate("{M}/{D}/{YY} {h}:{mm}:{ss} {AA}");
-
   let over;
 
   let tooltipVisible = false;
@@ -77,7 +75,7 @@ export function tooltipPlugin({
       trailer = uPlot.fmtNum(u.data[seriesIdx][dataIdx]) + "% since start";
     }
     tooltip.textContent =
-      fmtDate(new Date(u.data[0][dataIdx] * 1e3)) +
+      (new Date(u.data[0][dataIdx] * 1e3)).toISOString() +
       "\ncommit_hash=" +
       commits[dataIdx][0].slice(0, 10) +
       "\n" +
