@@ -11,4 +11,4 @@ searcher:
   fast_field_cache_capacity: 0G
   split_footer_cache_capacity: 0G
   partial_request_cache_capacity: 0G
-  aggregation_memory_limit: 1G
+  aggregation_memory_limit: 4G
