@@ -1,0 +1,13 @@
+{
+  "track_total_hits": true,
+  "size": 0,
+  "aggs": {
+    "metrics_percentile": {
+      "percentiles": {
+        "field": "metrics.size"
+      } 
+    }
+  }
+}
+
+
