@@ -101,7 +101,7 @@ def resolve_engine_data_dir(engine: str, data_dir: str | None, runner_config_pat
     if not data_dir:
         return os.path.join(os.getcwd(), "engines", engine, "data")
     if data_dir[0] != '{' or data_dir[-1] != '}':
-        return data_dir
+        return os.path.abspath(os.path.expanduser(data_dir))
     # Placeholder that must be resolved using the config.
     try:
         config = read_runner_config(runner_config_path)
@@ -120,7 +120,7 @@ def resolve_engine_config_filename(engine: str, config_filename: str | None) -> 
     if engine != "quickwit":
         raise ValueError("Only quickwit is supported in resolve_engine_config_filename()")
     if config_filename:
-        return os.path.join(os.getcwd(), os.path.expanduser(config_filename))
+        return os.path.abspath(os.path.expanduser(config_filename))
     return os.path.join(os.getcwd(), "engines", engine, "configs", "quickwit.yaml")
 
 
@@ -961,6 +961,7 @@ def stop_engine(engine: str):
         # container was being stopped previously, get() can succeed
         # and stop() can raise a NotFound exception.
         container.stop()
+        container.remove()
     except docker.errors.NotFound as ex:
         logging.info("Attempted to stop %s but it was not found: %s", engine, ex)
 
