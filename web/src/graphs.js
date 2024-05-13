@@ -115,7 +115,7 @@ class GraphsWithSelector extends React.Component {
           <fieldset>
             <label htmlFor="datasetField">Dataset</label>
 	    <Select id="datasetField" onChange={(evt) => this.handleChangeDataset(evt)}
-		    option={datasets.map((ds) => ({value: ds, label: ds}))}
+		    options={datasets.map((ds) => ({value: ds, label: ds}))}
 		    defaultValue={({value: this.props.initial_dataset, label: this.props.initial_dataset})}
 	    />
 	    <label>Run filter (format: &lt;engine&gt;.&lt;storage&gt;.&lt;instance&gt;.&lt;tag&gt;)</label>
@@ -229,14 +229,17 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
 
 export function showContinuousGraphs(opt_track_filter,
 				     opt_run_filter_display_name) {
-  fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking`)
-    .then((res) => { return res.json(); })
+  Promise.all([
+    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking`).then(res => res.json()),
+    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=github_workflow&tag=push_main`).then(res => res.json())
+  ])
     .then((resp) => {
+      const all_run_infos = [...resp[0].run_infos, ...resp[1].run_infos];
       // Maps datasets a map of display names
       // (e.g. "quickwit.ssd.c3-standard-4.continuous") to:
       // {track, engine, storage, instance}.
       let dataset_to_runs = {};
-      for (const run_info of resp.run_infos) {
+      for (const run_info of all_run_infos) {
 	let dataset = run_info.track;
 	let display_name = getRunDisplayName(run_info, /*include_hash=*/false);
 	if (!(dataset in dataset_to_runs)) {
@@ -263,7 +266,6 @@ export function showContinuousGraphs(opt_track_filter,
 	  }
 	}
       }
-      
 
       let datasets = Object.keys(dataset_to_selector_options).sort();
       let initial_dataset = opt_track_filter;
