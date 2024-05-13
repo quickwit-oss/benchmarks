@@ -898,7 +898,7 @@ def start_engine_from_docker(
         image.id,
         ["run"] + (extra_args or []),
         name=engine,
-        auto_remove=True,
+        auto_remove=False,
         detach=True,
         init=True,
         environment={"QW_DISABLE_TELEMETRY": "1",
