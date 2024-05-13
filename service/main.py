@@ -51,6 +51,12 @@ app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=4)
 # Used for building the redirection URL used by Google's oauth2 flow.
 DOMAIN = os.environ.get("DOMAIN", "http://localhost:9000")
 
+# Whether authentication is enabled. 0 disables it.
+ENABLE_AUTH = os.environ.get("ENABLE_AUTH") != "0"
+
+if not ENABLE_AUTH:
+    print("WARNING: AUTHENTICATION DISABLED")
+
 # OAuth settings. They come from the Google Cloud console section
 # "OAuth 2.0 Client IDs".
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
@@ -68,14 +74,15 @@ GOOGLE_REDIRECT_URI = f"{DOMAIN}/auth/google"
 JWT_SECRET = os.environ.get("JWT_SECRET")
 JWT_ALGO = "HS256"
 JWT_EXPIRATION = datetime.timedelta(days=365)
-if GOOGLE_CLIENT_ID is None or GOOGLE_CLIENT_SECRET is None or JWT_SECRET is None:
+if ENABLE_AUTH and (GOOGLE_CLIENT_ID is None or GOOGLE_CLIENT_SECRET is None or JWT_SECRET is None):
     raise Exception('Missing env variables. Expected GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, JWT_SECRET.')
 
 ACCEPTED_SERVICE_ACCOUNT_EMAIL = "continuous-benchmark-runner@quickwit-prod.iam.gserviceaccount.com"
 
 oauth2_scheme = fastapi.security.OAuth2AuthorizationCodeBearer(
     authorizationUrl='/login/google',
-    tokenUrl='/auth/google')
+    tokenUrl='/auth/google',
+    auto_error=False)
 
 
 @app.get("/login/google")
@@ -183,8 +190,17 @@ def create_jwt_token(verified_email_address: str):
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGO)
 
 
-def get_current_user_email(token: str = Depends(oauth2_scheme)) -> str:
+def get_current_user_email(token: str | None = Depends(oauth2_scheme)) -> str:
     """Verify the validity of the JWT token and return the email it contains."""
+    if not ENABLE_AUTH:
+        return "(unverified_auth_disabled)"
+    if token is None:
+        # Needs to be checked because of auto_error=False on oauth2_scheme.
+        raise HTTPException(
+            status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
+            detail=f"JWT token not provided",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO])
         email: str = payload.get('sub')
@@ -229,7 +245,9 @@ def get_db():
 def check_jwt_token(email_current_user: Annotated[str, Depends(get_current_user_email)],
                     db: Session = Depends(get_db)):
     """Debug endpoint to check authentication with a JWT token."""
-    return f"Authentication OK with email: {email_current_user}"
+    if not ENABLE_AUTH:
+        return "Authentication not checked. Auth disabled."
+    return f"Authentication OK with email: {email_current_user}."
 
 
 @app.post("/api/v1/indexing_runs/", response_model=schemas.IndexingRun)

@@ -1122,14 +1122,14 @@ def run_benchmark(benchs_to_run: list[BenchType],
     return True
 
 
-def check_exporter_token(endpoint: str, token: str, verify_https: bool = True) -> bool:
+def check_exporter_token(endpoint: str, token: str | None, verify_https: bool = True) -> bool:
     """Returns true if the token is valid according to the service."""
     endpoint = f'{endpoint}/api/v1/check_jwt_token'
     try:
         print(f"Checking JWT token using {endpoint}")
         response = requests.get(endpoint,
                                 verify=verify_https,
-                                auth=BearerAuthentication(token))
+                                auth=BearerAuthentication(token) if token else None)
     except requests.exceptions.ConnectionError as ex:
         logging.error("Failed to connect to %s: %s", endpoint, ex)
         return False
@@ -1144,10 +1144,11 @@ def check_exporter_token(endpoint: str, token: str, verify_https: bool = True) -
     return True
 
 
-def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
+def get_exporter_token(endpoint: str, verify_https: bool = True) -> str | None:
     """Get and return a JWT token for the benchmark service endpoint.
 
     The token is cached to a local file for convenience during future runs.
+    None is returned when the service does not need authentication.
     """
     jwt_token_filename = os.path.expanduser(JWT_TOKEN_FILENAME)
     try:
@@ -1160,6 +1161,9 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str:
                 print(f"Invalid token in {jwt_token_filename}, trying to obtain a new one.")
     except FileNotFoundError:
         pass
+    if check_exporter_token(endpoint, None, verify_https):
+        print("Service does not require auth.")
+        return None
     auth_url = f'{endpoint}/login/google'
     print("Opening login page of the endpoint used for exporting runs:")
     print(auth_url)

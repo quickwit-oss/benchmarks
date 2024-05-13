@@ -22,9 +22,22 @@ sudo apt-get -y install npm
 cd ../web/ && npm install && npm run build
 ```
 
-#### Run
+#### Run with no authentication
 
-First, you need to, for oauth:
+Run from the *parent directory* to start a service with no authentication:
+
+```bash
+ENABLE_AUTH=0 DATABASE_URL=sqlite:///./benchmark_service.db \
+uvicorn service.main:app --reload --log-config=service/log_conf.yaml --port=9000
+```
+
+Navigating to http://localhost:9000 should show a webpage showing
+runs exported to the service and stored in the SQLITE DB file
+`benchmark_service.db`.
+
+#### Run with authentication
+
+To enable oauth, you need to:
 - Generate a secret key for signing JWT tokens, e.g. `openssl rand -hex 32`
 - Setup or get a Google oauth client ID and secret, they come from the Google Cloud console section "APIs and Services / Credentials / OAuth 2.0 Client IDs" and should be of type "Client ID for Web application".
 - Make sure `http://localhost:9000/auth/google` is listed in "Authorized redirect URIs".
@@ -38,9 +51,7 @@ uvicorn service.main:app --reload --log-config=service/log_conf.yaml --port=9000
 
 The port `9000` must match what is present in "Authorized redirect URIs" in Google's "OAuth 2.0 Client IDs".
 
-Navigating to http://localhost:9000 should show a webpage showing
-runs exported to the service and stored in the SQLITE DB file
-`benchmark_service.db`.
+#### Run with authentication and https
 
 Making the service use https can be done by passing certs with `--ssl-keyfile`, `--ssl-certfile`. For local testing, self-signed certificates can be generated with:
 ```bash
@@ -55,6 +66,8 @@ and env variable `DOMAIN=https://localhost:9000`.
 For Google oauth to work, you need to make sure
 `https://localhost:9000/auth/google` redirection is authorized in
 "Authorized redirect URIs"
+
+#### Connecting to a Postgres Cloud SQL instance
 
 The service can connect to a Google Cloud SQL instance (typically Postgres) with env variables:
 ```
