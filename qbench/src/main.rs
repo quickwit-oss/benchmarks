@@ -134,12 +134,9 @@ async fn main() -> anyhow::Result<()> {
             error!(err=?err);
             err
         })?;
-
-        let batch_num_bytes = doc_batch.bytes.len() as u64;
         futures.push(send_with_retry(
             &sink,
             doc_batch,
-            batch_num_bytes,
             args.retry_indexing_errors,
         ));
 
@@ -188,9 +185,9 @@ async fn main() -> anyhow::Result<()> {
 async fn send_with_retry(
     sink: &Box<dyn sink::Sink>,
     doc_batch: DocumentBatch,
-    batch_num_bytes: u64,
     retry: bool,
 ) -> Result<u64, u64> {
+    let batch_num_bytes = doc_batch.bytes.len() as u64;
     loop {
         match sink.send(&doc_batch).await {
             Ok(()) => return Ok(batch_num_bytes),
