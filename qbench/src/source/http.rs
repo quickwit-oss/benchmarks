@@ -36,16 +36,20 @@ async fn send_documents_from_uri(
     let mut batch_reader = BatchLineReader::from_uri(uri, batch_size).await?;
     let mut bytes: Vec<u8> = Vec::new();
     while let Some(batch) = batch_reader.next_batch().await? {
-        bytes.extend_from_slice(&batch);
-        if bytes.len() > batch_size || !batch_reader.has_next() {
-            let bytes_to_send = mem::take(&mut bytes);
+        if bytes.len() + batch.len() > batch_size {
             batch_tx.send(Ok(DocumentBatch {
-                bytes: bytes_to_send,
-                last: last_uri && !batch_reader.has_next(),
+                bytes: mem::take(&mut bytes),
+                last: false,
             }))?;
         }
-
+        bytes.extend_from_slice(&batch);
     }
+    // Don't forget to send the last batch.
+    batch_tx.send(Ok(DocumentBatch {
+        bytes: mem::take(&mut bytes),
+        last: last_uri,
+    }))?;
+
     Ok::<_, anyhow::Error>(())
 }
 
