@@ -52,13 +52,14 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
 
 ### Ingestion
 
-| Engine   |   Loki   | Quickwit   |
+| Engine   |   Quickwit   |  Loki  |
 |----------|----------|------------|
-| Ingestion time (min) | 55 | 123 (+123%) |
-| Mean vCPU | 2.75 | 2.2 |
-| Total CPU time (min) | ~151 | ~270 (+80%) |
-| Number of files on GCS | 145,756 (x5,829) | 25 |
-| Bucket size (GiB) | 55 | 53 |
+| Ingestion time (min) | 123 (+123%) | 55 |
+| Mean vCPU | 2.2 | 2.75 |
+| Total CPU time (min) | ~270 (+80%) | ~151 |
+| Number of files on GCS | 25 | 145,756 (x5,829) |
+| Bucket size (GiB) | 53 | 55 |
+
 
 ## Queries
 
@@ -77,54 +78,53 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
     <tr>
         <td rowspan="3">`queen`</td>
         <td>Latency (s)</td>
-        <td>9.3s (+1,425%)</td>
         <td>0.6s</td>
+        <td>9.3s (+1,425%)</td>
     </tr>
     <tr>
         <td>CPU Time (s)</td>
-        <td>146s (+5,270%)</td>
         <td>2.7s</td>
+        <td>146s (+5,270%)</td>
     </tr>
     <tr>
         <td># of GET Requests</td>
-        <td>14,821* (+7,095%)</td>
         <td>206</td>
+        <td>14,821* (+7,095%)</td>
     </tr>
     <tr>
         <td rowspan="3">`us-east-2` (label)</td>
         <td>Latency (s)</td>
-        <td>1.0s (+74%)</td>
         <td>0.6s</td>
+        <td>1.0s (+74%)</td>
     </tr>
     <tr>
         <td>CPU Time (s)</td>
-        <td>2s</td>
         <td>2.7s (+35%)</td>
+        <td>2s</td>
     </tr>
     <tr>
         <td># of GET Requests</td>
-        <td>47</td>
         <td>211* (+348%)</td>
+        <td>47</td>
     </tr>
     <tr>
         <td rowspan="3">`us-east-2` (label) and `queen`</td>
         <td>Latency (s)</td>
-        <td>0.98s (+59%)</td>
         <td>0.6s</td>
+        <td>0.98s (+59%)</td>
     </tr>
     <tr>
         <td>CPU Time (s)</td>
-        <td>11s (+279%)</td>
         <td>2.8s</td>
+        <td>11s (+279%)</td>
     </tr>
     <tr>
         <td># of GET Requests</td>
-        <td>561* (+120%)</td>
         <td>255</td>
+        <td>561* (+120%)</td>
     </tr>
     </tbody>
 </table>
-
 
 ### Query log volume by level
 
@@ -281,6 +281,7 @@ You need to have read/write permissions on the GCS bucket named `gcs://quickwit-
 ```
 cd qbench
 cargo build --release
+cd ..
 ```
 
 #### Update quickwit.yaml
@@ -305,10 +306,11 @@ You need to edit the quickwit config file at `engines/quickwit/configs/quickwit.
 We will ingest logs with `qbench`, it will take a bit less than 1h.
 
 ```bash
-## start Quickwit
+## First start Quickwit
 cd engines/quickwit
 make start
 cd ../..
+## Then run ingest + queries
 python3 run.py --engine quickwit --storage s3 --track generated-logs-for-loki --engine_specific_queries_subdir qw_100docs --instance n2-16vcpus --tags ingest-v1
 ```
 
