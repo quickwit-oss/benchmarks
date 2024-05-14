@@ -129,6 +129,7 @@ async fn main() -> anyhow::Result<()> {
     let start = Instant::now();
 
     let mut futures = FuturesUnordered::new();
+
     for batch_res in source.batch_stream(sink.batch_size()).await? {
         let doc_batch = batch_res.map_err(|err| {
             error!(err=?err);
@@ -149,9 +150,18 @@ async fn main() -> anyhow::Result<()> {
                     &mut num_ingestion_error_bytes,
                     start,
                 )
-                .unwrap();
             }
         }
+    }
+
+    // Don't forget to handle the last results.
+    while let Some(result) = futures.next().await {
+        handle_result(
+            result,
+            &mut num_ingested_bytes,
+            &mut num_ingestion_error_bytes,
+            start,
+        )
     }
 
     sink.commit().await?;
@@ -208,7 +218,7 @@ fn handle_result(
     num_ingested_bytes: &mut u64,
     num_ingestion_error_bytes: &mut u64,
     start: std::time::Instant,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+) {
     match result {
         Ok(bytes) => {
             *num_ingested_bytes += bytes;
@@ -221,7 +231,6 @@ fn handle_result(
             *num_ingestion_error_bytes += bytes;
         },
     }
-    Ok(())
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
