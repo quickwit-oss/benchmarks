@@ -1,0 +1,42 @@
+{
+    "agent": {
+      "ephemeral_id": "9d0fd4b2-0cf1-4b9b-9ad1-61e46657134d",
+      "id": "9d0fd4b2-0cf1-4b9b-9ad1-61e46657134d",
+      "name": "coldraccoon",
+      "type": "filebeat",
+      "version": "8.8.0"
+    },
+    "aws.cloudwatch": {
+      "ingestion_time": "2023-09-17T13:31:04.741Z",
+      "log_stream": "novachopper"
+    },
+    "cloud": {
+      "region": "us-east-1"
+    },
+    "event": {
+      "dataset": "generic",
+      "id": "peachmare",
+      "ingested": "2023-09-17T12:48:00.741424Z"
+    },
+    "host": {
+      "name": "coldraccoon"
+    },
+    "input": {
+      "type": "aws-cloudwatch"
+    },
+    "level": "INFO",
+    "log.file.path": "/var/log/messages/novachopper",
+    "message": "2023-09-17T13:31:04.741Z Sep 17 13:31:04 ip-187-57-167-52 systemd: jackal fancier hero griffin finger scale fireroar",
+    "metrics": {
+      "size": 390145,
+      "tmin": 68811
+    },
+    "process": {
+      "name": "systemd"
+    },
+    "tags": [
+      "preserve_original_event"
+    ],
+    "timestamp": 1673247599,
+    "trace_id": "5161051656584663225"
+  }

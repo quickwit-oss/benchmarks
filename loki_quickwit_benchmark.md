@@ -1,13 +1,9 @@
 
 ## Benchmark Results: Quickwit vs. Loki
 
-## Objectives
+## Goals
 
-This benchmark aims to highlight the differences and trade-offs between Quickwit and Loki for their users. Despite both log engines employing a decoupled compute and storage architecture, they use distinct data structures for querying data:
-- Quickwit has an inverted index and columnar storage optimized for analytics.
-- Loki has labels to categorize data into distinct streams, simplifying data access without an inverted index.
-
-Each system has unique advantages and drawbacks; Quickwit's complex data structures enhance search speeds but increase CPU usage during data ingestion. This report highlights these differences.
+This benchmark aims to highlight the differences and trade-offs between Quickwit and Loki for their users. Read more on our dedicated [blog post](https://quickwit.io/blog/benchmarking-quickwit-loki)
 
 ## Dataset
 
@@ -64,11 +60,11 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
 
 | Engine   |   Loki   | Quickwit   |
 |----------|----------|------------|
-| Ingest time | 55 min   | 123 min (+123%) |
+| Ingestion time (min) | 55 | 123 (+123%) |
 | Mean vCPU | 2.75 | 2.2 |
-| Total CPU time | ~151 min | ~270 min (+78%) |
-| Number of files on GCS | 145,756 (x5829) | 25 |
-| Bucket size | 55 GiB | 53 GiB |
+| Total CPU time (min) | ~151 | ~270 (+80%) |
+| Number of files on GCS | 145,756 (x5,829) | 25 |
+| Bucket size (GiB) | 55 | 53 |
 
 ## Queries
 
@@ -77,47 +73,59 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
 <table>
     <thead>
         <tr>
-            <th></th>
-            <th colspan="2">Latency (s)</th>
-            <th colspan="2">CPU Time (s)</th>
-            <th colspan="2">Get Requests</th>
-        </tr>
-        <tr>
-            <th>Query \ Engine</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
+            <th>Query</th>
+            <th style={{"width":"200px"}}>Metric</th>
+            <th style={{"width":"150px"}}>Quickwit</th>
+            <th style={{"width":"150px"}}>Loki</th>
         </tr>
     </thead>
     <tbody>
     <tr>
-        <td>`queen`</td>
-        <td>9.3s (+1425%)</td>
+        <td rowspan="3">`queen`</td>
+        <td>Latency (s)</td>
+        <td>9.3s (+1,425%)</td>
         <td>0.6s</td>
-        <td>165s (+6000%)</td>
+    </tr>
+    <tr>
+        <td>CPU Time (s)</td>
+        <td>146s (+5,270%)</td>
         <td>2.7s</td>
-        <td>17,655 (+8400%)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
+        <td>14,821* (+7,095%)</td>
         <td>206</td>
     </tr>
     <tr>
-        <td>`us-east-2` (label)</td>
+        <td rowspan="3">`us-east-2` (label)</td>
+        <td>Latency (s)</td>
         <td>1.0s (+74%)</td>
         <td>0.6s</td>
-        <td>2.1s</td>
-        <td>2.8s (+30%)</td>
-        <td>85</td>
-        <td>203 (+138%)</td>
     </tr>
     <tr>
-        <td>`us-east-2` (label) and `queen`</td>
-        <td>0.98s (+60%)</td>
+        <td>CPU Time (s)</td>
+        <td>2s</td>
+        <td>2.7s (+35%)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
+        <td>47</td>
+        <td>211* (+348%)</td>
+    </tr>
+    <tr>
+        <td rowspan="3">`us-east-2` (label) and `queen`</td>
+        <td>Latency (s)</td>
+        <td>0.98s (+59%)</td>
         <td>0.6s</td>
-        <td>15s (+435%)</td>
+    </tr>
+    <tr>
+        <td>CPU Time (s)</td>
+        <td>11s (+279%)</td>
         <td>2.8s</td>
-        <td>661 (+159%)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
+        <td>561* (+120%)</td>
         <td>255</td>
     </tr>
     </tbody>
@@ -129,69 +137,187 @@ Quickwit latest build was used, it should be more or less the same than 0.8.1.
 <table>
     <thead>
         <tr>
-            <th></th>
-            <th colspan="2">Latency</th>
-            <th colspan="2">CPU Time (s)</th>
-            <th colspan="2">Get Requests</th>
-        </tr>
-        <tr>
-            <th>Query \ Engine</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
-            <th>Loki</th>
-            <th>Quickwit</th>
+            <th>Query</th>
+            <th style={{"width":"200px"}}>Metric</th>
+            <th style={{"width":"150px"}}>Quickwit</th>
+            <th style={{"width":"150px"}}>Loki</th>
         </tr>
     </thead>
     <tbody>
     <tr>
-        <td>All dataset</td>
-        <td>85s (x39)</td>
+        <td rowspan="3">All dataset</td>
+        <td>Latency (s)</td>
         <td>2.1s</td>
-        <td>1151s (x50)</td>
-        <td>22.3s</td>
-        <td>204,808 (x2300)</td>
+        <td>90s (x42)</td>
+    </tr>
+    <tr>
+        <td>CPU Time (s)</td>
+        <td>22s</td>
+        <td>1,160s (x51)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
         <td>88</td>
+        <td>203,665 (x2,313)</td>
     </tr>
     <tr>
-        <td>`queen`</td>
-        <td>560s (x1399)</td>
+        <td rowspan="3">`queen`</td>
+        <td>Latency (s)</td>
         <td>0.4s </td>
-        <td>8688s (x2713)</td>
+        <td>565s (x11,423)</td>
+    </tr>
+    <tr>
+        <td>CPU Time (s)</td>
         <td>3.2s</td>
-        <td>203,910 (x1386)</td>
-        <td>147</td>
+        <td>8,713s (x12,688)</td>
     </tr>
     <tr>
-        <td>`us-east-2` (label)</td>
-        <td>4.1s (+580%)</td>
+        <td># of GET Requests</td>
+        <td>132</td>
+        <td>204,622 (x1,549)</td>
+    </tr>
+    <tr>
+        <td rowspan="3">`us-east-2` (label)</td>
+        <td>Latency (s)</td>
         <td>0.6s</td>
-        <td>41s (x13)</td>
-        <td>2.85s</td>
-        <td>6,180 (x41)</td>
-        <td>146</td>
+        <td>4.8s (+685%)</td>
     </tr>
     <tr>
-        <td>`us-east-2` (label) and `queen`</td>
-        <td>27 (x53)</td>
-        <td>0.5</td>
-        <td>337 (x115)</td>
-        <td>2.93</td>
-        <td>5,471 (x27)</td>
-        <td>195</td>
+        <td>CPU Time (s)</td>
+        <td>2.8s</td>
+        <td>40s (x13)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
+        <td>211</td>
+        <td>6,163 (x28)</td>
+    </tr>
+    <tr>
+        <td rowspan="3">`us-east-2` (label) and `queen`</td>
+        <td>Latency (s)</td>
+        <td>0.4s</td>
+        <td>28s (x70)</td>
+    </tr>
+    <tr>
+        <td>CPU Time (s)</td>
+        <td>2.9s</td>
+        <td>337s (x115)</td>
+    </tr>
+    <tr>
+        <td># of GET Requests</td>
+        <td>176</td>
+        <td>5,596 (x31)</td>
     </tr>
     </tbody>
 </table>
 
 ## Reproducing the benchmark
 
-Coming soon!
+Note: this is still a WIP, I need to run again all commands to be sure there is no typo and nothing is missing. Open an issue if something is broken.
 
-### Command to get the number of files stored by Loki
+### Requirements
+
+- Python > 3.10
+- docker and docker-compose
+- [gsutil](https://cloud.google.com/storage/docs/gsutil_install)
+- [rustup](https://rustup.rs/) to build `qbench`, a tool to ingest data into Quickwit.
+
+### Setup
+
+```
+git clone git@github.com:quickwit-oss/benchmarks.git
+cd benchmarks
+pip install -r requirements.txt
+```
+
+Start Prometheus and Grafana to store Loki metrics and visualize them.
+
+```bash
+docker compose up
+```
+
+### Download datasets
+
+```
+# Download generated-logs-v1
+mkdir /data/datasets
+gsutil rsync -y ".*logs-\d{4}.*\.gz$" gs://quickwit-datasets-public/benchmarks/generated-logs/ /data/datasets
+```
+
+### Run Loki benchmark
+
+You need to have read/write permissions on a GCS bucket named `bench202403-loki-100streams`.
+
+#### Ingest data
+
+We will ingest logs with Vector, it will take a bit less than 1h.
+
+```bash
+cd engines/loki
+## start Loki
+make start
+## start vector
+docker run -i -v $(pwd)/:/etc/vector/ -v /data/datasets/generated-logs-v1/:/datasets/ --net benchmark --rm timberio/vector:0.36.0-debian --config /etc/vector/vector_100streams.yaml
+```
+
+#### Benchmark the queries
+
+```bash
+# Go back to the root directory of the repository
+cd ../..
+python3 run.py --engine loki --storage s3 --track generated-logs-for-loki --engine_specific_queries_subdir loki_100streams_100docs --instance n2-16vcpus --tags loki-benchmark --search-only
+
+# Results are stored in a JSON file
+cat results/generated-logs-for-loki.loki.loki-benchmark.n2-16vcpus/search-results.json
+```
+
+#### Command to get the number of files stored by Loki
 
 ```
 gsutil ls -lR gs://bench20240414-loki-2-9-6--100streams | tail -n 1
 TOTAL: 145756 objects, 55137804027 bytes (51.35 GiB)
 ```
 
+### Run Quickwit benchmark
+
+You need to have read/write permissions on the GCS bucket named `gcs://quickwit-dev`.
+
+#### Compile qbench
+
+```
+cd qbench
+cargo build --release
+```
+
+#### Update quickwit.yaml
+
+You need to edit the quickwit config file at `engines/quickwit/configs/quickwit.yaml` to specify the metastore URI, default index root URI and your access/secret keys.
+
+```
++metastore_uri: s3://bench202403-loki-qwdata/indexes
++default_index_root_uri: s3://bench202403-loki-qwdata/indexes
++
++storage:
++  s3:
++    flavor: gcs
++    region: us-east1
++    endpoint: https://storage.googleapis.com
++    access_key_id: XXXX
++    secret_access_key: XXXX
+```
+
+#### Ingest data and run queries
+
+We will ingest logs with `qbench`, it will take a bit less than 1h.
+
+```bash
+## start Quickwit
+cd engines/quickwit
+make start
+cd ../..
+python3 run.py --engine quickwit --storage s3 --track generated-logs-for-loki --engine_specific_queries_subdir qw_100docs --instance n2-16vcpus --tags ingest-v1
+```
+
+This will produce two files `indexing-results.json` and `search-results.json` in the directory `results/generated-logs-for-loki.quickwit.ingest-v1.n2-16vcpus/`
+
+You should now have all the results used in the benchmark.
