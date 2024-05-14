@@ -14,31 +14,11 @@ import DataGrid, {SelectColumn} from 'react-data-grid';
 
 import {BENCHMARK_SERVICE_ADDRESS, getRunDisplayName} from "./utils.js";
 
-const react_data_grid_columns = [
-  SelectColumn,
-  { key: 'id', name: 'ID' },
-  // TODO: Make links work in the data grid.
-//  { key: 'raw_link', name: 'Raw details' },
-  { key: 'verified_email', name: 'User' },
-  { key: 'timestamp', name: 'Timestamp' },
-  { key: 'run_type', name: 'Run Type' },
-  { key: 'tag', name: 'Tags' },
-  { key: 'track', name: 'Track' },
-  { key: 'engine', name: 'Engine' },
-  { key: 'storage', name: 'Storage' },
-  { key: 'instance', name: 'Instance' },
-  { key: 'short_commit_hash', name: 'Commit Hash' },
-  { key: 'source', name: 'Source' },
-  // Not needed for now.
-//  { key: 'index_uid', name: 'Index UID' }
-];
-
 function rowKeyGetter(row) {
   return row.id;
 }
 
 // Expected props:
-// `columns`
 // `rows`
 function RunList(props) {
   let [selected_rows, set_selected_rows] = useState(new Set());
@@ -90,8 +70,13 @@ function RunList(props) {
   const columns = useMemo(() => {
     return [
       SelectColumn,
-      { key: 'id', name: 'ID' },
-//      { key: 'raw_link', name: 'Raw details' },
+      {
+	key: 'id',
+	name: 'ID',
+	renderCell: (props) => {
+	  return <a href={props.row.raw_link}>{props.row.id}</a>;
+	}
+      },
       { key: 'verified_email', name: 'User' },
       { key: 'timestamp', name: 'Timestamp' },
       { key: 'run_type', name: 'Run Type' },
@@ -183,7 +168,7 @@ export function showRunList() {
       }
       let el = document.getElementById("app-container");
       ReactDOM.render(<React.StrictMode>
-			<RunList columns={react_data_grid_columns} rows={rows}
+			<RunList rows={rows}
 			/>
 		      </React.StrictMode>, el);
     });
