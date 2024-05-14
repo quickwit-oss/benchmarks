@@ -34,20 +34,17 @@ async fn send_documents_from_uri(
 ) -> anyhow::Result<()> {
     info!("Send data from uri: {uri:?}", uri = uri);
     let mut batch_reader = BatchLineReader::from_uri(uri, batch_size).await?;
-    let mut total_bytes = 0;
     let mut bytes: Vec<u8> = Vec::new();
     while let Some(batch) = batch_reader.next_batch().await? {
-        if total_bytes + batch.len() > batch_size {
+        bytes.extend_from_slice(&batch);
+        if bytes.len() > batch_size || !batch_reader.has_next() {
             let bytes_to_send = mem::take(&mut bytes);
             batch_tx.send(Ok(DocumentBatch {
                 bytes: bytes_to_send,
                 last: last_uri && !batch_reader.has_next(),
             }))?;
-            total_bytes = 0;
         }
 
-        total_bytes += batch.len();
-        bytes.extend_from_slice(&batch);
     }
     Ok::<_, anyhow::Error>(())
 }
