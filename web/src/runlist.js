@@ -85,7 +85,21 @@ function RunList(props) {
       { key: 'engine', name: 'Engine' },
       { key: 'storage', name: 'Storage' },
       { key: 'instance', name: 'Instance' },
-      { key: 'short_commit_hash', name: 'Commit Hash' },
+      {
+	key: 'short_commit_hash',
+	name: 'Commit Hash',
+	renderCell: (props) => {
+	  if (props.row.engine === "quickwit") {
+	    return (
+	      <a href={`https://github.com/quickwit-oss/quickwit/commit/${props.row.commit_hash}`}>
+		{props.row.short_commit_hash}
+	      </a>
+	    );
+	  } else {
+	    return props.row.short_commit_hash;
+	  }
+	}
+      },
       { key: 'source', name: 'Source' },
 //      { key: 'index_uid', name: 'Index UID' },
     ];
