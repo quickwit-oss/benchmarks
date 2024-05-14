@@ -2,6 +2,7 @@
 extern crate tracing;
 
 use std::fmt::{Display, Formatter};
+use std::fs::File;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
@@ -9,10 +10,11 @@ use std::time::Instant;
 use anyhow::bail;
 use clap::Parser;
 use futures_util::stream::FuturesUnordered;
+use rayon::prelude::*;
+use serde::Serialize;
 use serde_json::json;
 use source::{DocumentBatch, Source};
 use tokio_stream::StreamExt;
-
 mod sink;
 mod source;
 mod utils;
@@ -73,6 +75,49 @@ fn read_rdtsc() -> u64 {
 #[cfg(not(target_arch = "x86_64"))]
 fn read_rdtsc() -> u64 {
     0
+}
+
+#[derive(Serialize)]
+pub struct ShardInfo {
+    pub uri: String,
+    pub b3_hash: String,
+}
+
+// This re-reads all the input files which is a bit wasteful, but computing
+// the hashes online as part of the sources is cumbersome.
+fn compute_shard_infos(uris: Vec<String>) -> Vec<ShardInfo> {
+    let shard_infos_res: Vec<anyhow::Result<ShardInfo>> = uris
+        .par_iter()
+        .map(|uri| -> anyhow::Result<ShardInfo> {
+            if uri.starts_with("http") {
+                Ok(ShardInfo {
+                    uri: uri.clone(),
+                    b3_hash: "".to_string(),
+                })
+            } else {
+                let mut hasher = blake3::Hasher::new();
+                info!("Hashing file {}", uri);
+                Ok(ShardInfo {
+                    uri: uri.clone(),
+                    b3_hash: hasher
+                        .update_reader(File::open(uri)?)?
+                        .finalize()
+                        .to_hex()
+                        .as_str()
+                        .to_string(),
+                })
+            }
+        })
+        .collect();
+
+    let mut shard_infos: Vec<ShardInfo> = Vec::new();
+    for shard_res in shard_infos_res {
+        match shard_res {
+            Err(e) => error!(err=?e),
+            Ok(shard_info) => shard_infos.push(shard_info),
+        }
+    }
+    shard_infos
 }
 
 #[tokio::main(worker_threads = 4)]
@@ -186,6 +231,7 @@ async fn main() -> anyhow::Result<()> {
         "doc_per_second": doc_per_second,
         "megabytes_per_second": megabytes_per_second,
         "build_info": build_info,
+        "input_shard_info": compute_shard_infos(source.uris()),
     });
     std::fs::write(output_path, serde_json::to_string_pretty(&results)?)?;
 

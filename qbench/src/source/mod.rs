@@ -36,6 +36,8 @@ pub trait Source: Sync + Send + 'static {
         &self,
         batch_size: usize,
     ) -> anyhow::Result<flume::Receiver<anyhow::Result<DocumentBatch>>>;
+
+    fn uris(&self) -> Vec<String>;
 }
 
 pub(crate) struct BatchLineReader {

@@ -82,4 +82,7 @@ impl Source for UriSource {
         tokio::task::spawn(send_documents_from_uris(uris, batch_tx, batch_size));
         Ok(batch_rx)
     }
+    fn uris(&self) -> Vec<String> {
+        self.uris.iter().cloned().collect()
+    }
 }
