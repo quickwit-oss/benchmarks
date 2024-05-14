@@ -52,6 +52,11 @@ class BuildInfo(BaseModel):
     commit_hash: str
     version: str
 
+# Information about the input shard files indexing by the engine.
+class InputShardInfo(BaseModel):
+    uri: str
+    b3_hash: str
+
 
 class IndexingRunResults(BaseModel):
     index: str | None = None
@@ -80,6 +85,7 @@ class IndexingRunResults(BaseModel):
     object_storage_upload_megabytes: float | None = None
     object_storage_fetch_requests: float | None = None
     object_storage_put_requests: float | None = None
+    input_shard_info: list[InputShardInfo] | None = None
 
 
 class IndexingRun(BaseModel):
