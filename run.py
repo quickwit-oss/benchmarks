@@ -214,7 +214,7 @@ class ProcessMonitor:
 
     """
     def __init__(self, process_id=None, process_name=None, metrics_addr=None,
-                 watched_metrics: dict[str, WatchedMetric] = None):
+                 watched_metrics: dict[str, WatchedMetric] | None = None):
         if bool(process_id) == bool(process_name):
             raise ValueError('Either process_id or process_name should be specified')
         if not process_id:
@@ -227,6 +227,7 @@ class ProcessMonitor:
         self.metrics_addr = metrics_addr
         self.watched_metrics = watched_metrics
         self._metrics_values = {}
+        self._cpu_times = None
         self._reset_vm_hwm_success = True
         self._docker_client = docker.from_env()
        
@@ -300,7 +301,7 @@ class ProcessMonitor:
                 clear_refs.write("5\n")
             return True
 
-    def _get_vm_hwm_megabytes(self) -> int | None:
+    def _get_vm_hwm_megabytes(self) -> float | None:
         """Read /proc/pid/status to get the VmHWM (see man proc)."""
         with open(f'/proc/{self.process.pid}/status', 'r') as status:
             match = re.search(r"VmHWM:\s*(?P<size>\d*)\s*kB", status.read())
@@ -315,6 +316,8 @@ class ProcessMonitor:
         return self
 
     def get_stats_since_start(self) -> dict[str, float]:
+        if self._cpu_times is None:
+            raise ValueError(f"{self} was not started.")
         cpu_times = self.process.cpu_times()
         stats = {
             'total_cpu_time_s': max(
@@ -322,8 +325,9 @@ class ProcessMonitor:
                 self._cpu_times.user - self._cpu_times.system,
                 0),
         }
-        if self._reset_vm_hwm_success:
-            stats['peak_memory_megabytes'] = self._get_vm_hwm_megabytes()
+        vm_hwm = self._get_vm_hwm_megabytes()
+        if self._reset_vm_hwm_success and vm_hwm is not None:
+            stats['peak_memory_megabytes'] = vm_hwm
 
         for name, new_v in self._read_metrics().items():
             stats[name] = new_v - self._metrics_values[name]
@@ -429,7 +433,7 @@ def export_results(endpoint: str,
 
 
 def get_common_debug_info(engine_client: SearchClient, index_name: str):
-    index_info: IndexInfo = engine_client.index_info(index_name)
+    index_info: IndexInfo | None = engine_client.index_info(index_name)
     return {
         "command_line": ' '.join(sys.argv),
         "unsafe_user": getpass.getuser(),
@@ -508,7 +512,8 @@ class ElasticClient(SearchClient):
     def engine_info(self):
         response = requests.get(f"{self.root_api}/")
         if response.status_code != 200:
-            raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
+            raise Exception(
+                f"Error while checking basic info {response.status_code=} {response.text=}")
         return response.json()
 
     def commit_hash(self) -> str | None:
@@ -596,7 +601,8 @@ class QuickwitClient(ElasticClient):
     def engine_info(self):
         response = requests.get(f"{self.root_api}/version")
         if response.status_code != 200:
-            raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
+            raise Exception(
+                f"Error while checking basic info {response.status_code=} {response.text=}")
         return response.json()
 
     def commit_hash(self) -> str | None:
@@ -680,7 +686,8 @@ class LokiClient(SearchClient):
     def engine_info(self):
         response = requests.get(f"{self.root_api}/loki/api/v1/status/buildinfo")
         if response.status_code != 200:
-            raise Exception(f"Error while checking basic info {status_code=} {response.text=}")
+            raise Exception(
+                f"Error while checking basic info {response.status_code=} {response.text=}")
         return response.json()
 
     def commit_hash(self) -> str | None:
@@ -691,7 +698,7 @@ class LokiClient(SearchClient):
         """The name of the docker container running this engine."""
         return "loki"
 
-    def index_info(self, index_name: str) -> dict[str, str] | None:
+    def index_info(self, index_name: str) -> IndexInfo | None:
         del index_name  # unused
         # Loki does not have the concept of an index.
         return None
@@ -862,7 +869,7 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
 def start_engine_from_binary(
         engine: str, binary_path: str,
         engine_data_dir: str | None, engine_config_filename: str | None = None,
-        extra_args: list[str] = None):
+        extra_args: list[str] | None = None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by start_engine_from_binary().")
     config_filename = resolve_engine_config_filename(engine, engine_config_filename)
@@ -885,7 +892,7 @@ def start_engine_from_binary(
 def start_engine_from_docker(
         engine: str, binary_path: str | None,
         engine_data_dir: str | None = None, engine_config_filename: str | None = None,
-        extra_args: list[str] = None):
+        extra_args: list[str] | None = None):
     if engine != 'quickwit':
         raise ValueError(f"Engine {engine} not supported by start_engine_from_docker().")
     docker_client = docker.from_env()
