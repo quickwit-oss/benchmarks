@@ -134,6 +134,8 @@ class Benchmark extends React.Component {
       runs: {},
       // This search metric to display.
       search_metric: this.initial_search_metric,
+      // The set of queries for which the checkbox is checked.
+      checked_queries: null,
     };
     this.fetchRuns(this.props.ids_to_display);
   }
@@ -167,7 +169,18 @@ class Benchmark extends React.Component {
       }
       runs[id] = run_pair;
     }
-    this.setState({"runs": runs});
+    let all_query_names = new Set();
+    for (let run_id in runs) {
+      let queries = runs[run_id].search?.run_results?.queries;
+      if (!queries) {
+	continue;
+      }
+      for (let q of Array.from(queries)) {
+	all_query_names.add(q.name);
+      }
+    }
+    this.setState({"runs": runs,
+		   "checked_queries": all_query_names});
   }
   
   // run_ids: Array of {indexing: numerical run ID, search: numerical run ID}.
@@ -222,17 +235,19 @@ class Benchmark extends React.Component {
 				     this.state.search_metric.value.field_multiplier));
       let metric_average_over_queries = 0
       let unsupported = false
+      let num_selected_queries = 0;
       for (let query of engine_queries) {
 	if (query.unsupported) {
 	  unsupported = true;
-        } else {
+        } else if (this.state.checked_queries.has(query.name)) {
           metric_average_over_queries += query.median;
+	  num_selected_queries += 1;
         }
       }
       if (unsupported) {
         metric_average_over_queries = undefined;
       } else {
-        metric_average_over_queries = (metric_average_over_queries / engine_queries.length) | 0;
+        metric_average_over_queries = (metric_average_over_queries / num_selected_queries) | 0;
       }
       engines[run_id] = engine_results;
       engines[run_id].indexing_run_info = run_pair.indexing?.run_info;
@@ -255,6 +270,9 @@ class Benchmark extends React.Component {
 	  ratio_has_unsupported = true;
 	  continue;
 	}
+	if (!this.state.checked_queries.has(query.name)) {
+	  continue;
+	}
 	let reference_metric = query_data[reference_engine].median;
         let ratio = 1.0;
         if (Math.abs(reference_metric - query.median) >=
@@ -264,11 +282,10 @@ class Benchmark extends React.Component {
         }
         sum_log_ratios += Math.log(ratio);
       }
-      const num_queries = Object.keys(engine_queries).length;
-      if (ratio_has_unsupported || num_queries === 0) {
+      if (ratio_has_unsupported || num_selected_queries === 0) {
 	engines[run_id].avg_ratios = null;
-      } else if (num_queries >= 1) {
-	engines[run_id].avg_ratios = Math.exp(sum_log_ratios / num_queries);
+      } else {
+	engines[run_id].avg_ratios = Math.exp(sum_log_ratios / num_selected_queries);
       }
     }
 
@@ -316,6 +333,17 @@ class Benchmark extends React.Component {
 	"&search_metric=" + this.state.search_metric.value.field);
   }
 
+  handleQueryCheckboxChange(evt) {
+    const query_name = evt.target.id;
+    if (this.state.checked_queries.has(query_name)) {
+      this.state.checked_queries.delete(query_name);
+    } else {
+      this.state.checked_queries.add(query_name);
+    }
+    // Yes, this is needed to trigger rendering.
+    this.setState({"checked_queries": this.state.checked_queries});
+  }
+  
   render() {
     this.setPermalink();
     let data_view = this.generateDataView();
@@ -594,23 +622,30 @@ class Benchmark extends React.Component {
 		     let query_name = kv[0];
 		     let engine_queries = kv[1];
 		     let ref_engine = Object.keys(engine_queries)[0];
-		     return <tr key={query_name}>
-			      <td><Display name={query_name} query={engine_queries[ref_engine].query}></Display></td>
-			      {
-				Object.keys(data_view.engines).map(engine => {
-				  let cell_data = engine_queries[engine];
-				  if (cell_data == null || cell_data.unsupported) {
-				    return <td key={query_name + engine} className={"data"}></td>;
-				  } else {
-				    return <td key={query_name + engine} className={"data " + cell_data.className}>
-					     <div className="timing">{numberWithCommas(cell_data.median)} {this.state.search_metric.value.unit}</div>
-					     <div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
-					     <div className="count">{numberWithCommas(cell_data.count)} docs</div>
-					   </td>;
-				  }
-				})
-			      }
-			    </tr>
+		     return (
+		       <tr key={query_name}>
+			 <td>
+			   <Display name={query_name} query={engine_queries[ref_engine].query}></Display>
+			   <input type="checkbox" id={query_name}
+				  checked={this.state.checked_queries.has(query_name)}
+				  onChange={this.handleQueryCheckboxChange.bind(this)}/>
+			 </td>
+			 {
+			   Object.keys(data_view.engines).map(engine => {
+			     let cell_data = engine_queries[engine];
+			     if (cell_data == null || cell_data.unsupported) {
+			       return <td key={query_name + engine} className={"data"}></td>;
+			     } else {
+			       return <td key={query_name + engine} className={"data " + cell_data.className}>
+					<div className="timing">{numberWithCommas(cell_data.median)} {this.state.search_metric.value.unit}</div>
+					<div className="timing-variation">{formatPercentVariation(cell_data.variation)}</div>
+					<div className="count">{numberWithCommas(cell_data.count)} docs</div>
+				      </td>;
+			     }
+			   })
+			 }
+		       </tr>
+		     );
 		   })
 		 }
                </tbody>
@@ -738,7 +773,7 @@ function assemble_runs_to_display(run_infos, selected_run_ids) {
   let full_name_to_run_info = {};
   for (let run_info of run_infos) {
     id_to_run_info[run_info.id] = run_info;
-    if (run_info.run_type != "indexing") {
+    if (run_info.run_type !== "indexing") {
       continue;
     }
     run_info.preselected = selected_run_ids_set.has(run_info.id);
@@ -754,7 +789,7 @@ function assemble_runs_to_display(run_infos, selected_run_ids) {
   let to_display = [];
   for (let run_id of selected_run_ids) {
     const run_info = id_to_run_info[run_id];
-    if (run_info.run_type != "search") {
+    if (run_info.run_type !== "search") {
       continue;
     }
     // Now, we use an heuristic to find a corresponding indexing run
@@ -781,7 +816,7 @@ function assemble_runs_to_display(run_infos, selected_run_ids) {
   let matched_indexing_ids = new Set(to_display.map((id_pair) => id_pair.indexing));
 
   for (let run_info of run_infos) {   
-    if (run_info.run_type == "indexing" &&
+    if (run_info.run_type === "indexing" &&
 	run_info.preselected &&
 	!matched_indexing_ids.has(run_info.id)) {
       to_display.push({indexing: run_info.id, search: null});
