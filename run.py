@@ -214,7 +214,8 @@ class ProcessMonitor:
 
     """
     def __init__(self, process_id=None, process_name=None, metrics_addr=None,
-                 watched_metrics: dict[str, WatchedMetric] | None = None):
+                 watched_metrics: dict[str, WatchedMetric] | None = None,
+                 fine_grained_cpu_metrics=False):
         if bool(process_id) == bool(process_name):
             raise ValueError('Either process_id or process_name should be specified')
         if not process_id:
@@ -230,6 +231,7 @@ class ProcessMonitor:
         self._cpu_times = None
         self._reset_vm_hwm_success = True
         self._docker_client = docker.from_env()
+        self._fine_grained_cpu_metrics = fine_grained_cpu_metrics
        
     def _read_metrics(self):
         if not self.metrics_addr or not self.watched_metrics:
@@ -319,12 +321,24 @@ class ProcessMonitor:
         if self._cpu_times is None:
             raise ValueError(f"{self} was not started.")
         cpu_times = self.process.cpu_times()
+
+        def total_cpu_time(cpu_times):
+            return (cpu_times.user + cpu_times.system +
+                    cpu_times.children_user + cpu_times.children_system)
+
         stats = {
             'total_cpu_time_s': max(
-                cpu_times.user + cpu_times.system -
-                self._cpu_times.user - self._cpu_times.system,
-                0),
+                total_cpu_time(cpu_times) - total_cpu_time(self._cpu_times),
+                0)
         }
+        if self._fine_grained_cpu_metrics:
+            stats.update({
+                'user_cpu_time_s': max(cpu_times.user - self._cpu_times.user, 0),
+                'system_cpu_time_s': max(cpu_times.system - self._cpu_times.system, 0),
+                'children_user_cpu_time_s': max(cpu_times.children_user - self._cpu_times.children_user, 0),
+                'children_system_cpu_time_s': max(cpu_times.children_system - self._cpu_times.children_system, 0),
+            })
+
         vm_hwm = self._get_vm_hwm_megabytes()
         if self._reset_vm_hwm_success and vm_hwm is not None:
             stats['peak_memory_megabytes'] = vm_hwm

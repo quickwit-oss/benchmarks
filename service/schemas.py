@@ -80,6 +80,10 @@ class IndexingRunResults(BaseModel):
     docker_info: dict | None = None
     command_line: str | None = None
     total_cpu_time_s: float | None = None
+    user_cpu_time_s: float | None = None
+    system_cpu_time_s: float | None = None
+    children_user_cpu_time_s: float | None = None
+    children_system_cpu_time_s: float | None = None
     peak_memory_megabytes: float | None = None
     object_storage_download_megabytes: float | None = None
     object_storage_upload_megabytes: float | None = None
@@ -120,6 +124,11 @@ class QueryResult(BaseModel):
     duration: QueryMeasurements
     engine_duration: QueryMeasurements
     total_cpu_time_s: QueryMeasurements | None = None
+    # Additional optional CPU time metrics.
+    user_cpu_time_s: QueryMeasurements | None = None
+    system_cpu_time_s: QueryMeasurements | None = None
+    children_user_cpu_time_s: QueryMeasurements | None = None
+    children_system_cpu_time_s: QueryMeasurements | None = None
     peak_memory_megabytes: QueryMeasurements | None = None
     object_storage_download_megabytes: QueryMeasurements | None = None
     object_storage_upload_megabytes: QueryMeasurements | None = None
