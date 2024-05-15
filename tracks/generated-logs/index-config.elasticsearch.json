@@ -167,6 +167,10 @@
           "type": "keyword",
           "ignore_above": 1024
         },
+        "level": {
+          "type": "keyword",
+          "ignore_above": 1024
+        },
         "trace_id": {
           "type": "keyword",
           "ignore_above": 1024
