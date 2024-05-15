@@ -61,16 +61,20 @@ export function tooltipPlugin({
 
     let trailer = "";
     if (absoluteMode) {
-      let pctSinceStart = (
+      let percentageSinceStart = (
         ((u.data[seriesIdx][dataIdx] - u.data[seriesIdx][0]) /
-          u.data[seriesIdx][0]) *
-        100
-      ).toFixed(2);
-      trailer =
-        uPlot.fmtNum(u.data[seriesIdx][dataIdx]) +
-        " (" +
-        pctSinceStart +
-        "% since start)";
+          u.data[seriesIdx][0])
+      ).toLocaleString(navigator?.language || "en-US", {maximumFractionDigits: 2, style: "percent"});
+      trailer = uPlot.fmtNum(u.data[seriesIdx][dataIdx])
+      if (dataIdx > 0) {
+	let percentageWithPrevious = (
+          ((u.data[seriesIdx][dataIdx] - u.data[seriesIdx][dataIdx - 1]) /
+           u.data[seriesIdx][dataIdx - 1])
+	).toLocaleString(navigator?.language || "en-US", {maximumFractionDigits: 2, style: "percent"});
+	trailer += ` (${percentageSinceStart} since start, ${percentageWithPrevious} from previous)`;
+      } else {
+        trailer += ` (${percentageSinceStart} since start)`;
+      }
     } else {
       trailer = uPlot.fmtNum(u.data[seriesIdx][dataIdx]) + "% since start";
     }
