@@ -628,7 +628,9 @@ class Benchmark extends React.Component {
 			   <Display name={query_name} query={engine_queries[ref_engine].query}></Display>
 			   <input type="checkbox" id={query_name}
 				  checked={this.state.checked_queries.has(query_name)}
-				  onChange={this.handleQueryCheckboxChange.bind(this)}/>
+				  onChange={this.handleQueryCheckboxChange.bind(this)}
+				  title="Include query in aggregated stats?"
+			   />
 			 </td>
 			 {
 			   Object.keys(data_view.engines).map(engine => {
