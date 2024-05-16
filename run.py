@@ -30,6 +30,8 @@ import prometheus_client.parser as prometheus_parser
 import psutil
 import requests
 import yaml
+from service import schemas
+from benchmark_service_client import BenchmarkServiceClient
 
 logger = logging.getLogger(__name__)
 
@@ -134,17 +136,6 @@ def get_engine_env(runner_config_path: str) -> dict[str, str]:
     if "engine_env" not in config:
         return {}
     return {key.upper(): value for key, value in config.items("engine_env")}
-
-
-class BearerAuthentication(requests.auth.AuthBase):
-    """Helper to pass a bearer token as a header with requests."""
-
-    def __init__(self, token):
-        self.token = token
-
-    def __call__(self, r):
-        r.headers["authorization"] = f"Bearer {self.token.strip()}"
-        return r
 
 
 def get_docker_info(container_name: str):
@@ -392,17 +383,16 @@ class SearchClient(ABC):
         raise NotImplementedError
 
 
-def export_results(endpoint: str,
+def export_results(bench_service_client: BenchmarkServiceClient,
+                   args: argparse.Namespace,
                    results: dict[str, Any],
                    results_type: str,
                    exporter_token: str | None,
-                   verify_https: bool = True,
                    url_file: str | None = None):
     """Exports bench results to the a REST API endpoint.
 
     The endpoint is supposed to implement the API of service/main.py.
     """
-    api_endpoint = f'{endpoint}/api/v1/{results_type}_runs/'
     results = results.copy()
     info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
                    'source', 'commit_hash', 'index_uid'}
@@ -416,30 +406,12 @@ def export_results(endpoint: str,
             'run_results': run_results,
         }
     }
-    try:
-        response = requests.post(
-            api_endpoint, json=request,
-            verify=verify_https,
-            auth=BearerAuthentication(exporter_token) if exporter_token else None)
-    except requests.exceptions.ConnectionError as ex:
-        logging.error("Failed to export results to %s: %s", api_endpoint, ex)
-        return
-    
-    if response.status_code != 200:
-        resp_content = response.content
-        try:
-            # Just trying to get the best error message
-            resp_content = json.loads(resp_content)
-        except json.JSONDecodeError:
-            pass
-        logging.error(f'Failed exporting results to {api_endpoint}: {response} {pprint.pformat(resp_content)}')
-        return
-
-    run_info = response.json()["run_info"]
-    run_id = run_info["id"]
-    url = endpoint + f"/?run_ids={run_id}"
+    run_info = bench_service_client.export_run(request, results_type, exporter_token)
+    run_id = run_info.id
+    url = bench_service_client.endpoint + f"/?run_ids={run_id}"
     color = '' if os.environ.get("NO_COLOR") else '\033[92m'
-    logging.info(f'Exported results to {api_endpoint}: {run_info}\n{color}Results can be seen at address: {url} \033[0m')
+    logging.info(f'Exported results to {bench_service_client.endpoint}: {run_info}\n{color}Results can be seen at address: {url} \033[0m')
+
     # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
     if url_file:
         with open(url_file, 'a') as out:
@@ -1055,7 +1027,9 @@ def run_indexing_benchmark(
         
 
 def run_benchmark(benchs_to_run: list[BenchType],
-                  args: argparse.Namespace, exporter_token: str | None):
+                  args: argparse.Namespace,
+                  bench_service_client: BenchmarkServiceClient | None,
+                  exporter_token: str | None):
     """Prepares indices and runs the benchmark."""
     results_dir = f'{args.output_path}/{args.track}.{args.engine}'
     if args.tags:
@@ -1114,9 +1088,9 @@ def run_benchmark(benchs_to_run: list[BenchType],
 
         with open(output_path , "w") as f:
             json.dump(indexing_results, f, default=lambda obj: obj.__dict__, indent=4)
-        if args.export_to_endpoint:
-            export_results(args.export_to_endpoint, indexing_results, "indexing",
-                           exporter_token, verify_https=not args.disable_exporter_https_verification,
+        if bench_service_client:
+            export_results(bench_service_client, args, indexing_results, "indexing",
+                           exporter_token,
                            url_file=args.write_exported_run_url_to_file)
         if completed_process.returncode != 0:
             logging.error("Error while running indexing")
@@ -1124,8 +1098,9 @@ def run_benchmark(benchs_to_run: list[BenchType],
 
     if BenchType.SEARCH in benchs_to_run:
         print("Run search bench...")
-        search_results = run_search_benchmark(engine_client, args.engine, index, num_iterations,
-                                              queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
+        search_results = run_search_benchmark(
+            engine_client, args.engine, index, num_iterations,
+            queries_dir, args.query_filter, f'{results_dir}/search-results.json', args.no_hits)
         search_results['tag'] = args.tags
         search_results['storage'] = args.storage
         search_results['instance'] = instance
@@ -1135,37 +1110,16 @@ def run_benchmark(benchs_to_run: list[BenchType],
         search_output_filepath = f'{results_dir}/search-results.json'
         with open(search_output_filepath , "w") as f:
             json.dump(search_results, f, default=lambda obj: obj.__dict__, indent=4)
-        if args.export_to_endpoint:
-            export_results(args.export_to_endpoint, search_results, "search",
-                           exporter_token, verify_https=not args.disable_exporter_https_verification,
+        if bench_service_client:
+            export_results(bench_service_client, args, search_results, "search",
+                           exporter_token,
                            url_file=args.write_exported_run_url_to_file)
             
     return True
 
 
-def check_exporter_token(endpoint: str, token: str | None, verify_https: bool = True) -> bool:
-    """Returns true if the token is valid according to the service."""
-    endpoint = f'{endpoint}/api/v1/check_jwt_token'
-    try:
-        print(f"Checking JWT token using {endpoint}")
-        response = requests.get(endpoint,
-                                verify=verify_https,
-                                auth=BearerAuthentication(token) if token else None)
-    except requests.exceptions.ConnectionError as ex:
-        logging.error("Failed to connect to %s: %s", endpoint, ex)
-        return False
-    if response.status_code == 404:
-        logging.error("Endpoint '%s' not found (404)", endpoint)
-        return False
-    if response.status_code == 401:
-        return False
-    if response.status_code != 200:
-        logging.error("Unexpected error from endpoint %s: %s", endpoint, response)
-        return False
-    return True
-
-
-def get_exporter_token(endpoint: str, verify_https: bool = True) -> str | None:
+def get_exporter_token(bench_service_client: BenchmarkServiceClient,
+                       endpoint: str) -> str | None:
     """Get and return a JWT token for the benchmark service endpoint.
 
     The token is cached to a local file for convenience during future runs.
@@ -1175,14 +1129,14 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str | None:
     try:
         with open(jwt_token_filename, "r") as f:
             token = f.read()
-            if check_exporter_token(endpoint, token, verify_https):
+            if bench_service_client.check_exporter_token(token):
                 print(f"Token in {jwt_token_filename} is valid. Re-using it.")
                 return token
             else:
                 print(f"Invalid token in {jwt_token_filename}, trying to obtain a new one.")
     except FileNotFoundError:
         pass
-    if check_exporter_token(endpoint, None, verify_https):
+    if bench_service_client.check_exporter_token(None):
         print("Service does not require auth.")
         return None
     auth_url = f'{endpoint}/login/google'
@@ -1190,7 +1144,7 @@ def get_exporter_token(endpoint: str, verify_https: bool = True) -> str | None:
     print(auth_url)
     webbrowser.open(auth_url, new=2, autoraise=True)
     token = input("Please paste the JWT token displayed in the service response:\n").strip()
-    if not check_exporter_token(endpoint, token, verify_https):
+    if not bench_service_client.check_exporter_token(token):
         raise Exception(f"Token '{token}' is invalid, error in copy-paste?")
     print(f"Saving token to file {jwt_token_filename} for future use.")
     with open(jwt_token_filename, "w") as f:
@@ -1293,9 +1247,15 @@ def main():
 
     tmp_fix_args_for_gh_workflow(args)
 
-    if args.export_to_endpoint and not args.disable_exporter_auth:
-        exporter_token = get_exporter_token(args.export_to_endpoint,
-                                            verify_https=not args.disable_exporter_https_verification)
+    bench_service_client = (
+        BenchmarkServiceClient(args.export_to_endpoint,
+                               verify_https=not args.disable_exporter_https_verification)
+        if args.export_to_endpoint else None)
+    
+    if bench_service_client and not args.disable_exporter_auth:
+        # TODO: manage exporter_token inside bench_service_client.
+        exporter_token = get_exporter_token(bench_service_client,
+                                            args.export_to_endpoint)
     else:
         exporter_token = None
 
@@ -1317,7 +1277,7 @@ def main():
                 start_engine(args.engine, args.binary_path,
                              args.engine_data_dir, args.engine_config_file)
             # When looping, we ignore errors.
-            bench_ok = run_benchmark([BenchType.INDEXING], args, exporter_token)
+            bench_ok = run_benchmark([BenchType.INDEXING], args, bench_service_client, exporter_token)
 
         if BenchType.SEARCH in benchs_to_run and bench_ok:
             if args.manage_engine:
@@ -1332,7 +1292,7 @@ def main():
                 stop_engine(args.engine)
                 start_engine(args.engine, args.binary_path,
                              args.engine_data_dir, args.engine_config_file, for_search_only=True)
-            bench_ok = run_benchmark([BenchType.SEARCH], args, exporter_token)
+            bench_ok = run_benchmark([BenchType.SEARCH], args, bench_service_client, exporter_token)
 
         if args.manage_engine:
             stop_engine(args.engine)
