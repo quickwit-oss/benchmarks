@@ -101,6 +101,23 @@ class CreateIndexingRunRequest(BaseModel):
     run: IndexingRun
 
 
+class ListRunsRequest(BaseModel):
+    run_type: str | None = None
+    track: str | None = None
+    engine: str | None = None
+    storage: str | None = None
+    instance: str | None = None
+    tag: str | None = None
+    commit_hash: str | None = None
+    commit_hash_list: list[str] | None = None
+    start_timestamp: datetime.datetime | None = None
+    end_timestamp: datetime.datetime | None = None
+    unsafe_user: str | None = None
+    verified_email: str | None = None
+    source: RunSource | None = None
+    index_uid: str | None = None
+
+
 class ListRunsResponse(BaseModel):
     # For convenience, runs are returned by the service from most
     # recent to oldest.

@@ -104,7 +104,7 @@ def list_runs(db: Session,
               storage: str | None = None,
               instance: str | None = None,
               tag: str | None = None,
-              commit_hash: str | None = None,
+              commit_hash_list: list[str] | None = None,
               start_timestamp: datetime.datetime | None = None,
               end_timestamp: datetime.datetime | None = None,
               unsafe_user: str | None = None,
@@ -144,8 +144,8 @@ def list_runs(db: Session,
         db_query = db_query.filter(models.Run.instance == instance)
     if tag is not None:
         db_query = db_query.filter(models.Run.tag == tag)
-    if commit_hash is not None:
-        db_query = db_query.filter(models.Run.commit_hash == commit_hash)
+    if commit_hash_list:
+        db_query = db_query.filter(models.Run.commit_hash.in_(commit_hash_list))
     if start_timestamp is not None:
         db_query = db_query.filter(models.Run.timestamp >= start_timestamp)
     if end_timestamp is not None:

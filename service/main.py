@@ -271,7 +271,7 @@ def create_indexing_run(req: schemas.CreateIndexingRunRequest,
 
 
 # TODO: consider removing.
-@app.get("/api/v1/indexing_runs/{run_id}", response_model=schemas.IndexingRun)
+@app.get("/api/v1/indexing_runs/{run_id}", response_model=schemas.IndexingRun, deprecated=True)
 def get_indexing_run(run_id: int, db: Session = Depends(get_db)):
     """Get an indexing run from the service."""
     try:
@@ -289,7 +289,9 @@ def list_tracks(db: Session = Depends(get_db)) -> list[str]:
     return tracks
 
 
-@app.get("/api/v1/all_runs/list/", response_model=schemas.ListRunsResponse)
+@app.get("/api/v1/all_runs/list/", response_model=schemas.ListRunsResponse,
+         # Use the post version instead.
+         deprecated=True)
 def list_runs(run_type: str | None = None,
               track: str | None = None,
               engine: str | None = None,
@@ -305,6 +307,9 @@ def list_runs(run_type: str | None = None,
               index_uid: str | None = None,
               db: Session = Depends(get_db)):
     """Return the list of runs according to filters."""
+    commit_hash_list = []
+    if commit_hash is not None:
+        commit_hash_list.append(commit_hash)
     db_runs = crud.list_runs(
         db=db,
         run_type=run_type,
@@ -313,13 +318,43 @@ def list_runs(run_type: str | None = None,
         storage=storage,
         instance=instance,
         tag=tag,
-        commit_hash=commit_hash,
+        commit_hash_list=commit_hash_list,
         start_timestamp=start_timestamp,
         end_timestamp=end_timestamp,
         unsafe_user=unsafe_user,
         verified_email=verified_email,
         source=source,
         index_uid=index_uid,
+        ordering=crud.Ordering.DESC)
+    return schemas.ListRunsResponse(
+        run_infos=[crud.db_run_to_run_info(db_run)
+                   for db_run in db_runs])
+
+
+@app.post("/api/v1/all_runs/list/", response_model=schemas.ListRunsResponse)
+def list_runs(req: schemas.ListRunsRequest,
+              db: Session = Depends(get_db)):
+    """Return the list of runs according to filters."""
+    commit_hash_list = []
+    if req.commit_hash is not None:
+        commit_hash_list.append(req.commit_hash)
+    if req.commit_hash_list is not None:
+        commit_hash_list.extend(req.commit_hash_list)
+    db_runs = crud.list_runs(
+        db=db,
+        run_type=req.run_type,
+        track=req.track,
+        engine=req.engine,
+        storage=req.storage,
+        instance=req.instance,
+        tag=req.tag,
+        commit_hash_list=commit_hash_list,
+        start_timestamp=req.start_timestamp,
+        end_timestamp=req.end_timestamp,
+        unsafe_user=req.unsafe_user,
+        verified_email=req.verified_email,
+        source=req.source,
+        index_uid=req.index_uid,
         ordering=crud.Ordering.DESC)
     return schemas.ListRunsResponse(
         run_infos=[crud.db_run_to_run_info(db_run)
@@ -344,7 +379,7 @@ def create_search_run(req: schemas.CreateSearchRunRequest,
 
 
 # TODO: consider removing.
-@app.get("/api/v1/search_runs/{run_id}", response_model=schemas.SearchRun)
+@app.get("/api/v1/search_runs/{run_id}", response_model=schemas.SearchRun, deprecated=True)
 def get_search_run(run_id: int, db: Session = Depends(get_db)):
     """Get a search run from the service."""
     try:
