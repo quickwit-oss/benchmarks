@@ -572,6 +572,9 @@ def export_results(bench_service_client: BenchmarkServiceClient,
             reference_tag=args.comparison_reference_tag)
         comparison = compare_runs(ref_run, bench_service_client.get_run(run_id))
 
+    comparison_url = (bench_service_client.build_url_for_run_ids([run_id, ref_run.run_info.id])
+                      if ref_run else run_url)
+
     comparison_text = None
     if not ref_run:
         comparison_text = "Reference bench run not found"
@@ -580,13 +583,13 @@ def export_results(bench_service_client: BenchmarkServiceClient,
     else:
         comparison_text = (
             f"Average search latency is {comparison.search_latency_ratio:.2}x that "
-            f"of the reference (lower is better). Ref run id: {ref_run.run_info.id}, "
-            f"ref commit: {ref_run.run_info.commit_hash}")
+            f"of the reference (lower is better).<br/>Ref run id: {ref_run.run_info.id}, "
+            f"ref commit: {ref_run.run_info.commit_hash}<br/>"
+            f"[Link]({comparison_url})"
 
     export_to_url_file = {
         "url": run_url,
-        "comparison_url": (bench_service_client.build_url_for_run_ids([run_id, ref_run.run_info.id])
-                           if ref_run else None),
+        "comparison_url": comparison_url,
         "comparison_text": comparison_text,
     }
     # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
