@@ -439,7 +439,8 @@ def get_reference_run(
         "storage": current_run_info.storage,
         "instance": current_run_info.instance,
         "tag": reference_tag,
-#        "source": current_run_info.source,
+        # Only use runs triggered by github workflow as reference.
+        "source": "github_workflow",
     }
     # Simple case: we have a bench run on the exact base commit.
     previous_run_info = bench_service_client.list_runs(
