@@ -444,8 +444,9 @@ def get_reference_run(
     # Simple case: we have a bench run on the exact base commit.
     previous_run_info = bench_service_client.list_runs(
         base_run_filter | {"commit_hash_list": [reference_commit]})
-    print("### Found directly a previous run on ref commit:", previous_run_info)
     if previous_run_info:
+        logging.debug("Found directly a ref run on ref commit: %s",
+                      previous_run_info[0])
         return bench_service_client.get_run(previous_run_info[0].id)
 
     # We get recent commits and try to find the most recent runs on
@@ -456,10 +457,12 @@ def get_reference_run(
     if previous_ref_commits is None:
         return
 
-    previous_run_infos = bench_service_client.list_runs(base_run_filter | {
+    run_filter = base_run_filter | {
         "commit_hash_list": previous_ref_commits,
-    })
-    print("###prev run infos candidates:", previous_run_infos, "\nfilter:", base_run_filter)
+    }
+    previous_run_infos = bench_service_client.list_runs(run_filter)
+    logging.debug("Ref run candidates: %s, filter: %s",
+                  previous_run_infos, run_filter)
     if not previous_run_infos:
         return
     
