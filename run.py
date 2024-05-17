@@ -585,7 +585,7 @@ def export_results(bench_service_client: BenchmarkServiceClient,
             f"Average search latency is {comparison.search_latency_ratio:.2}x that "
             f"of the reference (lower is better).<br/>Ref run id: {ref_run.run_info.id}, "
             f"ref commit: {ref_run.run_info.commit_hash}<br/>"
-            f"[Link]({comparison_url})"
+            f"[Link]({comparison_url})")
 
     export_to_url_file = {
         "url": run_url,
