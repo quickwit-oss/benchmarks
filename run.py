@@ -1431,6 +1431,9 @@ def main():
               "Only relevant when the benchmark "
               "is triggered from a Github workflow by a pull request."))
     parser.add_argument(
+        '--github-workflow-run-id', type=int,
+        help="Run ID of the github workflow that launched this benchmark run.")
+    parser.add_argument(
         '--github-pr', type=int,
         help=("Number of the Github PR that triggered this run. Only relevant when the benchmark "
               "is triggered from a Github workflow by a pull request."))
