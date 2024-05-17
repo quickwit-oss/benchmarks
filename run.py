@@ -8,6 +8,7 @@ import fnmatch
 import getpass
 import json
 import logging
+import math
 import os
 import platform
 import pprint
@@ -383,19 +384,159 @@ class SearchClient(ABC):
         raise NotImplementedError
 
 
+def get_github_commits(owner: str,
+                       repo: str,
+                       start_commit_sha: str) -> list[str] | None:
+    """Return the last N GH commits before (and incl.) `start_commit_sha`."""
+    try:
+        response = requests.get(
+            f"https://api.github.com/repos/{owner}/{repo}/commits?sha={start_commit_sha}&per_page=80",
+            headers={"Accept": "application/vnd.github+json",
+                     "X-GitHub-Api-Version": "2022-11-28"})
+        response.raise_for_status()
+    except requests.exceptions.RequestException as ex:
+        logging.info("Could not get list of commits from github for owner %s repo %s: %s", owner, repo, ex)
+        return
+    commit_shas = []
+    # See: https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#list-commits
+    # We assume they are in reverse chronological order.
+    for commit_response in response.json():
+        sha = commit_response.get("sha")
+        if sha:
+            commit_shas.append(sha)
+    return commit_shas
+
+
+def get_reference_run(
+        bench_service_client: BenchmarkServiceClient,
+        current_run_info: schemas.RunInfo,
+        owner: str,
+        repo: str,
+        reference_commit: str,
+        reference_tag: str = "push_main") -> schemas.SearchRun:
+    """Find a reference benchmark run to compare `current_run` to.
+
+    This will typically be the appropriate run with tag
+    `reference_tag` that ran on an engine built at commit
+    `reference_commit`. However, that run might not be available
+    (e.g. the github workflow does not run on every commits, or the
+    run might have failed). In that case, we get the most recent
+    commits from github, and find the most recent runs on those
+    commits.
+
+    Args:
+      bench_service_cleint:
+      current_info_run:
+      owner: Github owner of the repo of the benchmarked engine.
+      repo: Github repo of the benchmarked engine.
+      reference_commit: SHA hash of the commit to which we want a comparison.
+      reference_tag: We'll look for this tag in the reference run.
+    """
+    base_run_filter = {
+        "run_type": current_run_info.run_type,
+        "track": current_run_info.track,
+        "engine": current_run_info.engine,
+        "storage": current_run_info.storage,
+        "instance": current_run_info.instance,
+        "tag": reference_tag,
+#        "source": current_run_info.source,
+    }
+    # Simple case: we have a bench run on the exact base commit.
+    previous_run_info = bench_service_client.list_runs(
+        base_run_filter | {"commit_hash_list": [reference_commit]})
+    print("### Found directly a previous run on ref commit:", previous_run_info)
+    if previous_run_info:
+        return bench_service_client.get_run(previous_run_info[0].id)
+
+    # We get recent commits and try to find the most recent runs on
+    # those commits.
+    
+    previous_ref_commits = get_github_commits(owner, repo, reference_commit)
+    print("##prev commits:", previous_ref_commits)
+    if previous_ref_commits is None:
+        return
+
+    previous_run_infos = bench_service_client.list_runs(base_run_filter | {
+        "commit_hash_list": previous_ref_commits,
+    })
+    print("###prev run infos candidates:", previous_run_infos, "\nfilter:", base_run_filter)
+    if not previous_run_infos:
+        return
+    
+    ref_commits_to_prio = {commit: prio for prio, commit in enumerate(previous_ref_commits)}
+    
+    reference_run_info = min(
+        previous_run_infos,
+        key=lambda run_info: ref_commits_to_prio.get(run_info.commit_hash, 1e9))
+
+    return bench_service_client.get_run(reference_run_info.id)
+
+
+@dataclass
+class RunComparison:
+    search_latency_ratio: float | None = None
+    error_msg: str | None = None
+
+
+def compare_runs(reference_run: schemas.SearchRun | None,
+                 current_run: schemas.SearchRun | None) -> RunComparison:
+    """Compare two runs and returns a perf ratio.
+
+    Returns:
+      Geometric average of Search Latency ratios. This reproduces the
+      formula in web/src/index.js (generateDataView()) to compute a
+      ratio metric between the performance of two engines.
+
+    Re-implementing this logic here is unfortunately needed to to
+    report this metric in a github workflow (and we are not going to
+    execute js from py just for this function...).
+    """
+    if reference_run is None or current_run is None:
+        return RunComparison(error_msg="No reference run found")
+    # A list of mapping from query name to the median engine duration.
+    queries: list[dict[str, float]] = [{}, {}]
+    for i, run in enumerate((reference_run, current_run)):
+        for query in run.run_results.queries:
+            # TODO: We could report additional metrics than just engine_duration.
+            if not query.engine_duration.values: continue
+            queries[i][query.name] = statistics.median(query.engine_duration.values)
+
+    ref_query_names = set(queries[0].keys())
+    current_query_names = set(queries[1].keys())
+    if ref_query_names != current_query_names:
+        return RunComparison(error_msg=(
+            f"Not the same queries, cannot compare, "
+            f"difference: {ref_query_names ^ current_query_names}"))
+    if not ref_query_names:
+        return RunComparison(error_msg="No queries to compare, cannot compare runs")
+
+    sum_log_ratios = 0
+    for query_name in ref_query_names:
+        # Microseconds -> milliseconds
+        ref_ms = queries[0][query_name] / 1000
+        current_ms = queries[1][query_name] / 1000
+#        print(query_name, ref_ms, current_ms)
+        ratio = ((current_ms + 10) / (ref_ms + 10)) if abs(ref_ms - current_ms) >= 3 else 1
+        sum_log_ratios += math.log(ratio)
+
+    return RunComparison(search_latency_ratio=math.exp(sum_log_ratios / len(ref_query_names)))
+
+
 def export_results(bench_service_client: BenchmarkServiceClient,
                    args: argparse.Namespace,
                    results: dict[str, Any],
                    results_type: str,
                    exporter_token: str | None,
                    url_file: str | None = None):
-    """Exports bench results to the a REST API endpoint.
-
-    The endpoint is supposed to implement the API of service/main.py.
+    """Exports bench results to the benchmark service.
     """
     results = results.copy()
-    info_fields = {'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
-                   'source', 'commit_hash', 'index_uid'}
+    info_fields = {
+        'track', 'engine', 'storage', 'instance', 'tag', 'unsafe_user',
+        'source', 'commit_hash', 'index_uid',
+        'github_pr',
+        'github_workflow_user',
+    }
     run_info = {k: results.pop(k) for k in info_fields}
     run_results = results
 
@@ -407,15 +548,50 @@ def export_results(bench_service_client: BenchmarkServiceClient,
         }
     }
     run_info = bench_service_client.export_run(request, results_type, exporter_token)
+    if not run_info:
+        logging.error("Failed to export run")
+        return
     run_id = run_info.id
-    url = bench_service_client.endpoint + f"/?run_ids={run_id}"
+    run_url = bench_service_client.build_url_for_run_ids([run_id])
     color = '' if os.environ.get("NO_COLOR") else '\033[92m'
-    logging.info(f'Exported results to {bench_service_client.endpoint}: {run_info}\n{color}Results can be seen at address: {url} \033[0m')
+    logging.info(f'Exported results to {bench_service_client.endpoint}: {run_info}\n{color}Results can be seen at address: {run_url} \033[0m')
 
+    ref_run = None
+    comparison = None
+    if (results_type == "search" and args.comparison_reference_commit is not None and
+        args.comparison_reference_tag is not None):
+        # Compare against a reference.
+        ref_run = get_reference_run(
+            bench_service_client,
+            current_run_info=run_info,
+            owner=args.github_owner,
+            repo=args.github_repo,
+            reference_commit=args.comparison_reference_commit,
+            reference_tag=args.comparison_reference_tag)
+        comparison = compare_runs(ref_run, bench_service_client.get_run(run_id))
+
+    comparison_text = None
+    if not ref_run:
+        comparison_text = "Reference bench run not found"
+    elif comparison.error_msg:
+        comparison_text = comparison.error_msg
+    else:
+        comparison_text = (
+            f"Average search latency is {comparison.search_latency_ratio:.2}x that "
+            f"of the reference (lower is better). Ref run id: {ref_run.run_info.id}, "
+            f"ref commit: {ref_run.run_info.commit_hash}")
+
+    export_to_url_file = {
+        "url": run_url,
+        "comparison_url": (bench_service_client.build_url_for_run_ids([run_id, ref_run.run_info.id])
+                           if ref_run else None),
+        "comparison_text": comparison_text,
+    }
     # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
     if url_file:
         with open(url_file, 'a') as out:
-            out.write(f"url={url}\n")
+            for k, v in export_to_url_file.items():
+                out.write(f"{k}={v}\n")
 
 
 def get_common_debug_info(engine_client: SearchClient, index_name: str):
@@ -1082,6 +1258,8 @@ def run_benchmark(benchs_to_run: list[BenchType],
             indexing_results['qbench_returncode'] = completed_process.returncode
             indexing_results['qbench_command_line'] = ' '.join(completed_process.args)
             indexing_results['source'] = args.source
+            indexing_results['github_pr'] = args.github_pr
+            indexing_results['github_workflow_user'] = args.github_workflow_user
             indexing_results |= get_common_debug_info(engine_client, index)
             indexing_results |= monitor_stats
             # TODO: add config (/api/v1/config)?
@@ -1106,6 +1284,8 @@ def run_benchmark(benchs_to_run: list[BenchType],
         search_results['instance'] = instance
         search_results['track'] = args.track
         search_results['source'] = args.source
+        search_results['github_pr'] = args.github_pr
+        search_results['github_workflow_user'] = args.github_workflow_user
         search_results |= get_common_debug_info(engine_client, index)
         search_output_filepath = f'{results_dir}/search-results.json'
         with open(search_output_filepath , "w") as f:
@@ -1238,10 +1418,37 @@ def main():
         '--engine-config-file', type=str,
         help=("If specified and --manage-engine is set, this overrides the default engine config file "
               "(typically 'engines/$ENGINE/configs/quickwit.yaml for quickwit)'."))
+
     parser.add_argument(
         '--write-exported-run-url-to-file', type=str,
         help=("If specified, the URL of the exported run will be written to that file. "
               "Useful in github workflows where this will typically be set to $GITHUB_OUTPUT."))
+    parser.add_argument(
+        '--github-workflow-user', type=str,
+        help=("Github user that triggered the github workflow that triggered this run. "
+              "Only relevant when the benchmark "
+              "is triggered from a Github workflow by a pull request."))
+    parser.add_argument(
+        '--github-pr', type=int,
+        help=("Number of the Github PR that triggered this run. Only relevant when the benchmark "
+              "is triggered from a Github workflow by a pull request."))
+    parser.add_argument(
+        '--comparison-reference-commit', type=str,
+        help=("SHA hash of the commit we should compare the current run to. When this bench run is "
+              "triggered by a github workflow on a pull request, this should be the base commit "
+              "of the PR."))
+    parser.add_argument(
+        '--comparison-reference-tag', type=str,
+        help=("Tag of the reference benchmark run we should compare the current run to. "
+              "Typically 'push_main' for bench runs on the main git branch."))
+    parser.add_argument(
+        '--github-owner', type=str,
+        help=("Github owner. Only relevant when the benchmark is triggered from a Github workflow."),
+        default="quickwit-oss")
+    parser.add_argument(
+        '--github-repo', type=str,
+        help=("Github repo. Only relevant when the benchmark is triggered from a Github workflow."),
+        default="quickwit")
 
     args = parser.parse_args()
 
