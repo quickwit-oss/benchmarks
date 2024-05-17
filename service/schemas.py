@@ -46,7 +46,7 @@ class RunInfo(BaseModel):
     index_uid: str | None = None
     # The pull request that triggered the github workflow that
     # triggered that bench run.
-    github_pr: str | None = None
+    github_pr: int | None = None
     github_workflow_user: str | None = None
 
 
