@@ -34,4 +34,6 @@ class Run(Base):
     run_results = Column(JSON)
     source = Column(String, index=True)
     index_uid = Column(String, index=True)
+    github_pr = Column(Integer, index=True)
+    github_workflow_user = Column(String, index=True)
 

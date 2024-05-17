@@ -44,6 +44,10 @@ class RunInfo(BaseModel):
     verified_email: str | None = None
     source: RunSource = RunSource.MANUAL
     index_uid: str | None = None
+    # The pull request that triggered the github workflow that
+    # triggered that bench run.
+    github_pr: str | None = None
+    github_workflow_user: str | None = None
 
 
 class BuildInfo(BaseModel):

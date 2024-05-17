@@ -45,7 +45,10 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
         unsafe_user=db_run.unsafe_user,
         verified_email=db_run.verified_email,
         source=db_run.source,
-        index_uid=db_run.index_uid)
+        index_uid=db_run.index_uid,
+        github_pr=db_run.github_pr,
+        github_workflow_user=db_run.github_workflow_user,
+    )
 
 def upgrade_indexing_run(run: schemas.IndexingRun):
     if run.run_results.megabytes_per_second is None:
@@ -130,6 +133,8 @@ def list_runs(db: Session,
                   models.Run.verified_email,
                   models.Run.source,
                   models.Run.index_uid,
+                  models.Run.github_pr,
+                  models.Run.github_workflow_user,
                   ]
     db_query = db.query(*fields)
     if run_type is not None:
