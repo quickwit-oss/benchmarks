@@ -454,7 +454,6 @@ def get_reference_run(
     # those commits.
     
     previous_ref_commits = get_github_commits(owner, repo, reference_commit)
-    print("##prev commits:", previous_ref_commits)
     if previous_ref_commits is None:
         return
 
