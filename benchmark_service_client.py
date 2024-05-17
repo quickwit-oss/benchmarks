@@ -28,6 +28,11 @@ class BenchmarkServiceClient:
         self.endpoint = service_endpoint
         self._verify_https = verify_https
 
+    def build_url_for_run_ids(self, run_ids: list[int]) -> str:
+        """Build an URL for the comparison page for the given `run_ids`."""
+        run_ids_str = ",".join([str(id) for id in run_ids])
+        return f"{self.endpoint}/?run_ids={run_ids_str}"
+
     def get_run(self, run_id: int) -> schemas.SearchRun | None:
         uri = f'{self.endpoint}/api/v1/all_runs/get/'
         try:
