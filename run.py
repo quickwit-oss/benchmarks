@@ -1342,7 +1342,7 @@ def get_exporter_token(bench_service_client: BenchmarkServiceClient,
 
 # Temporary hacks to fix args for the github workflow running quickwit on GCS.
 def tmp_fix_args_for_gh_workflow(args):
-    if args.github_pr <= 0:
+    if args.github_pr is not None and args.github_pr <= 0:
         args.github_pr = None
     if (args.source == 'github_workflow' and
         args.storage == 'gcs' and
