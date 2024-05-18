@@ -580,7 +580,7 @@ def export_results(bench_service_client: BenchmarkServiceClient,
     if not ref_run:
         comparison_text = "Reference bench run not found"
     elif comparison.error_msg:
-        comparison_text = comparison.error_msg
+        comparison_text = "ERROR: " + comparison.error_msg
     else:
         comparison_text = (
             f"Average search latency is {comparison.search_latency_ratio:.2}x that "
