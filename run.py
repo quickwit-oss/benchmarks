@@ -538,6 +538,7 @@ def export_results(bench_service_client: BenchmarkServiceClient,
         'source', 'commit_hash', 'index_uid',
         'github_pr',
         'github_workflow_user',
+        'github_workflow_run_id',
     }
     run_info = {k: results.pop(k) for k in info_fields}
     run_results = results
@@ -1265,6 +1266,7 @@ def run_benchmark(benchs_to_run: list[BenchType],
             indexing_results['source'] = args.source
             indexing_results['github_pr'] = args.github_pr
             indexing_results['github_workflow_user'] = args.github_workflow_user
+            indexing_results['github_workflow_run_id'] = args.github_workflow_run_id
             indexing_results |= get_common_debug_info(engine_client, index)
             indexing_results |= monitor_stats
             # TODO: add config (/api/v1/config)?
@@ -1291,6 +1293,7 @@ def run_benchmark(benchs_to_run: list[BenchType],
         search_results['source'] = args.source
         search_results['github_pr'] = args.github_pr
         search_results['github_workflow_user'] = args.github_workflow_user
+        search_results['github_workflow_run_id'] = args.github_workflow_run_id
         search_results |= get_common_debug_info(engine_client, index)
         search_output_filepath = f'{results_dir}/search-results.json'
         with open(search_output_filepath , "w") as f:

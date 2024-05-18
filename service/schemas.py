@@ -48,6 +48,7 @@ class RunInfo(BaseModel):
     # triggered that bench run.
     github_pr: int | None = None
     github_workflow_user: str | None = None
+    github_workflow_run_id: int | None = None
 
 
 class BuildInfo(BaseModel):

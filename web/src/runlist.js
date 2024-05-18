@@ -14,6 +14,9 @@ import DataGrid, {SelectColumn} from 'react-data-grid';
 
 import {BENCHMARK_SERVICE_ADDRESS, getRunDisplayName} from "./utils.js";
 
+const GITHUB_REPO = "quickwit";
+const GITHUB_OWNER = "quickwit-oss";
+
 function rowKeyGetter(row) {
   return row.id;
 }
@@ -91,7 +94,7 @@ function RunList(props) {
 	renderCell: (props) => {
 	  if (props.row.engine === "quickwit") {
 	    return (
-	      <a href={`https://github.com/quickwit-oss/quickwit/commit/${props.row.commit_hash}`}>
+	      <a href={`https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/commit/${props.row.commit_hash}`}>
 		{props.row.short_commit_hash}
 	      </a>
 	    );
@@ -100,7 +103,36 @@ function RunList(props) {
 	  }
 	}
       },
-      { key: 'source', name: 'Source' },
+      {
+	key: 'source',
+	name: 'Source',
+	renderCell: (props) => {
+	  if (props.row.github_workflow_run_id != null) {
+	    return (
+	      <a href={`https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runs/${props.row.github_workflow_run_id}`}>
+		{props.row.source}
+	      </a>
+	    );
+	  } else {
+	    return props.row.source;
+	  }
+	}
+      },
+      {
+	key: 'github_pr',
+	name: 'GH PR',
+	renderCell: (props) => {
+	  if (props.row.github_pr != null) {
+	    return (
+	      <a href={`https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/pull/${props.row.github_pr}`}>
+		{props.row.github_pr}
+	      </a>
+	    );
+	  } else {
+	    return "";
+	  }
+	}
+      },
 //      { key: 'index_uid', name: 'Index UID' },
     ];
   }, []);

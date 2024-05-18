@@ -48,6 +48,7 @@ def db_run_to_run_info(db_run: models.Run | sqlalchemy.engine.row.Row) -> schema
         index_uid=db_run.index_uid,
         github_pr=db_run.github_pr,
         github_workflow_user=db_run.github_workflow_user,
+        github_workflow_run_id=db_run.github_workflow_run_id,
     )
 
 def upgrade_indexing_run(run: schemas.IndexingRun):
@@ -135,6 +136,7 @@ def list_runs(db: Session,
                   models.Run.index_uid,
                   models.Run.github_pr,
                   models.Run.github_workflow_user,
+                  models.Run.github_workflow_run_id,
                   ]
     db_query = db.query(*fields)
     if run_type is not None:

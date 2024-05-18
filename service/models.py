@@ -36,4 +36,5 @@ class Run(Base):
     index_uid = Column(String, index=True)
     github_pr = Column(Integer, index=True)
     github_workflow_user = Column(String, index=True)
+    github_workflow_run_id = Column(Integer, index=True)
 
