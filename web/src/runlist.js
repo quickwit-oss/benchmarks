@@ -169,9 +169,12 @@ function RunList(props) {
       <br/>
       {
 	filter_specs.map((filter_spec) => {
-	  if (!showFilters) return;
+	  let row_style = {};
+	  if (!showFilters) {
+	    row_style = {display: "none"};
+	  }
 	  return (
-            <div class="row">
+            <div class="row" style={row_style} key={filter_spec.name}>
 	      <div class="runlist-column-filter-name">
 		{filter_spec.name}:  
 	      </div>
