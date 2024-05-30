@@ -89,7 +89,7 @@ class BenchmarkServiceClient:
         except requests.exceptions.ConnectionError as ex:
             logging.error("Failed to export results to %s: %s", uri, ex)
             return
-    
+
         if response.status_code != 200:
             resp_content = response.content
             try:

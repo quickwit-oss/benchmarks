@@ -22,7 +22,7 @@ import webbrowser
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from glob import glob
-from typing import Any
+from typing import Any, Generator
 
 import dateutil.parser as dateutil_parser
 import docker
@@ -413,7 +413,7 @@ def get_reference_run(
         owner: str,
         repo: str,
         reference_commit: str,
-        reference_tag: str = "push_main") -> schemas.SearchRun:
+        reference_tag: str = "push_main") -> schemas.SearchRun | None:
     """Find a reference benchmark run to compare `current_run` to.
 
     This will typically be the appropriate run with tag
@@ -444,7 +444,8 @@ def get_reference_run(
     }
     # Simple case: we have a bench run on the exact base commit.
     previous_run_info = bench_service_client.list_runs(
-        base_run_filter | {"commit_hash_list": [reference_commit]})
+        schemas.ListRunsRequest.model_validate(
+            base_run_filter | {"commit_hash_list": [reference_commit]}))
     if previous_run_info:
         logging.debug("Found directly a ref run on ref commit: %s",
                       previous_run_info[0])
@@ -460,7 +461,8 @@ def get_reference_run(
     run_filter = base_run_filter | {
         "commit_hash_list": previous_ref_commits,
     }
-    previous_run_infos = bench_service_client.list_runs(run_filter)
+    previous_run_infos = bench_service_client.list_runs(
+        schemas.ListRunsRequest.model_validate(run_filter))
     logging.debug("Ref run candidates: %s, filter: %s",
                   previous_run_infos, run_filter)
     if not previous_run_infos:
@@ -872,7 +874,7 @@ class LokiClient(SearchClient):
         return None
 
 
-def drive(index: str, queries: list[Query], client: SearchClient):
+def drive(index: str, queries: list[Query], client: SearchClient) -> Generator[dict[str, Any], None, None]:
     for query in queries:
         tries = 0
         while True:
@@ -902,7 +904,7 @@ def drive(index: str, queries: list[Query], client: SearchClient):
         yield result | {'query': query, 'duration': duration}
 
 
-def read_queries(queries_dir, query_filter):
+def read_queries(queries_dir: str, query_filter: str) -> Generator[Query, None, None]:
     query_files = sorted(glob("{queries_dir}/*.json".format(queries_dir=queries_dir)))
     for q_filepath in query_files:
         query_name, _ = os.path.splitext(os.path.basename(q_filepath))
@@ -930,7 +932,7 @@ def get_engine_client(engine: str, no_hits: bool) -> SearchClient:
 
 
 def run_search_benchmark(search_client: SearchClient, engine: str, index: str, num_iterations: int,
-                         queries_dir: str, query_filter, output_filepath: str, no_hits: bool) -> dict:
+                         queries_dir: str, query_filter: str, output_filepath: str, no_hits: bool) -> dict:
     """Run the benchmark."""
     queries: list[Query] = list(read_queries(queries_dir, query_filter))
 
@@ -1528,3 +1530,5 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         sys.exit(1)
+
+# TODO: cold mode.
