@@ -1,6 +1,5 @@
 import React from 'react';
 import Select from 'react-select';
-import $ from 'jquery';
 import { JsonView, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import ReactDOM from 'react-dom';
@@ -855,8 +854,16 @@ function showComparison(run_ids_filter,
     });
 }
 
-$(function () {
 
+function call_when_ready(fn) {
+  if (document.readyState !== 'loading') {
+    fn();
+    return;
+  }
+  document.addEventListener('DOMContentLoaded', fn);
+}
+
+call_when_ready(() => {
   let searchParams = new URLSearchParams(window.location.search)
   if (searchParams.get("page") === "graphs") {
     console.log("Showing graphs");
