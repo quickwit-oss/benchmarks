@@ -61,7 +61,7 @@ class BenchmarkServiceClient:
         try:
             response = requests.post(
                 uri,
-                json=req,
+                data=req.json(),
                 headers={
                     "accept": "application/json",
                     "Content-Type": "application/json",
