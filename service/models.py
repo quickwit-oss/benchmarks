@@ -6,7 +6,7 @@
 
 # Databases (SQLAlchemy) models.
 
-from sqlalchemy import (JSON, Boolean, Column, DateTime, Enum, ForeignKey,
+from sqlalchemy import (JSON, BigInteger, Boolean, Column, DateTime, Enum, ForeignKey,
                         Integer, String)
 from sqlalchemy.orm import relationship
 
@@ -34,7 +34,7 @@ class Run(Base):
     run_results = Column(JSON)
     source = Column(String, index=True)
     index_uid = Column(String, index=True)
-    github_pr = Column(Integer, index=True)
+    github_pr = Column(BigInteger, index=True)
     github_workflow_user = Column(String, index=True)
-    github_workflow_run_id = Column(Integer, index=True)
+    github_workflow_run_id = Column(BigInteger, index=True)
 
