@@ -256,6 +256,8 @@ class Benchmark extends React.Component {
       // Ratios with a similar formula as in the clickhouse benchmark.
       // https://github.com/ClickHouse/ClickBench/?tab=readme-ov-file#results-usage-and-scoreboards
       // Sum(log(ratio)) for each query comparing the current engine to the first engine.
+      // If this computation (or its parameters) change,
+      // `compare_runs()` in run.py should be updated.
       let sum_log_ratios = 0;
       let ratio_has_unsupported = false;
       for (let query of engine_queries) {
