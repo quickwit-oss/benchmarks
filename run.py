@@ -1342,19 +1342,6 @@ def get_exporter_token(bench_service_client: BenchmarkServiceClient,
     return token
 
 
-# Temporary hacks to fix args for the github workflow running quickwit on GCS.
-def tmp_fix_args_for_gh_workflow(args):
-    if args.github_pr is not None and args.github_pr <= 0:
-        args.github_pr = None
-    if (args.source == 'github_workflow' and
-        args.storage == 'gcs' and
-        args.engine_data_dir == '{qwdata_gcs}' and
-        not args.engine_config_file):
-        args.engine_config_file = 'engines/quickwit/configs/cbench_quickwit_gcs.yaml'
-        logging.info("Setting --engine-config-file to %s to fix gh workflow",
-                     args.engine_config_file)
-
-
 def main():
     import sys
     logging.basicConfig(
@@ -1466,7 +1453,10 @@ def main():
         default="quickwit")
 
     args = parser.parse_args()
-    tmp_fix_args_for_gh_workflow(args)
+    # For convenience, the Github CBENCH workflow sets --github-pr=0
+    # when there is no PR. Change it to None which is cleaner.
+    if args.github_pr is not None and args.github_pr <= 0:
+        args.github_pr = None
 
     bench_service_client = (
         BenchmarkServiceClient(args.export_to_endpoint,
