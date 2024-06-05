@@ -229,9 +229,12 @@ function uplotParamsFromSeries(run_filter_display_name, series) {
 
 export function showContinuousGraphs(opt_track_filter,
 				     opt_run_filter_display_name) {
+  // Only show graphs for a dataset and display name that had at least
+  // one run in the last 3 months.
+  const start_ts_s = Math.floor(Date.now() / 1000 - 3 * 30 * 24 * 3600);
   Promise.all([
-    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking`).then(res => res.json()),
-    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=github_workflow&tag=push_main`).then(res => res.json())
+    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=continuous_benchmarking&start_timestamp=${start_ts_s}`).then(res => res.json()),
+    fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?source=github_workflow&tag=push_main&start_timestamp=${start_ts_s}`).then(res => res.json())
   ])
     .then((resp) => {
       const all_run_infos = [...resp[0].run_infos, ...resp[1].run_infos];

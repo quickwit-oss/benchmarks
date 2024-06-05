@@ -205,7 +205,7 @@ function RunList(props) {
 export function showRunList() {
   // By default only show the runs of the last 6 months.
   // TODO: consider adding date pickers.
-  const start_ts_s = Date.now() / 1000 - 6 * 30 * 24 * 3600;
+  const start_ts_s = Math.floor(Date.now() / 1000 - 6 * 30 * 24 * 3600);
   fetch(`${BENCHMARK_SERVICE_ADDRESS}/api/v1/all_runs/list/?start_timestamp=${start_ts_s}`)
     .then((res) => { return res.json(); })
     .then((resp) => {
