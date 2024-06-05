@@ -247,7 +247,7 @@ class Benchmark extends React.Component {
       if (unsupported) {
         metric_average_over_queries = undefined;
       } else {
-        metric_average_over_queries = (metric_average_over_queries / num_selected_queries) | 0;
+        metric_average_over_queries = Math.round(metric_average_over_queries / num_selected_queries);
       }
       engines[run_id] = engine_results;
       engines[run_id].indexing_run_info = run_pair.indexing?.run_info;
