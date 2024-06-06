@@ -33,6 +33,7 @@ import requests
 import yaml
 from service import schemas
 from benchmark_service_client import BenchmarkServiceClient
+from github_client import GithubClient
 
 logger = logging.getLogger(__name__)
 
@@ -384,54 +385,41 @@ class SearchClient(ABC):
         raise NotImplementedError
 
 
-def get_github_commits(owner: str,
-                       repo: str,
-                       start_commit_sha: str) -> list[str] | None:
-    """Return the last N GH commits before (and incl.) `start_commit_sha`."""
-    try:
-        response = requests.get(
-            f"https://api.github.com/repos/{owner}/{repo}/commits?sha={start_commit_sha}&per_page=80",
-            headers={"Accept": "application/vnd.github+json",
-                     "X-GitHub-Api-Version": "2022-11-28"})
-        response.raise_for_status()
-    except requests.exceptions.RequestException as ex:
-        logging.info("Could not get list of commits from github for owner %s repo %s: %s", owner, repo, ex)
-        return
-    commit_shas = []
-    # See: https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#list-commits
-    # We assume they are in reverse chronological order.
-    for commit_response in response.json():
-        sha = commit_response.get("sha")
-        if sha:
-            commit_shas.append(sha)
-    return commit_shas
-
-
 def get_reference_run(
         bench_service_client: BenchmarkServiceClient,
+        github_client: GithubClient,
+        github_pr: str | int,
         current_run_info: schemas.RunInfo,
-        owner: str,
-        repo: str,
-        reference_commit: str,
+        reference_branch: str = "main",
         reference_tag: str = "push_main") -> schemas.SearchRun | None:
     """Find a reference benchmark run to compare `current_run` to.
 
     This will typically be the appropriate run with tag
-    `reference_tag` that ran on an engine built at commit
-    `reference_commit`. However, that run might not be available
-    (e.g. the github workflow does not run on every commits, or the
-    run might have failed). In that case, we get the most recent
-    commits from github, and find the most recent runs on those
-    commits.
+    `reference_tag` that ran on an engine built at the reference commit
+    which is the most recent common ancestor between
+    `reference_branch` and the HEAD of the pull request `github_pr`.
+    However, that run might not be available (e.g. the github workflow
+    does not run on every commits, or the run might have failed). In
+    that case, we get the most recent commits from github, and find
+    the most recent runs on those commits.
 
     Args:
-      bench_service_cleint:
-      current_info_run:
-      owner: Github owner of the repo of the benchmarked engine.
-      repo: Github repo of the benchmarked engine.
-      reference_commit: SHA hash of the commit to which we want a comparison.
+      bench_service_client:
+      github_client:
+      github_pr: Pull request ID of this benchmark run.
+      current_info_run: Info of the current benchmark run.
+      reference_branch: The branch to which we want a comparison.
       reference_tag: We'll look for this tag in the reference run.
     """
+    pr_head = github_client.get_pull_request_head(github_pr)
+    logging.debug("Github PR HEAD: %s", pr_head)
+    if not pr_head:
+        return
+    reference_commit = github_client.get_merge_base(pr_head, reference_branch)
+    logging.debug("Reference commit: %s", reference_commit)
+    if not reference_commit:
+        return
+
     base_run_filter = {
         "run_type": current_run_info.run_type,
         "track": current_run_info.track,
@@ -454,7 +442,7 @@ def get_reference_run(
     # We get recent commits and try to find the most recent runs on
     # those commits.
     
-    previous_ref_commits = get_github_commits(owner, repo, reference_commit)
+    previous_ref_commits = github_client.get_commits(reference_commit)
     if previous_ref_commits is None:
         return
 
@@ -563,15 +551,17 @@ def export_results(bench_service_client: BenchmarkServiceClient,
 
     ref_run = None
     comparison = None
-    if (results_type == "search" and args.comparison_reference_commit is not None and
-        args.comparison_reference_tag is not None):
+    if (results_type == "search" and args.github_pr is not None and
+        args.comparison_reference_tag is not None and
+        args.comparison_reference_branch is not None):
         # Compare against a reference.
         ref_run = get_reference_run(
             bench_service_client,
+            GithubClient(github_owner=args.github_owner,
+                         github_repo=args.github_repo),
+            github_pr=args.github_pr,
             current_run_info=run_info,
-            owner=args.github_owner,
-            repo=args.github_repo,
-            reference_commit=args.comparison_reference_commit,
+            reference_branch=args.comparison_reference_branch,
             reference_tag=args.comparison_reference_tag)
         comparison = compare_runs(ref_run, bench_service_client.get_run(run_id))
 
@@ -1436,13 +1426,16 @@ def main():
               "is triggered from a Github workflow by a pull request."))
     parser.add_argument(
         '--comparison-reference-commit', type=str,
-        help=("SHA hash of the commit we should compare the current run to. When this bench run is "
-              "triggered by a github workflow on a pull request, this should be the base commit "
-              "of the PR."))
+        help=("DEPRECATED. No effect."))
     parser.add_argument(
         '--comparison-reference-tag', type=str,
         help=("Tag of the reference benchmark run we should compare the current run to. "
               "Typically 'push_main' for bench runs on the main git branch."))
+    parser.add_argument(
+        '--comparison-reference-branch', type=str,
+        help=("Reference branch we should compare the current run to. "
+              "Typically 'main'"),
+        default='main')
     parser.add_argument(
         '--github-owner', type=str,
         help=("Github owner. Only relevant when the benchmark is triggered from a Github workflow."),
