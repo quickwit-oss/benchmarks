@@ -521,6 +521,12 @@ def export_results(bench_service_client: BenchmarkServiceClient,
                    exporter_token: str | None,
                    url_file: str | None = None):
     """Exports bench results to the benchmark service.
+
+    If this is a run triggered by a pull request (typically as part of
+    a Github workflow), this also performs a comparison to an
+    appropriate baseline, and stores the comparison link and message
+    to `url_file` (typically set to $GITHUB_OUTPUT in a github workflow).
+
     """
     results = results.copy()
     info_fields = {
@@ -585,7 +591,9 @@ def export_results(bench_service_client: BenchmarkServiceClient,
         "comparison_url": comparison_url,
         "comparison_text": comparison_text,
     }
-    # This will typically be $GITHUB_OUTPUT for easily getting the URL from a github workflow.
+    logging.info("Comparison results:\n%s", pprint.pformat(export_to_url_file))
+    # This will typically be $GITHUB_OUTPUT for easily getting the URL
+    # from a github workflow.
     if url_file:
         with open(url_file, 'a') as out:
             for k, v in export_to_url_file.items():
