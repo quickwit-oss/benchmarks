@@ -1,4 +1,4 @@
-version: 0.6
+version: 0.8
 index_id: generated-logs-for-loki
 
 doc_mapping:
