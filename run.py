@@ -575,7 +575,7 @@ def export_results(bench_service_client: BenchmarkServiceClient,
         comparison_text = "ERROR: " + comparison.error_msg
     else:
         comparison_text = (
-            f"Average search latency is {comparison.search_latency_ratio:.2}x that "
+            f"Average search latency is {comparison.search_latency_ratio:.3}x that "
             f"of the reference (lower is better).<br/>Ref run id: {ref_run.run_info.id}, "
             f"ref commit: {ref_run.run_info.commit_hash}<br/>"
             f"[Link]({comparison_url})")
