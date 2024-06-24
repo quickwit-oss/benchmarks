@@ -1,0 +1,123 @@
+version: 0.8
+index_id: generated-logs
+
+doc_mapping:
+  mode: lenient
+  field_mappings:
+    - name: timestamp
+      type: datetime
+      precision: milliseconds
+      fast: true
+      input_formats:
+        - rfc3339
+      output_format: unix_timestamp_secs
+    - name: message
+      type: text
+    - name: agent
+      type: object
+      field_mappings:
+        - name: ephemeral_id
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: id
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: name
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: type
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: version
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: aws.cloudwatch
+      type: object
+      field_mappings:
+        - name: ingestion_time
+          type: datetime
+          input_formats:
+            - rfc3339
+          output_format: unix_timestamp_secs
+          fast: true
+        - name: log_stream
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: cloud
+      type: object
+      field_mappings:
+        - name: region
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: event
+      type: object
+      field_mappings:
+        - name: dataset
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: id
+          type: text
+          tokenizer: raw
+          fast: true
+        - name: ingested
+          type: datetime
+          input_formats:
+            - rfc3339
+          output_format: unix_timestamp_secs
+          fast: true
+    - name: host
+      type: object
+      field_mappings:
+        - name: name
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: input
+      type: object
+      field_mappings:
+        - name: type
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: level
+      type: text
+      tokenizer: raw
+      fast: true
+    - name: metrics
+      type: object
+      field_mappings:
+        - name: size
+          type: i64
+          fast: true
+        - name: tmin
+          type: i64
+          fast: true
+    - name: process
+      type: object
+      field_mappings:
+        - name: name
+          type: text
+          tokenizer: raw
+          fast: true
+    - name: trace_id
+      type: text
+      tokenizer: raw
+      fast: true
+    - name: tags
+      type: array<text>
+      tokenizer: raw
+      fast: false
+  timestamp_field: timestamp
+
+indexing_settings:
+  split_num_docs_target: 10000000
+  commit_timeout_secs: 60
+ 
