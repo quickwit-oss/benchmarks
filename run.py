@@ -358,7 +358,7 @@ class IndexInfo:
 
 class SearchClient(ABC):
     @abstractmethod
-    def query(self, index: str, query: Query):
+    def query(self, index: str, query):
         raise NotImplementedError
 
     @abstractmethod
@@ -872,6 +872,69 @@ class LokiClient(SearchClient):
         return None
 
 
+class QuickwitDatafusionClient(SearchClient):
+    """Client for the Datafusion SQL API of Quickwit."""
+    def __init__(self, endpoint="http://127.0.0.1:7289/api/v1",
+                 no_hits=False) -> None:
+        self.no_hits = no_hits
+        self.endpoint = endpoint
+
+    def create_index(self, index, config_json: str):
+        del index
+        del config_json
+        raise Exception("Not supported")
+
+    def delete_index(self, index: str):
+        del index
+        raise Exception("Not supported")
+
+    def check_index_exists(self, index: str):
+        del index
+        raise Exception("Not supported")
+
+    def create_started_monitor(self) -> ProcessMonitor:
+        return ProcessMonitor(process_name='datafusion-quickwit').start()
+
+    def query(self, index: str, query):
+        monitor = self.create_started_monitor()
+        start = time.monotonic()
+        query["only_count"] = True
+        query["row_limit"] = 1_000_000_000
+        response = requests.post(f"{self.endpoint}/run_sql_query", json=query)
+        monitor_stats = monitor.get_stats_since_start()
+        duration = int((time.monotonic() - start) * 1e6)
+        if response.status_code != 200:
+            print("Error while querying", query, response.text)
+            return {
+                "num_hits": 0,
+                "elapsed_time_micros": -1,
+                "response_status_code": response.status_code,
+                "response": response.text,
+            }
+        data = response.json()
+        return {
+            # Not really the number of "hits", but the best we have.
+            "num_hits": data["num_rows"],
+            # For now, quickwit datafusion does not report the engine duration, use the best we can.
+            "elapsed_time_micros": duration,
+        } | monitor_stats
+
+    def engine_info(self):
+        return {}
+
+    def commit_hash(self) -> str | None:
+        return None
+
+    @property
+    def docker_container_name(self) -> str:
+        """The name of the docker container running this engine."""
+        return "datafusion-quickwit"
+
+    def index_info(self, index_name: str) -> IndexInfo | None:
+        del index_name  # unused
+        return None
+
+
 def drive(index: str, queries: list[Query], client: SearchClient) -> Generator[dict[str, Any], None, None]:
     for query in queries:
         tries = 0
@@ -918,6 +981,8 @@ def read_queries(queries_dir: str, query_filter: str) -> Generator[Query, None, 
 def get_engine_client(engine: str, no_hits: bool) -> SearchClient:
     if engine == "quickwit":
         return QuickwitClient(no_hits=no_hits)
+    elif engine == "quickwit-datafusion":
+        return QuickwitDatafusionClient(no_hits=no_hits)
     elif engine == "loki":
         return LokiClient(endpoint="http://127.0.0.1:3100", no_hits=no_hits)
     elif engine == "opensearch":
@@ -1015,7 +1080,7 @@ def prepare_index(engine: str, track: str, index: str, overwrite_index: bool):
         client = LokiClient(endpoint="http://127.0.0.1:9301")
         index_config = open(f"tracks/{track}/index-config.quickwit.yaml").read()
     else:
-        assert engine == "elasticsearch", f"Unknown engin {engine}"
+        assert engine == "elasticsearch", f"Unknown engine {engine}"
         client = ElasticClient()
         index_config = open(f"tracks/{track}/index-config.elasticsearch.json").read()
         
