@@ -1,0 +1,1 @@
+{"query": "SELECT timestamp FROM quickwit WHERE timestamp >= to_timestamp('2023-01-09T01:00:00Z') ORDER BY timestamp DESC"}

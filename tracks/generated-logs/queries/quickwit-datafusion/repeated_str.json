@@ -1,0 +1,1 @@
+{"query": "SELECT tags  FROM  quickwit  where trace_id = '2566377301415292313' limit 1"}

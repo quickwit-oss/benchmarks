@@ -1,0 +1,1 @@
+{"query": "select trace_id, metrics.size, metrics.tmin from quickwit where metrics.size > 918715"}

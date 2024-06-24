@@ -1,0 +1,1 @@
+{"query": "select trace_id from quickwit where trace_id = '2566377301415292313' or metrics.tmin = 193166"}

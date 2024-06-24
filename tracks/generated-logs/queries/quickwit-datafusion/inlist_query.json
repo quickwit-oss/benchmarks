@@ -1,0 +1,1 @@
+{"query": "select trace_id from quickwit where trace_id IN('2566377301415292313', '3623765996886834565')"}

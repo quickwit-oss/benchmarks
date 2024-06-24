@@ -1,0 +1,1 @@
+{"query": "select count(trace_id) from quickwit"}
