@@ -661,16 +661,18 @@ class ElasticClient(SearchClient):
         if extra_url_component:
             url += '/' + extra_url_component
         monitor = self.create_started_monitor()
-        response = requests.post(f"{url}/{index}/_search", json=query)
-        monitor_stats = monitor.get_stats_since_start()
-        if response.status_code != 200:
-            print("Error while querying", query, response.text)
+        try:
+            response = requests.post(f"{url}/{index}/_search", json=query)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as ex:
+            print("Error while querying", query, ex)
             return {
                 "num_hits": 0,
                 "elapsed_time_micros": -1,
-                "response_status_code": response.status_code,
-                "response": response.text,
+                "response_status_code": ex.response.status_code if ex.response else -1,
+                "response": str(ex),
             }
+        monitor_stats = monitor.get_stats_since_start()
         data = response.json()
         return {
             "num_hits": data["hits"]["total"]["value"] if "total" in data["hits"] else 0,
@@ -900,17 +902,19 @@ class QuickwitDatafusionClient(SearchClient):
         start = time.monotonic()
         query["only_count"] = True
         query["row_limit"] = 1_000_000_000
-        response = requests.post(f"{self.endpoint}/run_sql_query", json=query)
-        monitor_stats = monitor.get_stats_since_start()
-        duration = int((time.monotonic() - start) * 1e6)
-        if response.status_code != 200:
-            print("Error while querying", query, response.text)
+        try:
+            response = requests.post(f"{self.endpoint}/run_sql_query", json=query)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as ex:
+            print("Error while querying", query, ex)
             return {
                 "num_hits": 0,
                 "elapsed_time_micros": -1,
-                "response_status_code": response.status_code,
-                "response": response.text,
+                "response_status_code": ex.response.status_code if ex.response else -1,
+                "response": str(ex),
             }
+        monitor_stats = monitor.get_stats_since_start()
+        duration = int((time.monotonic() - start) * 1e6)
         data = response.json()
         return {
             # Not really the number of "hits", but the best we have.
